@@ -47,7 +47,7 @@ namespace DarksideGUI
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            InjectPid(apiObject, 25);
+            InjectPid(apiObject, Int32.Parse(NumberTextBox.Text));
         }
 
     }

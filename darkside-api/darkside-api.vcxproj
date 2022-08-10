@@ -139,11 +139,13 @@
   <ItemGroup>
     <ClInclude Include="DarksideAPI.h" />
     <ClInclude Include="DarksideAPICaller.h" />
-    <ClInclude Include="stdfx.h" />
+    <ClInclude Include="simple-inject.h" />
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DarksideAPI.cpp" />
     <ClCompile Include="DarksideAPICaller.cpp" />
+    <ClCompile Include="simple-inject.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
