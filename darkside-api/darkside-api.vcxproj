@@ -137,11 +137,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DaocAPI.h" />
+    <ClInclude Include="DarksideAPI.h" />
+    <ClInclude Include="DarksideAPICaller.h" />
     <ClInclude Include="stdfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DaocAPI.cpp" />
+    <ClCompile Include="DarksideAPI.cpp" />
+    <ClCompile Include="DarksideAPICaller.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
