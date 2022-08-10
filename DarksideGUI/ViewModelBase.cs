@@ -9,6 +9,8 @@ using System.Windows.Input;
 
 
 
+//Not currently using this viewmodelbase
+
 namespace DarksideGUI
 {
 
@@ -19,6 +21,7 @@ namespace DarksideGUI
         public static extern void HelloWorld();
  
         private ICommand _saveCommand;
+        private ICommand _injectCommand;
 
         public ICommand SaveCommand
         {
@@ -43,6 +46,28 @@ namespace DarksideGUI
         private void SaveObject()
         {
             HelloWorld();
+        }
+
+        public ICommand InjectCommand (int pid)
+        {
+            {
+                if (_injectCommand == null)
+                {
+                    _injectCommand = new RelayCommand(
+                        param => this.InjectPid(pid),
+                        param => this.CanInject(pid));
+                }
+            }
+            return _injectCommand;
+        }
+
+        private bool CanInject(int pid)
+        {
+            return true;
+        }
+
+        private void InjectPid(int pid) {
+            MessageBox.Show(String.Format("Injecting pid {0}",pid));
         }
     }
 }
