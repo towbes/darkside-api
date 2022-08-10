@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "darkside-api", "darkside-ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarksideGUI", "DarksideGUI\DarksideGUI.csproj", "{A35B7DD2-2964-4901-8B84-0A51F0ED3BBC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "darkside-hooks", "darkside-hooks\darkside-hooks.vcxproj", "{F50145F6-FEBF-4625-9697-1C4C46CE62E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{A35B7DD2-2964-4901-8B84-0A51F0ED3BBC}.Release|x64.Build.0 = Release|Any CPU
 		{A35B7DD2-2964-4901-8B84-0A51F0ED3BBC}.Release|x86.ActiveCfg = Release|Any CPU
 		{A35B7DD2-2964-4901-8B84-0A51F0ED3BBC}.Release|x86.Build.0 = Release|Any CPU
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Debug|Any CPU.Build.0 = Debug|x64
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Debug|x64.ActiveCfg = Debug|x64
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Debug|x64.Build.0 = Debug|x64
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Debug|x86.ActiveCfg = Debug|Win32
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Debug|x86.Build.0 = Debug|Win32
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Release|Any CPU.ActiveCfg = Release|x64
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Release|Any CPU.Build.0 = Release|x64
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Release|x64.ActiveCfg = Release|x64
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Release|x64.Build.0 = Release|x64
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Release|x86.ActiveCfg = Release|Win32
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
