@@ -1,4 +1,20 @@
 #pragma once
+#include "DaocStructs.h"
+
+extern "C" class __declspec(dllexport) PlayerInfo {
+private:
+    playerpos_t* playerPositionInfo;
+    uintptr_t ptrPlayerPosition;
+    playerpos_t* pPlayerPos;
+    void* hMapFile;
+public:
+    PlayerInfo();
+    ~PlayerInfo();
+
+    //Player Info
+    bool GetPlayerInfo();
+};
+
 
 
 //moving this out temporarily

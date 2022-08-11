@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Globals.h"
+#include "PlayerInfo.h"
+
 
 extern "C" __declspec(dllexport) void __cdecl MainThread() {
 #ifdef _DEBUG
@@ -10,18 +12,11 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     std::cout << "DLL got injected!!" << std::endl;
 #endif 
 
-    //Initialize daocgame pointers
-    ptrPlayerPosition = ptrPlayerPosition_x;
-    playerPositionInfo = *(playerpos_t**)ptrPlayerPosition;
-
-#ifdef _DEBUG
-    std::cout << "PlayerPositionPtr: " << std::hex << (int)ptrPlayerPosition << std::endl;
-    std::cout << "Player Position X: " << std::fixed << std::setprecision(0) << playerPositionInfo->pos_x << std::endl;
-#endif
-
+    PlayerInfo* pInfo = new PlayerInfo();
 
     //wait for user input
     while (true) {
+        pInfo->GetPlayerInfo();
         //break when user presses end
         if (GetAsyncKeyState(VK_END) & 1) {
             break;
