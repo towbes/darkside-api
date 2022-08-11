@@ -72,9 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)DarksideGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
+    <IncludePath>C:\boost\boost_1_80_0_b1;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)DarksideGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
+    <IncludePath>C:\boost\boost_1_80_0_b1;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -140,11 +142,12 @@
     <ClInclude Include="DarksideAPI.h" />
     <ClInclude Include="DarksideAPICaller.h" />
     <ClInclude Include="simple-inject.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DarksideAPI.cpp" />
     <ClCompile Include="DarksideAPICaller.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="simple-inject.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

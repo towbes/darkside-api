@@ -9,6 +9,10 @@ inline uintptr_t FixDaocGameOffset(T nOffset)
 	return static_cast<uintptr_t>(nOffset);
 }
 
+struct apicmd_t {
+	char test[10];
+};
+
 
 #define INITIALIZE_DAOCGAME_OFFSET(var) uintptr_t var = FixDaocGameOffset(var##_x)
 

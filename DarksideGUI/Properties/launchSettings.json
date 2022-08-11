@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DarksideGUI": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

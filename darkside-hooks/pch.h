@@ -14,5 +14,9 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
-
+#include <fstream>
+#include <conio.h>
+#include <tchar.h>
+#include <boost/interprocess/file_mapping.hpp>
+#include <boost/interprocess/mapped_region.hpp>
 #endif //PCH_H
