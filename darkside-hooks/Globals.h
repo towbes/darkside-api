@@ -3,6 +3,8 @@
 #include "DaocStructs.h"
 #include "pch.h"
 
+extern HMODULE ghModule;
+
 template <typename T, typename = std::enable_if_t<std::is_integral_v<T>, void>>
 inline uintptr_t FixDaocGameOffset(T nOffset)
 {

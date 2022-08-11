@@ -17,4 +17,6 @@
 #include <fstream>
 #include <conio.h>
 #include <tchar.h>
+#include <strsafe.h>
+#include <atlstr.h>
 #endif //PCH_H
