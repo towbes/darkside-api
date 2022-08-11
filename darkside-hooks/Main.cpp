@@ -30,7 +30,5 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     FreeConsole();
 #endif
 
-
-
     FreeLibraryAndExitThread(ghModule, 0);
 }
