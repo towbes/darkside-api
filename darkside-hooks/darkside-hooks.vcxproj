@@ -72,9 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)DarksideGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
+    <IncludePath>C:\daoc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)DarksideGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
+    <IncludePath>C:\daoc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -147,8 +149,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="daocGame.h" />
+    <ClInclude Include="DaocStructs.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Hook.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

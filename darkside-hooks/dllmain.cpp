@@ -1,5 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
+#include "Globals.h"
+
 
 
 DWORD WINAPI MainThread(HMODULE hModule) {
@@ -10,6 +12,15 @@ DWORD WINAPI MainThread(HMODULE hModule) {
     freopen_s(&f, "CONOUT$", "w", stdout);
     std::cout << "DLL got injected!" << std::endl;
 #endif 
+
+    //Initialize player pointer
+    ptrPlayerPosition = ptrPlayerPosition_x;
+    playerPositionInfo = *(playerpos_t**)ptrPlayerPosition;
+
+#ifdef _DEBUG
+    std::cout << "PlayerPositionPtr: " << std::hex << (int)ptrPlayerPosition << std::endl;
+    std::cout << "Player Position X: " << std::fixed << std::setprecision(0) << playerPositionInfo->pos_x << std::endl;
+#endif
 
 
     //wait for user input

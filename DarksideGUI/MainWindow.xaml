@@ -10,5 +10,6 @@
         <Button Command="{Binding Path=SaveCommand}" Width="123" Click="Button_Click">Run Command</Button>
         <Button Command="{Binding Path=InjectCommand}" CommandParameter="25" Width="116" Click="Button_Click_1">Inject</Button>
         <TextBox Name="NumberTextBox"/>
+        <Button Width="113" Click="Button_Click_2">GetPlayerInfo</Button>
     </StackPanel>
 </Window>

@@ -22,6 +22,20 @@ namespace DarksideGUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        //Player position struct
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct PlayerPosition
+        {
+            public float pos_x { get; private set; }
+            public short heading { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 68)] public char[] unknown1;
+            public float pos_y { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public char[] unknown2;
+            public float pos_z { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] public char[] unknown3;
+        }
+
+
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateDarksideAPI();
 
@@ -30,6 +44,9 @@ namespace DarksideGUI
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void InjectPid(IntPtr pApiObject, int pid);
+
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetPlayerInfo(IntPtr pApiObject, IntPtr lpBuffer);
 
         IntPtr apiObject;
 
@@ -50,5 +67,20 @@ namespace DarksideGUI
             InjectPid(apiObject, Int32.Parse(NumberTextBox.Text));
         }
 
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            int size = Marshal.SizeOf<PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+
+            
+
+            GetPlayerInfo(apiObject, buf);
+
+
+            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+
+            MessageBox.Show(String.Format("Created PlayerPosition object at {0}", buf));
+            MessageBox.Show((playerPos.pos_x).ToString());
+        }
     }
 }
