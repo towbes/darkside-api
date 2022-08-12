@@ -1,6 +1,4 @@
 #pragma once
-#include "DaocGame.h"
-#include "DaocStructs.h"
 #include "pch.h"
 
 extern HMODULE ghModule;
@@ -22,4 +20,4 @@ extern uintptr_t funcSellItem;
 extern uintptr_t ptrAutorunToggle2;
 extern uintptr_t funcRunSpeed;
 extern uintptr_t ptrPlayerPosition;
-extern playerpos_t* playerPositionInfo;
+extern uintptr_t playerPositionInfo;

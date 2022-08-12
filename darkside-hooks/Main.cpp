@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Globals.h"
 #include "PlayerPosition.h"
+#include "PartyMemberInfo.h"
 
 
 extern "C" __declspec(dllexport) void __cdecl MainThread() {
@@ -13,6 +14,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
 #endif 
 
     PlayerPosition* pInfo = new PlayerPosition();
+    PartyMemberInfo* pMemInfo = new PartyMemberInfo();
 
     //wait for user input
     while (true) {

@@ -27,10 +27,16 @@
     <ClInclude Include="Globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DaocStructs.h">
+    <ClInclude Include="PlayerPosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerPosition.h">
+    <ClInclude Include="PartyMemberInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\daoc\daocgame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\daoc\DaocStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -45,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PlayerPosition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PartyMemberInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -9,6 +9,7 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
+#include <Windows.h>
 #include <crtdbg.h>
 #include <stdlib.h>
 #include <string>
