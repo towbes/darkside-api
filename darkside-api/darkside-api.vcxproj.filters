@@ -27,7 +27,10 @@
     <ClInclude Include="simple-inject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\daoc\DaocStructs.h">
+    <ClInclude Include="..\..\..\..\daoc\daocgame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\daoc\DaocStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
