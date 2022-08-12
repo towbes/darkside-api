@@ -16,9 +16,10 @@ private:
     //Player autorun toggle
     void* arunMapFile;
     std::wstring arunmmf_name;
-    BYTE valAutorunToggle;
+    BYTE preValAutorunToggle;
     BYTE* shmAutorunToggle;
     BYTE* ptrAutorunToggle;
+    
 
 public:
     PlayerPosition();
@@ -26,7 +27,8 @@ public:
 
     //Player Info
     bool GetPlayerPosition();
-
+    //Autorun
+    void GetAutorun();
     void SetAutorun();
 };
 

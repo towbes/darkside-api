@@ -44,10 +44,10 @@ PlayerPosition::PlayerPosition() {
     
     //Setup the autorun toggle mmf
     ptrAutorunToggle = (BYTE*)ptrAutorunToggle2_x;
-    valAutorunToggle = *(BYTE*)ptrAutorunToggle;
+    preValAutorunToggle = *(BYTE*)ptrAutorunToggle;
 #ifdef _DEBUG
     std::cout << "ptrAutorunToggle: " << std::hex << (int)ptrAutorunToggle << std::endl;
-    std::cout << "valAutorunToggle: " << std::hex << (int)valAutorunToggle << std::endl;
+    std::cout << "valAutorunToggle: " << std::hex << (int)preValAutorunToggle << std::endl;
 #endif
     posInfommf_name = std::to_wstring(pid) + L"_arun";
     std::size_t arunfileSize = sizeof(BYTE);
@@ -71,7 +71,7 @@ PlayerPosition::PlayerPosition() {
     }//Todo add exception
 
     if (shmAutorunToggle != NULL) {
-        *shmAutorunToggle = valAutorunToggle;
+        *shmAutorunToggle = preValAutorunToggle;
     }//Todo add exception
 }
 
@@ -89,9 +89,19 @@ bool PlayerPosition::GetPlayerPosition() {
     return true;
 }
 
+void PlayerPosition::GetAutorun() {
+    *shmAutorunToggle = *ptrAutorunToggle;
+}
+
 void PlayerPosition::SetAutorun() {
-    valAutorunToggle = *(BYTE*)shmAutorunToggle;
-    *ptrAutorunToggle = *shmAutorunToggle;
+    if ((BYTE)preValAutorunToggle == *(BYTE*)shmAutorunToggle) {
+        //do nothing
+    }
+    else if (preValAutorunToggle != *shmAutorunToggle) {
+        *ptrAutorunToggle = *shmAutorunToggle;
+        preValAutorunToggle = *(BYTE*)shmAutorunToggle;
+    }
+    
 #ifdef _DEBUG
     //std::cout << "valAutorunToggle: " << std::hex << (int)valAutorunToggle << std::endl;
     //std::cout << "shmAutorunToggle: " << std::hex << *(int*)shmAutorunToggle << std::endl;
