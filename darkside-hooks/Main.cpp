@@ -19,6 +19,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     //wait for user input
     while (true) {
         pInfo->GetPlayerPosition();
+        pInfo->SetHeading();
         pInfo->SetAutorun();
         pMemInfo->GetPartyMembers();
         //break when user presses end

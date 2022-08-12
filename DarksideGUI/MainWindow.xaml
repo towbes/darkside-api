@@ -22,6 +22,8 @@
             <Button Width="126" Click="Button_Click_3">Toggle Autorun</Button>
         </StackPanel>
         <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button Width="131" Click="Button_Click_5">Change heading</Button>
+            <Slider Name="HeadingSlider" Maximum="4000" TickPlacement="BottomRight" TickFrequency="200" ValueChanged="HeadingSlider_ValueChanged"/>
             <Button Width="159" Click="Button_Click_4">Get Member Index</Button>
             <TextBox Name="MemberIndexBox"/>
             <TextBlock Name="MemberInfo" TextWrapping="Wrap" FontSize="16" Foreground="Orange">Filler</TextBlock>

@@ -62,12 +62,15 @@ namespace DarksideGUI
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetPlayerHeading(IntPtr pApiObject, bool changeHeading, short newHeading);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetAutorun(IntPtr pApiObject, bool autorun);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetPartyMember(IntPtr pApiObject, int memberIndex, IntPtr lpBuffer);
 
         IntPtr apiObject;
         bool autorun = false;
+        bool changeHeading = false;
 
         public MainWindow()
         {
@@ -124,6 +127,22 @@ namespace DarksideGUI
                 cname, partyMember.hp_pct, partyMember.endu_pct, partyMember.pow_pct);
 
             MemberInfo.Text = msg;
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            changeHeading = !changeHeading;
+            //If changeheading toggled off, set it to false
+            if (!changeHeading)
+            {
+                SetPlayerHeading(apiObject, false, 0);
+            }
+        }
+
+        private void HeadingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            //Change heading when the slider moves if changeHeading is toggled on, otherwise it will do nothing
+            SetPlayerHeading(apiObject, changeHeading, (short)HeadingSlider.Value);
         }
     }
 }

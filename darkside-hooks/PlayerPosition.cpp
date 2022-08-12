@@ -35,12 +35,39 @@ PlayerPosition::PlayerPosition() {
     }
 
     if (hMapFile != 0) {
-        pPlayerPos = (playerpos_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+        pShmPlayerPos = (playerpos_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
     
-    if (pPlayerPos != NULL) {
-        *pPlayerPos = *playerPositionInfo;
+    if (pShmPlayerPos != NULL) {
+        *pShmPlayerPos = *playerPositionInfo;
     }//Todo add exception
+
+    //setup the heading overwrite flag mmf
+    headingmmf_name = std::to_wstring(pid) + L"_heading";
+    std::size_t headingFileSize = sizeof(headingupdate_t);
+
+
+    auto headingMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        headingFileSize,                // maximum object size (low-order DWORD)
+        headingmmf_name.c_str());                 // name of mapping object
+
+    if (headingMapFile == NULL)
+    {
+        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+            GetLastError());
+    }
+
+    if (headingMapFile != 0) {
+        headingUpdate = (headingupdate_t*)MapViewOfFile(headingMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    }//Todo add exception
+
+
+    headingUpdate->changeHeading = false;
+    headingUpdate->heading = 0;
     
     //Setup the autorun toggle mmf
     ptrAutorunToggle = (BYTE*)ptrAutorunToggle2_x;
@@ -73,37 +100,56 @@ PlayerPosition::PlayerPosition() {
     if (shmAutorunToggle != NULL) {
         *shmAutorunToggle = preValAutorunToggle;
     }//Todo add exception
+
 }
 
 PlayerPosition::~PlayerPosition() {
-    UnmapViewOfFile(pPlayerPos);
+    UnmapViewOfFile(pShmPlayerPos);
     CloseHandle(hMapFile);
     UnmapViewOfFile(shmAutorunToggle);
     CloseHandle(arunMapFile);
+    UnmapViewOfFile(headingUpdate);
+    CloseHandle(headingMapFile);
 }
 
 bool PlayerPosition::GetPlayerPosition() {
-
-    *pPlayerPos = *playerPositionInfo;
-
+    //Lock the pointer when we read it
+    std::lock_guard<std::mutex> lg(posUpdateMutex);
+    *pShmPlayerPos = *playerPositionInfo;
     return true;
+}
+
+void PlayerPosition::SetHeading() {
+    if ((bool)headingUpdate->changeHeading) {
+        //lock the pointer when we write it
+        std::lock_guard<std::mutex> lg(posUpdateMutex);
+        playerPositionInfo->heading = headingUpdate->heading;
+    }
 }
 
 void PlayerPosition::GetAutorun() {
     *shmAutorunToggle = *ptrAutorunToggle;
 }
 
-void PlayerPosition::SetAutorun() {
+
+
+bool PlayerPosition::SetAutorun() {
+    //Only change the autorun value if the shared memory changed
+    //This lets the player still use in game autorun
     if ((BYTE)preValAutorunToggle == *(BYTE*)shmAutorunToggle) {
         //do nothing
+        return false;
     }
     else if (preValAutorunToggle != *shmAutorunToggle) {
         *ptrAutorunToggle = *shmAutorunToggle;
         preValAutorunToggle = *(BYTE*)shmAutorunToggle;
+        return true;
     }
+    return false;
     
 #ifdef _DEBUG
     //std::cout << "valAutorunToggle: " << std::hex << (int)valAutorunToggle << std::endl;
     //std::cout << "shmAutorunToggle: " << std::hex << *(int*)shmAutorunToggle << std::endl;
 #endif
 }
+

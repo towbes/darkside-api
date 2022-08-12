@@ -27,6 +27,15 @@ bool GetPlayerPosition(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	return false;
 }
 
+bool SetPlayerHeading(DarksideAPI* apiObject, bool changeHeading, short newHeading) {
+	if (apiObject != NULL) {
+		if (apiObject->SetPlayerHeading(changeHeading, newHeading)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool SetAutorun(DarksideAPI* apiObject, bool autorun) {
 	if (apiObject != NULL) {
 		if (apiObject->SetAutorun(autorun)) {

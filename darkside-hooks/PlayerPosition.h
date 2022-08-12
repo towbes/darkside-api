@@ -10,17 +10,29 @@ private:
     //Player Position Info
     playerpos_t* playerPositionInfo;
     uintptr_t ptrPlayerPosition;
-    playerpos_t* pPlayerPos;
+    playerpos_t* pShmPlayerPos;
     void* hMapFile;
     std::wstring posInfommf_name;
+
+    //Setup mmf to track heading overwrite
+    void* headingMapFile;
+    std::wstring headingmmf_name;
+    //Pointer to heading update struct in shared memory
+    headingupdate_t* headingUpdate;
+    //Mutex for the player position pointer
+    //Prevents writing/reading at the same time
+    std::mutex posUpdateMutex;
 
     //Player autorun toggle
     void* arunMapFile;
     std::wstring arunmmf_name;
-    BYTE preValAutorunToggle;
     BYTE* shmAutorunToggle;
     BYTE* ptrAutorunToggle;
+    //Stores previous value of mmf autorun toggle
+    //This keeps track of whether an autorun was sent or not
+    BYTE preValAutorunToggle;
     
+
 
 public:
     PlayerPosition();
@@ -28,7 +40,11 @@ public:
 
     //Player Info
     bool GetPlayerPosition();
+    //Heading
+    void SetHeading();
+
     //Autorun
     void GetAutorun();
-    void SetAutorun();
+    bool SetAutorun();
+
 };

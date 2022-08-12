@@ -14,6 +14,8 @@ extern "C" {
 
 	extern __declspec(dllexport) bool GetPlayerPosition(DarksideAPI* apiObject, LPVOID lpBuffer);
 
+	extern __declspec(dllexport) bool SetPlayerHeading(DarksideAPI* apiObject, bool changeHeading, short newHeading);
+
 	extern __declspec(dllexport) bool SetAutorun(DarksideAPI* apiObject, bool autorun);
 
 	extern __declspec(dllexport) bool GetPartyMember(DarksideAPI* apiObject, int memberIndex, LPVOID lpBuffer);

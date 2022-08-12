@@ -18,6 +18,7 @@ public:
 
     //Player Position
     bool GetPlayerPosition(LPVOID lpBuffer);
+    bool SetPlayerHeading(bool changeHeading, short newHeading);
     bool SetAutorun(bool autorun);
 
     //Party Members

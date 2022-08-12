@@ -20,4 +20,5 @@
 #include <tchar.h>
 #include <strsafe.h>
 #include <atlstr.h>
+#include <mutex>
 #endif //PCH_H
