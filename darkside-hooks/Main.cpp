@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Globals.h"
-#include "PlayerInfo.h"
+#include "PlayerPosition.h"
 
 
 extern "C" __declspec(dllexport) void __cdecl MainThread() {
@@ -12,11 +12,11 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     std::cout << "DLL got injected!!" << std::endl;
 #endif 
 
-    PlayerInfo* pInfo = new PlayerInfo();
+    PlayerPosition* pInfo = new PlayerPosition();
 
     //wait for user input
     while (true) {
-        pInfo->GetPlayerInfo();
+        pInfo->GetPlayerPosition();
         //break when user presses end
         if (GetAsyncKeyState(VK_END) & 1) {
             break;

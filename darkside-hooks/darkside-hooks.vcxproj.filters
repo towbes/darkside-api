@@ -30,7 +30,7 @@
     <ClInclude Include="DaocStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerInfo.h">
+    <ClInclude Include="PlayerPosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
+    <ClCompile Include="PlayerPosition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

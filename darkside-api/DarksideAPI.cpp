@@ -65,7 +65,14 @@ void DarksideAPI::InjectPid(int pid) {
             // Call the remote function
             DWORD dwThreadId = 0;
             auto hThread = CreateRemoteThread(hProc, nullptr, 0, LPTHREAD_START_ROUTINE(data.lpInit), nullptr, 0, &dwThreadId);
-            ResumeThread(hThread);
+            if (hThread != 0) {
+                ResumeThread(hThread);
+            }
+            else {
+                _tprintf(TEXT("Could not create remote thread (%d).\n"),
+                    GetLastError());
+            }
+           
         }
     }
 }
@@ -74,9 +81,7 @@ bool DarksideAPI::GetPlayerInfo(LPVOID lpBuffer) {
    
 
     std::size_t fileSize = sizeof(playerpos_t);
-
-    TCHAR szName[] = TEXT("pid_mmf");
-
+    std::wstring mmf_name = std::to_wstring(pidHandle) + L"_pInfo";
 
 
     auto hMapFile = CreateFileMapping(
@@ -85,24 +90,27 @@ bool DarksideAPI::GetPlayerInfo(LPVOID lpBuffer) {
         PAGE_READWRITE,          // read/write access
         0,                       // maximum object size (high-order DWORD)
         fileSize,                // maximum object size (low-order DWORD)
-        szName);                 // name of mapping object
+        mmf_name.c_str());                 // name of mapping object
 
     if (hMapFile == NULL)
     {
         _tprintf(TEXT("Could not create file mapping object (%d).\n"),
             GetLastError());
-        return 1;
+        return false;
     }
 
 
     playerpos_t* pPlayerPos = (playerpos_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
+    if (pPlayerPos == NULL) {
+        _tprintf(TEXT("Could not find pPlayerPos (%d).\n"),
+            GetLastError());
+        return false;
+    }
+    
     playerpos_t sPlayerPos = *pPlayerPos;
-
     memcpy(lpBuffer, &sPlayerPos, sizeof(playerpos_t));
-
     UnmapViewOfFile(pPlayerPos);
-
     CloseHandle(hMapFile);
 
     return true;
