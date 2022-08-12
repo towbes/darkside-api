@@ -35,21 +35,41 @@ PartyMemberInfo::PartyMemberInfo() {
     }
 
     if (hMapFile != 0) {
-        ptrPartyMembers = (partymembers_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+        ptrShmPartyMembers = (partymembers_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
-    if (ptrPartyMembers != NULL) {
-        auto temp = std::addressof(ptrPartyMembers);
+    if (ptrShmPartyMembers != NULL) {
+        //
+        unsigned char* ptrShmBytePtr = reinterpret_cast<unsigned char*>(ptrShmPartyMembers);
+        unsigned char* ptrPInfoBytePtr = reinterpret_cast<unsigned char*>(ptrPartyMemberInfo);
         for (int i = 0; i < 8; i++) {
-            *(partymemberinfo_t*)ptrPartyMembers = *(partymemberinfo_t*)ptrPartyMemberInfo;
-            ptrPartyMemberInfo += sizeof(partymemberinfo_t);
-            pPartyMemberInfo += sizeof(partymemberinfo_t);
+            *(partymemberinfo_t*)ptrShmBytePtr = *(partymemberinfo_t*)ptrPInfoBytePtr;
+            ptrShmBytePtr += sizeof(partymemberinfo_t);
+            ptrPInfoBytePtr += sizeof(partymemberinfo_t);
         }
-        ptrPartyMembers = *temp;
     }//Todo add exception
 }
 
 PartyMemberInfo::~PartyMemberInfo() {
-    UnmapViewOfFile(pPartyMemberInfo);
+    UnmapViewOfFile(ptrShmPartyMembers);
     CloseHandle(hMapFile);
+}
+
+bool PartyMemberInfo::GetPartyMembers() {
+
+    if (ptrShmPartyMembers != NULL) {
+        unsigned char* ptrShmBytePtr = reinterpret_cast<unsigned char*>(ptrShmPartyMembers);
+        unsigned char* ptrPInfoBytePtr = reinterpret_cast<unsigned char*>(ptrPartyMemberInfo);
+        for (int i = 0; i < 8; i++) {
+            *(partymemberinfo_t*)ptrShmBytePtr = *(partymemberinfo_t*)ptrPInfoBytePtr;
+            ptrShmBytePtr += sizeof(partymemberinfo_t);
+            ptrPInfoBytePtr += sizeof(partymemberinfo_t);
+        }
+    }//Todo add exception
+#ifdef _DEBUG
+    //unsigned char* ptrShmBytePtr2 = reinterpret_cast<unsigned char*>(ptrShmPartyMembers);
+    //ptrShmBytePtr2 += sizeof(partymemberinfo_t);
+    //std::cout << "partymemberHP: " << std::hex << *(int*)ptrShmBytePtr2 << std::endl;
+#endif
+    return true;
 }

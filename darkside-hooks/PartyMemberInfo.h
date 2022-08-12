@@ -12,8 +12,7 @@ private:
     //Player Position Info
     partymemberinfo_t* partyMemberInfo;
     uintptr_t ptrPartyMemberInfo;
-    partymemberinfo_t* pPartyMemberInfo;
-    partymembers_t* ptrPartyMembers;
+    partymembers_t* ptrShmPartyMembers;
     void* hMapFile;
     std::wstring partyInfommf_name;
 
@@ -23,6 +22,6 @@ public:
     ~PartyMemberInfo();
 
     //Player Info
-    bool GetPartyMemmbers();
+    bool GetPartyMembers();
 };
 

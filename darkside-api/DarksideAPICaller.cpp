@@ -17,9 +17,9 @@ void InjectPid(DarksideAPI* apiObject, int pid) {
 	}
 }
 
-bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer) {
+bool GetPlayerPosition(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	if (apiObject != NULL) {
-		if (apiObject->GetPlayerInfo(lpBuffer)) {
+		if (apiObject->GetPlayerPosition(lpBuffer)) {
 			return true;
 		}
 		
@@ -30,6 +30,15 @@ bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer) {
 bool SetAutorun(DarksideAPI* apiObject, bool autorun) {
 	if (apiObject != NULL) {
 		if (apiObject->SetAutorun(autorun)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool GetPartyMember(DarksideAPI* apiObject, int memberIndex, LPVOID lpBuffer) {
+	if (apiObject != NULL) {
+		if (apiObject->GetPartyMember(memberIndex, lpBuffer)) {
 			return true;
 		}
 	}

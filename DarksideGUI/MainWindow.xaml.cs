@@ -35,6 +35,20 @@ namespace DarksideGUI
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] public char[] unknown3;
         }
 
+        //PartyMemberInfo
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct PartyMemberInfo
+        {
+            public int hp_pct { get; private set; }
+            public int endu_pct { get; private set; }
+            public int unknown;
+            public int pow_pct { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)] public char[] name;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)] public char[] unknown1;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)] public char[] class_name;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4616)] public char[] unknown2;
+        }
+
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateDarksideAPI();
@@ -46,9 +60,11 @@ namespace DarksideGUI
         public static extern void InjectPid(IntPtr pApiObject, int pid);
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetPlayerInfo(IntPtr pApiObject, IntPtr lpBuffer);
+        public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetAutorun(IntPtr pApiObject, bool autorun);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetPartyMember(IntPtr pApiObject, int memberIndex, IntPtr lpBuffer);
 
         IntPtr apiObject;
         bool autorun = false;
@@ -75,9 +91,9 @@ namespace DarksideGUI
             int size = Marshal.SizeOf<PlayerPosition>();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
 
-            
 
-            GetPlayerInfo(apiObject, buf);
+
+            GetPlayerPosition(apiObject, buf);
 
 
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
@@ -90,6 +106,24 @@ namespace DarksideGUI
         {
             autorun = !autorun;
             SetAutorun(apiObject, autorun);
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            int size = Marshal.SizeOf<PartyMemberInfo>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+
+            GetPartyMember(apiObject, Int32.Parse(MemberIndexBox.Text), buf);
+
+            PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(buf, typeof(PartyMemberInfo));
+
+            String cname = new string(partyMember.name);
+
+            String msg = String.Format("PartyMember Name is {0}" + Environment.NewLine + "HP: {1}%"
+                + Environment.NewLine + "Endu: {2}%" + Environment.NewLine + "Pow: {3}%",
+                cname, partyMember.hp_pct, partyMember.endu_pct, partyMember.pow_pct);
+
+            MemberInfo.Text = msg;
         }
     }
 }

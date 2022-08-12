@@ -20,6 +20,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     while (true) {
         pInfo->GetPlayerPosition();
         pInfo->SetAutorun();
+        pMemInfo->GetPartyMembers();
         //break when user presses end
         if (GetAsyncKeyState(VK_END) & 1) {
             break;

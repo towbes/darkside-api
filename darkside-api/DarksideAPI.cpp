@@ -2,17 +2,6 @@
 #include "simple-inject.h"
 #include <format>
 
-//Is this needed? Move to another file if so
-struct playerpos_t {
-    float pos_x;
-    short heading;
-    unsigned char unknown[68];
-    float pos_y;
-    unsigned char unknown2[8];
-    float pos_z;
-    char unknown4;
-};
-
 extern "C" VOID __cdecl MainThread();
 
 // Data struct to be shared between processes
@@ -78,7 +67,7 @@ void DarksideAPI::InjectPid(int pid) {
     }
 }
 
-bool DarksideAPI::GetPlayerInfo(LPVOID lpBuffer) {
+bool DarksideAPI::GetPlayerPosition(LPVOID lpBuffer) {
    
 
     std::size_t fileSize = sizeof(playerpos_t);
@@ -110,6 +99,7 @@ bool DarksideAPI::GetPlayerInfo(LPVOID lpBuffer) {
     }
     
     playerpos_t sPlayerPos = *pPlayerPos;
+
     memcpy(lpBuffer, &sPlayerPos, sizeof(playerpos_t));
     UnmapViewOfFile(pPlayerPos);
     CloseHandle(hMapFile);
@@ -151,4 +141,49 @@ bool DarksideAPI::SetAutorun(bool autorun) {
     else {
         *(BYTE*)shmAutorunToggle = 0x0;
     }
+}
+
+bool DarksideAPI::GetPartyMember(int memberIndex, LPVOID lpBuffer) {
+    //Setup the PlayerInfo mmf
+    std::wstring partyInfommf_name = std::to_wstring(pidHandle) + L"_pMemInfo";
+    //Set the size for 8 party members
+    std::size_t fileSize = sizeof(partymembers_t);
+    partymembers_t* ptrPartyMembers = NULL;
+
+    auto hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        fileSize,                // maximum object size (low-order DWORD)
+        partyInfommf_name.c_str());                 // name of mapping object
+
+    if (hMapFile == NULL)
+    {
+        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+            GetLastError());
+        return false;
+    }
+
+    if (hMapFile != 0) {
+        ptrPartyMembers = (partymembers_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    }//Todo add exception
+
+    if (ptrPartyMembers == NULL) {
+        _tprintf(TEXT("Could not create map view object (%d).\n"),
+            GetLastError());
+        return false;
+    }
+
+    unsigned char* ptrShmBytePtr = reinterpret_cast<unsigned char*>(ptrPartyMembers);
+
+    ptrShmBytePtr += sizeof(partymemberinfo_t) * memberIndex;
+
+    partymemberinfo_t sPartyMemberInfo = *(partymemberinfo_t*)ptrShmBytePtr;
+
+    memcpy(lpBuffer, &sPartyMemberInfo, sizeof(partymemberinfo_t));
+    UnmapViewOfFile(ptrPartyMembers);
+    CloseHandle(hMapFile);
+
+    return true;
 }
