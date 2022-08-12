@@ -20,6 +20,7 @@ PartyMemberInfo::PartyMemberInfo() {
     //Set the size for 8 party members
     std::size_t fileSize = sizeof(partymembers_t);
 
+    //Create a handle to memory mapped file
     auto hMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
@@ -35,15 +36,19 @@ PartyMemberInfo::PartyMemberInfo() {
     }
 
     if (hMapFile != 0) {
+        //Map a view of the memory mapped file from above
         ptrShmPartyMembers = (partymembers_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
     if (ptrShmPartyMembers != NULL) {
-        //
+        //Create a new pointer and cast as unsigned char to be able to offset by single byte values
         unsigned char* ptrShmBytePtr = reinterpret_cast<unsigned char*>(ptrShmPartyMembers);
         unsigned char* ptrPInfoBytePtr = reinterpret_cast<unsigned char*>(ptrPartyMemberInfo);
+        //Copy the 8 partymemberinfo_t structures into the shared memory
         for (int i = 0; i < 8; i++) {
+            //copy party member info
             *(partymemberinfo_t*)ptrShmBytePtr = *(partymemberinfo_t*)ptrPInfoBytePtr;
+            //Move offset to next party member
             ptrShmBytePtr += sizeof(partymemberinfo_t);
             ptrPInfoBytePtr += sizeof(partymemberinfo_t);
         }
@@ -58,10 +63,14 @@ PartyMemberInfo::~PartyMemberInfo() {
 bool PartyMemberInfo::GetPartyMembers() {
 
     if (ptrShmPartyMembers != NULL) {
+        //Create a new pointer and cast as unsigned char to be able to offset by single byte values
         unsigned char* ptrShmBytePtr = reinterpret_cast<unsigned char*>(ptrShmPartyMembers);
         unsigned char* ptrPInfoBytePtr = reinterpret_cast<unsigned char*>(ptrPartyMemberInfo);
+        //Copy the 8 partymemberinfo_t structures into the shared memory
         for (int i = 0; i < 8; i++) {
+            //copy party member info
             *(partymemberinfo_t*)ptrShmBytePtr = *(partymemberinfo_t*)ptrPInfoBytePtr;
+            //Move offset to next party member
             ptrShmBytePtr += sizeof(partymemberinfo_t);
             ptrPInfoBytePtr += sizeof(partymemberinfo_t);
         }

@@ -11,8 +11,11 @@ private:
 
     //Player Position Info
     partymemberinfo_t* partyMemberInfo;
+    //Pointer to in game memory
     uintptr_t ptrPartyMemberInfo;
+    //Shared memory for party member array
     partymembers_t* ptrShmPartyMembers;
+    //Shared memory variables
     void* hMapFile;
     std::wstring partyInfommf_name;
 
@@ -21,7 +24,7 @@ public:
     PartyMemberInfo();
     ~PartyMemberInfo();
 
-    //Player Info
+    //Copy game memory to shared memory
     bool GetPartyMembers();
 };
 

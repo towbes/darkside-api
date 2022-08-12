@@ -111,6 +111,7 @@ bool DarksideAPI::SetAutorun(bool autorun) {
     std::wstring posInfommf_name = std::to_wstring(pidHandle) + L"_arun";
     std::size_t fileSize = sizeof(BYTE);
 
+    //open the shared memory
     auto arunMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
@@ -135,6 +136,7 @@ bool DarksideAPI::SetAutorun(bool autorun) {
         return false;
     }
 
+    //Set autorun to 1 if true and 0 if false
     if (autorun) {
         *(BYTE*)shmAutorunToggle = 0x1;
     }
@@ -150,6 +152,7 @@ bool DarksideAPI::GetPartyMember(int memberIndex, LPVOID lpBuffer) {
     std::size_t fileSize = sizeof(partymembers_t);
     partymembers_t* ptrPartyMembers = NULL;
 
+    //reopen the shared memory
     auto hMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
@@ -174,14 +177,15 @@ bool DarksideAPI::GetPartyMember(int memberIndex, LPVOID lpBuffer) {
             GetLastError());
         return false;
     }
-
+    //cast as unsigned char* to be able to use single byte offsets to move the pointer
     unsigned char* ptrShmBytePtr = reinterpret_cast<unsigned char*>(ptrPartyMembers);
 
     ptrShmBytePtr += sizeof(partymemberinfo_t) * memberIndex;
-
+    //dereference the partymember_info data at memberIndex offset into a new object
     partymemberinfo_t sPartyMemberInfo = *(partymemberinfo_t*)ptrShmBytePtr;
-
+    //copy that object to the buffer
     memcpy(lpBuffer, &sPartyMemberInfo, sizeof(partymemberinfo_t));
+    //close the handles since we don't need them until the next call
     UnmapViewOfFile(ptrPartyMembers);
     CloseHandle(hMapFile);
 
