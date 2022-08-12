@@ -17,6 +17,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     //wait for user input
     while (true) {
         pInfo->GetPlayerPosition();
+        pInfo->SetAutorun();
         //break when user presses end
         if (GetAsyncKeyState(VK_END) & 1) {
             break;

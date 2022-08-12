@@ -13,6 +13,8 @@ extern "C" {
 	extern __declspec(dllexport) void InjectPid(DarksideAPI* apiObject, int pid);
 
 	extern __declspec(dllexport) bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool SetAutorun(DarksideAPI* apiObject, bool autorun);
 #ifdef __cplusplus
 }
 #endif

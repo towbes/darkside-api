@@ -3,18 +3,31 @@
 
 extern "C" class __declspec(dllexport) PlayerPosition {
 private:
+    //Current process id
+    int pid;
+
+    //Player Position Info
     playerpos_t* playerPositionInfo;
     uintptr_t ptrPlayerPosition;
     playerpos_t* pPlayerPos;
     void* hMapFile;
-    int pid;
-    std::wstring mmf_name;
+    std::wstring posInfommf_name;
+
+    //Player autorun toggle
+    void* arunMapFile;
+    std::wstring arunmmf_name;
+    BYTE valAutorunToggle;
+    BYTE* shmAutorunToggle;
+    BYTE* ptrAutorunToggle;
+
 public:
     PlayerPosition();
     ~PlayerPosition();
 
     //Player Info
     bool GetPlayerPosition();
+
+    void SetAutorun();
 };
 
 

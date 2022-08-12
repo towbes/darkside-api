@@ -26,3 +26,12 @@ bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	}
 	return false;
 }
+
+bool SetAutorun(DarksideAPI* apiObject, bool autorun) {
+	if (apiObject != NULL) {
+		if (apiObject->SetAutorun(autorun)) {
+			return true;
+		}
+	}
+	return false;
+}

@@ -2,6 +2,7 @@
 #include "simple-inject.h"
 #include <format>
 
+//Is this needed? Move to another file if so
 struct playerpos_t {
     float pos_x;
     short heading;
@@ -114,4 +115,40 @@ bool DarksideAPI::GetPlayerInfo(LPVOID lpBuffer) {
     CloseHandle(hMapFile);
 
     return true;
+}
+
+bool DarksideAPI::SetAutorun(bool autorun) {
+    std::wstring posInfommf_name = std::to_wstring(pidHandle) + L"_arun";
+    std::size_t fileSize = sizeof(BYTE);
+
+    auto arunMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        fileSize,                // maximum object size (low-order DWORD)
+        posInfommf_name.c_str());                 // name of mapping object
+
+    if (arunMapFile == NULL)
+    {
+        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+            GetLastError());
+    }
+
+    if (arunMapFile == 0) {
+        //Todo add exception
+        return false;
+    }
+    BYTE* shmAutorunToggle = (BYTE*)MapViewOfFile(arunMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+
+    if (shmAutorunToggle == NULL) {
+        return false;
+    }
+
+    if (autorun) {
+        *(BYTE*)shmAutorunToggle = 0x1;
+    }
+    else {
+        *(BYTE*)shmAutorunToggle = 0x0;
+    }
 }

@@ -11,5 +11,6 @@
         <Button Command="{Binding Path=InjectCommand}" CommandParameter="25" Width="116" Click="Button_Click_1">Inject</Button>
         <TextBox Name="NumberTextBox"/>
         <Button Width="113" Click="Button_Click_2">GetPlayerInfo</Button>
+        <Button Width="126" Click="Button_Click_3">Toggle Autorun</Button>
     </StackPanel>
 </Window>

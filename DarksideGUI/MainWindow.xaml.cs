@@ -47,8 +47,11 @@ namespace DarksideGUI
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetPlayerInfo(IntPtr pApiObject, IntPtr lpBuffer);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetAutorun(IntPtr pApiObject, bool autorun);
 
         IntPtr apiObject;
+        bool autorun = false;
 
         public MainWindow()
         {
@@ -81,6 +84,12 @@ namespace DarksideGUI
 
             MessageBox.Show(String.Format("Created PlayerPosition object at {0}", buf));
             MessageBox.Show((playerPos.pos_x).ToString());
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            autorun = !autorun;
+            SetAutorun(apiObject, autorun);
         }
     }
 }

@@ -17,4 +17,6 @@ public:
 
     //Player Info
     bool GetPlayerInfo(LPVOID lpBuffer);
+
+    bool SetAutorun(bool autorun);
 };
