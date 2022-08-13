@@ -149,8 +149,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\..\daoc\daocgame.h" />
-    <ClInclude Include="..\..\..\..\..\..\..\daoc\DaocStructs.h" />
+    <ClInclude Include="C:\daoc\daocgame.h" />
+    <ClInclude Include="C:\daoc\DaocStructs.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Hook.h" />

@@ -33,10 +33,10 @@
     <ClInclude Include="PartyMemberInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\daoc\daocgame.h">
+    <ClInclude Include="C:\daoc\daocgame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\daoc\DaocStructs.h">
+    <ClInclude Include="C:\daoc\DaocStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
