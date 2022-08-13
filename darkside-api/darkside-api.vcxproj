@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)DarksideGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
+    <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
     <IncludePath>C:\boost\boost_1_80_0_b1;C:\daoc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)DarksideGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
+    <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
     <IncludePath>C:\boost\boost_1_80_0_b1;C:\daoc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
