@@ -53,6 +53,12 @@ namespace DarkSideModernGUI
                 services.AddScoped<ViewModels.DataViewModel>();
                 services.AddScoped<Views.Pages.SettingsPage>();
                 services.AddScoped<ViewModels.SettingsViewModel>();
+                services.AddScoped<Views.Pages.TestPage>();
+                services.AddScoped<ViewModels.TestViewModel>();
+                services.AddScoped<Views.Pages.ClassSettingsPage>();
+                services.AddScoped<ViewModels.ClassSettingsViewModel>();
+                services.AddScoped<Views.Pages.WaypointsPage>();
+                services.AddScoped<ViewModels.WaypointsViewModel>();
 
                 // Configuration
                 services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));

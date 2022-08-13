@@ -1,0 +1,122 @@
+﻿<ui:UiPage
+    x:Class="DarkSideModernGUI.Views.Pages.TestPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:DarkSideModernGUI.Helpers"
+    xmlns:local="clr-namespace:DarkSideModernGUI.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="testPage"
+    d:DataContext="{d:DesignInstance local:TestPage,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+
+
+    <Grid
+        Height="374"
+        Margin="56,0,56,0"
+        VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+
+
+        <ui:TextBox
+            Name="NumberTextBox"
+            Height="34"
+            Margin="0,10,0,0"
+            VerticalAlignment="Top"
+            Text="game.dll id" />
+
+        <ui:Button
+            Margin="0,60,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Click="btnRunCommand_Click"
+            Content="Run Command"
+            Icon="Fluent24" />
+
+
+        <Slider
+            Name="HeadingSlider"
+            Grid.Column="1"
+            Margin="282,136,0,204"
+            Maximum="4000"
+            TickFrequency="200"
+            TickPlacement="BottomRight"
+            ValueChanged="HeadingSlider_ValueChanged" />
+
+        <ui:TextBox
+            Name="MemberIndexBox"
+            Grid.Column="1"
+            Margin="282,221,0,0"
+            VerticalAlignment="Top"
+            Text="MemberIndexBox" />
+
+        <TextBlock
+            Name="MemberInfo"
+            Grid.Column="1"
+            Margin="286,261,0,85"
+            FontSize="16"
+            Foreground="Orange"
+            TextWrapping="Wrap">
+            Filler
+        </TextBlock>
+
+
+
+        <ui:Button
+            Width="138"
+            Margin="0,108,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Click="Button_Click_1">
+            Inject
+        </ui:Button>
+
+        <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="70,97,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_2">
+            GetPlayerInfo
+        </ui:Button>
+        <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="70,137,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_3">
+            Toggle Autorun
+        </ui:Button>
+
+        <ui:Button
+            Grid.Column="1"
+            Width="155"
+            Margin="286,97,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_5">
+            Change heading
+        </ui:Button>
+        <ui:Button
+            Grid.Column="1"
+            Width="159"
+            Margin="282,183,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_4">
+            Get Member Index
+        </ui:Button>
+
+
+
+
+    </Grid>
+
+</ui:UiPage>

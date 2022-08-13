@@ -43,13 +43,29 @@ namespace DarkSideModernGUI.ViewModels
                     Icon = SymbolRegular.Home24,
                     PageType = typeof(Views.Pages.DashboardPage)
                 },
-                new NavigationItem()
+
+                            new NavigationItem()
                 {
-                    Content = "Data",
-                    PageTag = "data",
-                    Icon = SymbolRegular.DataHistogram24,
-                    PageType = typeof(Views.Pages.DataPage)
+                    Content = "Class Settings",
+                    PageTag = "ClassSettings",
+                    Icon = SymbolRegular.Accessibility24,
+                    PageType = typeof(Views.Pages.ClassSettingsPage)
+                },
+                                   new NavigationItem()
+                {
+                    Content = "Waypoints (Nav)",
+                    PageTag = "waypoints",
+                    Icon = SymbolRegular.VehicleSubway24,
+                    PageType = typeof(Views.Pages.WaypointsPage)
+                },
+                   new NavigationItem()
+                {
+                    Content = "Test",
+                    PageTag = "test",
+                    Icon = SymbolRegular.Beach24,
+                    PageType = typeof(Views.Pages.TestPage)
                 }
+
             };
 
             NavigationFooter = new ObservableCollection<INavigationControl>
