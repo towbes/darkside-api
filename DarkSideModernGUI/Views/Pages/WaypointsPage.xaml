@@ -136,7 +136,8 @@
             Grid.ColumnSpan="5"
             Width="687"
             Margin="0,100,56,0"
-            Foreground="#FFCCAB0D">
+            Foreground="#FFCCAB0D"
+            ItemsSource="{Binding Waypoints}">
 
             <ListView.View>
                 <GridView x:Name="grdWaypoints">
