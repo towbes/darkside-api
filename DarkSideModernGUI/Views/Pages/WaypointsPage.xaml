@@ -101,6 +101,18 @@
             VerticalAlignment="Top"
             Content="---" />
 
+
+        <ui:Button
+            x:Name="btnAddWaypoint"
+            Grid.Column="3"
+            Width="150"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Background="#FFFCA703"
+            Click="btnAddWaypoint_Click"
+            Content="Add Waypoint" />
+
+
         <Label
             Grid.Column="3"
             Width="30"
@@ -117,6 +129,36 @@
             VerticalAlignment="Top"
             Content="---" />
 
+
+        <ListView
+            x:Name="lvwWaypoints"
+            Grid.Row="0"
+            Grid.ColumnSpan="5"
+            Width="687"
+            Margin="0,100,56,0"
+            Foreground="#FFCCAB0D">
+
+            <ListView.View>
+                <GridView x:Name="grdWaypoints">
+                    <GridViewColumn
+                        Width="100"
+                        DisplayMemberBinding="{Binding playerPosX}"
+                        Header="playerPosX" />
+                    <GridViewColumn
+                        Width="100"
+                        DisplayMemberBinding="{Binding playerPosY}"
+                        Header="playerPosY" />
+                    <GridViewColumn
+                        Width="100"
+                        DisplayMemberBinding="{Binding playerPosZ}"
+                        Header="playerPosZ" />
+                    <GridViewColumn
+                        Width="100"
+                        DisplayMemberBinding="{Binding playerHeading}"
+                        Header="playerHeading" />
+                </GridView>
+            </ListView.View>
+        </ListView>
 
     </Grid>
 

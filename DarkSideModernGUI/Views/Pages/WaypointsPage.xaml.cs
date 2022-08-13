@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Timers;
 using System.Threading;
+using System.Collections.ObjectModel;
 
 
 namespace DarkSideModernGUI.Views.Pages
@@ -26,6 +27,12 @@ namespace DarkSideModernGUI.Views.Pages
     public partial class WaypointsPage : INavigableView<ViewModels.WaypointsViewModel>
     {
 
+        //To update the listview on waypoints addition
+
+        private ObservableCollection<Waypoint> waypoint;
+
+        ObservableCollection<Waypoint> waypoints = new ObservableCollection<Waypoint>();
+        public ObservableCollection<Waypoint> Waypoints { get { return waypoints; } }
 
         //Player position struct
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -68,6 +75,22 @@ namespace DarkSideModernGUI.Views.Pages
             tLogStream.Elapsed += new System.Timers.ElapsedEventHandler(t_Elapsed);
             tLogStream.Start();
 
+            //waypoint list
+            waypoint = new ObservableCollection<Waypoint>();
+
+                waypoint.Add (new Waypoint() {
+                    playerPosX = "100",
+                    playerPosY = "101",
+                    playerPosZ = "102",
+                    playerHeading = "103"
+                });
+
+
+            lvwWaypoints.ItemsSource = waypoint;
+
+
+
+
         }
 
 
@@ -87,9 +110,6 @@ namespace DarkSideModernGUI.Views.Pages
 
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
-            // MessageBox.Show(String.Format("Created PlayerPosition object at {0}", buf));
-            // MessageBox.Show((playerPos.pos_x).ToString());
-
             Dispatcher.Invoke(() => {
             lblWaypointX.Content = (playerPos.pos_x).ToString();
             lblWaypointY.Content = (playerPos.pos_y).ToString();
@@ -99,5 +119,48 @@ namespace DarkSideModernGUI.Views.Pages
         }
 
 
+
+        public class Waypoint
+        {
+            public string playerPosX { get; set; }
+            public string playerPosY { get; set; }
+            public string playerPosZ { get; set; }
+            public string playerHeading { get; set; }
+        }
+
+
+
+
+
+
+
+
+        private void btnAddWaypoint_Click(object sender, RoutedEventArgs e)
+        {
+
+            int size = Marshal.SizeOf<PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+
+
+            GetPlayerPosition(TestPage.apiObject, buf);
+
+
+            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+
+           
+
+            waypoint.Add(new Waypoint() { 
+               
+                playerPosX = (playerPos.pos_x).ToString(),
+                playerPosY = (playerPos.pos_y).ToString(),
+                playerPosZ = (playerPos.pos_z).ToString(),
+                playerHeading = (playerPos.heading).ToString()
+
+            });
+
+           // lvwWaypoints.ItemsSource = waypoints;
+
+
+        }
     }
 }
