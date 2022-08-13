@@ -24,7 +24,14 @@ DarksideAPI::DarksideAPI() {}
 DarksideAPI::~DarksideAPI() {}
 
 void DarksideAPI::InjectPid(int pid) {
-    simpleInject("C:\\Users\\ritzgames\\Desktop\\daoc\\darkside\\darkside-api\\DarksideGUI\\bin\\Debug\\net6.0-windows\\darkside-hooks.dll", (DWORD)pid);
+    //Get the current directory
+    CHAR buffer[MAX_PATH] = { 0 };
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    std::wstring::size_type pos = std::string(buffer).find_last_of("\\/");
+    std::string currPath = std::string(buffer).substr(0, pos);
+    //append darkside-hooks.dll
+    currPath = currPath + "\\darkside-hooks.dll";
+    simpleInject(currPath.c_str(), (DWORD)pid);
     std::wstring msg = std::format(L"Injected {}\n", pid);
     MessageBox(0, msg.c_str(), L"Hi", MB_ICONINFORMATION);
     this->pidHandle = pid;
