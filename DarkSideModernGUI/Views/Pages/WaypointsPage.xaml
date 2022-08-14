@@ -28,10 +28,11 @@
 
 
         <ui:Button
+            x:Name="btnNewRouteWaypoint"
             Width="150"
             Margin="0,395,0,0"
             VerticalAlignment="Top"
-            Content="New Route" />
+            Content="New Route" Click="btnNewRouteWaypoint_Click" />
 
 
         <ui:Button
@@ -52,8 +53,8 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             Background="#FFFCA703"
-            Click="btnAddWaypoint_Click"
-            Content="Auto Waypoints" />
+            Click="btnAddAutoWaypoint_Click"
+            Content="Start Auto Waypoints" />
 
 
         <DockPanel
@@ -106,13 +107,29 @@
             Width="470"
             Margin="5,62,5,70"
             AutoGenerateColumns="False"
+            BorderBrush="#FFFCA703"
             ItemsSource="{Binding waypoint}">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding waypointID}" Header="Waypoint ID" />
-                <DataGridTextColumn Binding="{Binding playerPosX}" Header="Waypoint X" />
-                <DataGridTextColumn Binding="{Binding playerPosY}" Header="Waypoint Y" />
-                <DataGridTextColumn Binding="{Binding playerPosZ}" Header="Waypoint Z" />
-                <DataGridTextColumn Binding="{Binding playerHeading}" Header="Direction" />
+                <DataGridTextColumn
+                    Width="92"
+                    Binding="{Binding waypointID}"
+                    Header="Waypoint ID" />
+                <DataGridTextColumn
+                    Width="92"
+                    Binding="{Binding playerPosX}"
+                    Header="Waypoint X" />
+                <DataGridTextColumn
+                    Width="92"
+                    Binding="{Binding playerPosY}"
+                    Header="Waypoint Y" />
+                <DataGridTextColumn
+                    Width="92"
+                    Binding="{Binding playerPosZ}"
+                    Header="Waypoint Z" />
+                <DataGridTextColumn
+                    Width="92"
+                    Binding="{Binding playerHeading}"
+                    Header="Direction" />
             </DataGrid.Columns>
         </DataGrid>
 
@@ -243,16 +260,17 @@
                         FontWeight="Bold" />
 
                     <ui:TextBox
-                        x:Name="txtSaveNewRoute"
+                        x:Name="txtSaveNewRouteFileName"
                         Width="160 "
                         Margin="0,0,0,10" />
 
                     <ui:Button
+                        x:Name="btnSaveRoute"
                         Width="160"
                         Margin="0,0,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
-                        Content="Save Route" />
+                        Content="Save Route" Click="btnSaveRoute_Click" />
 
 
                 </StackPanel>

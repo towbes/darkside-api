@@ -13,10 +13,20 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+//using System.Windows.Shapes;
 using System.Timers;
 using System.Threading;
 using System.Collections.ObjectModel;
+
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Security.Permissions;
+
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+
+
 
 
 namespace DarkSideModernGUI.Views.Pages
@@ -28,9 +38,15 @@ namespace DarkSideModernGUI.Views.Pages
     {
 
         //To update the gridview on waypoints addition
+
         public ObservableCollection<Waypoint> waypoint { get; set; }
 
-       //Player position struct
+        //Load or Save variables
+        private String currentDirectory;
+        private string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+
+
+        //Player position struct
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct PlayerPosition
         {
@@ -46,7 +62,10 @@ namespace DarkSideModernGUI.Views.Pages
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
 
         public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
-       
+
+        //Timer to be used for reading the Position Stream every 1 ms
+        public static System.Timers.Timer tAutoWaypoints = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
+    
 
         //IntPtr apiObject;
 
@@ -60,11 +79,18 @@ namespace DarkSideModernGUI.Views.Pages
         {
             ViewModel = viewModel;
 
-        //Timer to be used for reading the Position Stream every 1 ms
-            System.Timers.Timer tLogStream = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
-            tLogStream.AutoReset = true;
-            tLogStream.Elapsed += new System.Timers.ElapsedEventHandler(t_Elapsed);
-            tLogStream.Start();
+           //Timer to be used for reading the Position Stream every 1 ms
+            System.Timers.Timer tPlayerPositionUpdae = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
+            tPlayerPositionUpdae.AutoReset = true;
+            tPlayerPositionUpdae.Elapsed += new System.Timers.ElapsedEventHandler(t_Elapsed);
+            tPlayerPositionUpdae.Start();
+
+            tAutoWaypoints.AutoReset = true;
+            tAutoWaypoints.Elapsed += new System.Timers.ElapsedEventHandler(t_ElpasedAutoWaypoint);
+            //tAutoWaypoints.Start();
+
+            this.currentDirectory = Path.GetDirectoryName(strExeFilePath);
+
 
             InitializeComponent();
 
@@ -97,7 +123,29 @@ namespace DarkSideModernGUI.Views.Pages
         }
 
 
-        public class Waypoint
+        private void t_ElpasedAutoWaypoint(object sender, System.Timers.ElapsedEventArgs e)
+
+        {
+
+            int size = Marshal.SizeOf<PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            GetPlayerPosition(TestPage.apiObject, buf);
+            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+
+            Dispatcher.Invoke(() =>
+            {
+                    waypoint.Add(new Waypoint()
+                {
+                    waypointID = (grdWaypoints.Items.Count - 1).ToString(),
+                    playerPosX = (playerPos.pos_x).ToString(),
+                    playerPosY = (playerPos.pos_y).ToString(),
+                    playerPosZ = (playerPos.pos_z).ToString(),
+                    playerHeading = (playerPos.heading).ToString()
+                });
+            });
+        }
+
+        public struct Waypoint
         {
             public string waypointID { get; set; }
             public string playerPosX { get; set; }
@@ -112,11 +160,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             int size = Marshal.SizeOf<PlayerPosition>();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
-
-
             GetPlayerPosition(TestPage.apiObject, buf);
-
-
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
 
@@ -130,6 +174,105 @@ namespace DarkSideModernGUI.Views.Pages
            });
 
         
+        }
+
+        private void btnAddAutoWaypoint_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (tAutoWaypoints.Enabled)
+            {
+                tAutoWaypoints.Stop();
+                Dispatcher.Invoke(() =>
+                {
+                    btnAddAutoWaypoint.Content = "Start Auto Waypoints";
+
+                });
+            }
+            else {
+                tAutoWaypoints.Start();
+                Dispatcher.Invoke(() =>
+                {
+                    btnAddAutoWaypoint.Content = "Stop Auto Waypoints";
+
+                });
+            }    
+
+          
+        }
+
+        private void btnNewRouteWaypoint_Click(object sender, RoutedEventArgs e)
+        {
+           
+                waypoint.Clear();
+            
+        }
+
+        private void btnSaveRoute_Click(object sender, RoutedEventArgs e)
+        {
+            bool successSave = false;
+            String txtSaveNewRouteFileName = this.txtSaveNewRouteFileName.Text;
+            if (txtSaveNewRouteFileName.Length == 0)
+            {
+                txtSaveNewRouteFileName = (string)this.cmbWaypointOverwriteRoute.SelectedItem;
+            }
+
+            if (txtSaveNewRouteFileName != null && txtSaveNewRouteFileName.Length > 0)
+            {
+                try
+                {
+                    string regexSearch = new string(Path.GetInvalidPathChars());
+                    Regex r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
+                    txtSaveNewRouteFileName = r.Replace(txtSaveNewRouteFileName, "");
+
+                    String fullPath = Path.Combine(this.currentDirectory, txtSaveNewRouteFileName);
+                    fullPath = Path.ChangeExtension(fullPath, "wpr");
+
+                    using (FileStream fs = new FileStream(fullPath, FileMode.Create))
+                    {
+                        using (BinaryWriter binWriter = new BinaryWriter(fs))
+                        {
+                            Waypoint[] waypointpArray = waypoint.ToArray();
+                            for (int i = 0; i < waypointpArray.Length; ++i)
+                            {
+                                Waypoint item = waypointpArray[i];
+                                byte[] itemByte = this.getBytes(item);
+                                binWriter.Write(itemByte);
+                            }
+                            successSave = true;
+                            binWriter.Close();
+                        }
+                        fs.Close();
+                    }
+                }
+                catch
+                {
+                    successSave = false;
+                    MessageBox.Show("Unknown Error\n\nabort loading", "Loading Error");
+                }
+            }
+
+            if (successSave)
+            {
+                //this.saveFinishDelegate(txtSaveNewRouteFileName);
+               // this.Close();
+            }
+            else
+            {
+                //this.scanDirectoryForWaypointRoute();
+            }
+        }
+
+        byte[] getBytes(Waypoint str)
+        {
+            int size = Marshal.SizeOf(str);
+            byte[] arr = new byte[size];
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+
+            Marshal.StructureToPtr(str, ptr, true);
+            Marshal.Copy(ptr, arr, 0, size);
+            Marshal.FreeHGlobal(ptr);
+
+            return arr;
         }
 
     }
