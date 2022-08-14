@@ -130,38 +130,29 @@
             Content="---" />
 
 
-        <ListView
-            x:Name="lvwWaypoints"
+
+
+
+
+        <DataGrid
+            x:Name="grdWaypoints"
             Grid.Row="0"
             Grid.ColumnSpan="5"
             Width="687"
             Margin="0,100,56,0"
-            Foreground="#FFCCAB0D"
-            ItemsSource="{Binding Waypoints}">
-
-            <ListView.View>
-                <GridView x:Name="grdWaypoints">
-                    <GridViewColumn
-                        Width="100"
-                        DisplayMemberBinding="{Binding playerPosX}"
-                        Header="playerPosX" />
-                    <GridViewColumn
-                        Width="100"
-                        DisplayMemberBinding="{Binding playerPosY}"
-                        Header="playerPosY" />
-                    <GridViewColumn
-                        Width="100"
-                        DisplayMemberBinding="{Binding playerPosZ}"
-                        Header="playerPosZ" />
-                    <GridViewColumn
-                        Width="100"
-                        DisplayMemberBinding="{Binding playerHeading}"
-                        Header="playerHeading" />
-                </GridView>
-            </ListView.View>
-        </ListView>
+            AutoGenerateColumns="False"
+            ItemsSource="{Binding waypoint}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding waypointID}" Header="Waypoint ID" />
+                <DataGridTextColumn Binding="{Binding playerPosX}" Header="Waypoint X" />
+                <DataGridTextColumn Binding="{Binding playerPosY}" Header="Waypoint Y" />
+                <DataGridTextColumn Binding="{Binding playerPosZ}" Header="Waypoint Z" />
+                <DataGridTextColumn Binding="{Binding playerHeading}" Header="Direction" />
+            </DataGrid.Columns>
+        </DataGrid>
 
     </Grid>
+
 
 
 

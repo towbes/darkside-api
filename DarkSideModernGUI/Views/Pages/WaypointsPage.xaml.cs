@@ -29,10 +29,9 @@ namespace DarkSideModernGUI.Views.Pages
 
         //To update the listview on waypoints addition
 
-        private ObservableCollection<Waypoint> waypoint;
+        public ObservableCollection<Waypoint> waypoint { get; set; }
 
-        ObservableCollection<Waypoint> waypoints = new ObservableCollection<Waypoint>();
-        public ObservableCollection<Waypoint> Waypoints { get { return waypoints; } }
+      
 
         //Player position struct
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -64,31 +63,28 @@ namespace DarkSideModernGUI.Views.Pages
         {
             ViewModel = viewModel;
 
-            InitializeComponent();
-
-            // CheckForIllegalCrossThreadCalls = false; //this is BAD CODING :) - Need reworks with the threads.
-
-
-            //Timer to be used for reading the Position Stream every 1 ms
+        //Timer to be used for reading the Position Stream every 1 ms
             System.Timers.Timer tLogStream = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
             tLogStream.AutoReset = true;
             tLogStream.Elapsed += new System.Timers.ElapsedEventHandler(t_Elapsed);
             tLogStream.Start();
 
+
+            InitializeComponent();
+
             //waypoint list
-            waypoint = new ObservableCollection<Waypoint>();
+            waypoint = new ObservableCollection<Waypoint>()
+            {
+                //new Waypoint(){
+                //waypointID = (grdWaypoints.Items.Count + 1).ToString(),
+                //playerPosX = "100",
+                //playerPosY = "101",
+                //playerPosZ = "102",
+                //playerHeading = "103"
+                //}
+            };
 
-                waypoint.Add (new Waypoint() {
-                    playerPosX = "100",
-                    playerPosY = "101",
-                    playerPosZ = "102",
-                    playerHeading = "103"
-                });
-
-
-            lvwWaypoints.ItemsSource = waypoint;
-
-
+            grdWaypoints.ItemsSource = waypoint;
 
 
         }
@@ -122,17 +118,12 @@ namespace DarkSideModernGUI.Views.Pages
 
         public class Waypoint
         {
+            public string waypointID { get; set; }
             public string playerPosX { get; set; }
             public string playerPosY { get; set; }
             public string playerPosZ { get; set; }
             public string playerHeading { get; set; }
         }
-
-
-
-
-
-
 
 
         private void btnAddWaypoint_Click(object sender, RoutedEventArgs e)
@@ -147,20 +138,17 @@ namespace DarkSideModernGUI.Views.Pages
 
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
-           
 
-            waypoint.Add(new Waypoint() { 
-               
+           waypoint.Add(new Waypoint()
+            {
+                waypointID = (grdWaypoints.Items.Count - 1).ToString(),
                 playerPosX = (playerPos.pos_x).ToString(),
                 playerPosY = (playerPos.pos_y).ToString(),
                 playerPosZ = (playerPos.pos_z).ToString(),
                 playerHeading = (playerPos.heading).ToString()
+           });
 
-            });
-
-           // lvwWaypoints.ItemsSource = waypoints;
-
-
+        
         }
     }
 }
