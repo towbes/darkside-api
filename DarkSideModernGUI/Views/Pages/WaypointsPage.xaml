@@ -23,123 +23,88 @@
             <ColumnDefinition Width="160" />
             <ColumnDefinition Width="160" />
             <ColumnDefinition Width="160" />
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="250" />
         </Grid.ColumnDefinitions>
 
 
         <ui:Button
-            Grid.Column="0"
             Width="150"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            Content="Load Route" />
-
-
-        <Label
-            Grid.Column="0"
-            Width="30"
-            Margin="10,40,56,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="X:" />
-
-        <Label
-            Name="lblWaypointX"
-            Grid.Column="0"
-            Width="100"
-            Margin="30,40,56,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="---" />
-
-
-        <ui:Button
-            Grid.Column="1"
-            Width="150"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            Content="Save Route" />
-        <Label
-            Grid.Column="1"
-            Width="30"
-            Margin="10,40,56,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Y:" />
-
-        <Label
-            Name="lblWaypointY"
-            Grid.Column="1"
-            Width="100"
-            Margin="30,40,56,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="---" />
-
-
-        <ui:Button
-            Grid.Column="2"
-            Width="150"
-            HorizontalAlignment="Center"
+            Margin="0,395,0,0"
             VerticalAlignment="Top"
             Content="New Route" />
 
-        <Label
-            Grid.Column="2"
-            Width="30"
-            Margin="10,40,56,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Z:" />
-
-        <Label
-            Name="lblWaypointZ"
-            Grid.Column="2"
-            Width="100"
-            Margin="30,40,56,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="---" />
-
 
         <ui:Button
-            x:Name="btnAddWaypoint"
-            Grid.Column="3"
+            x:Name="btnAddOneWaypoint"
+            Grid.Column="1"
             Width="150"
+            Margin="0,395,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Click="btnAddWaypoint_Click"
+            Content="Add 1 Waypoint" />
+
+        <ui:Button
+            x:Name="btnAddAutoWaypoint"
+            Grid.Column="2"
+            Width="150"
+            Margin="0,395,0,0"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             Background="#FFFCA703"
             Click="btnAddWaypoint_Click"
-            Content="Add Waypoint" />
+            Content="Auto Waypoints" />
 
 
-        <Label
-            Grid.Column="3"
-            Width="30"
-            Margin="10,40,56,0"
+        <DockPanel
+            Grid.ColumnSpan="3"
+            Width="446"
+            Height="45"
+            Margin="10,40,0,0"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Dir:" />
-        <Label
-            Name="lblWaypointDir"
-            Grid.Column="3"
-            Width="100"
-            Margin="40,40,56,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="---" />
+            VerticalAlignment="Top">
 
 
+            <Label Width="30" Content="X:" />
+
+            <Label
+                x:Name="lblWaypointX"
+                Width="80"
+                Content="---" />
 
 
+            <Label Width="30" Content="Y:" />
+
+            <Label
+                x:Name="lblWaypointY"
+                Width="80"
+                Content="---" />
+
+
+            <Label Width="30" Content="Z:" />
+
+            <Label
+                x:Name="lblWaypointZ"
+                Width="80"
+                Content="---" />
+
+
+            <Label Width="30" Content="Dir:" />
+            <Label
+                x:Name="lblWaypointDir"
+                Width="80"
+                Content="---" />
+
+
+        </DockPanel>
 
 
         <DataGrid
             x:Name="grdWaypoints"
             Grid.Row="0"
-            Grid.ColumnSpan="5"
-            Width="687"
-            Margin="0,100,56,0"
+            Grid.ColumnSpan="3"
+            Width="470"
+            Margin="5,62,5,70"
             AutoGenerateColumns="False"
             ItemsSource="{Binding waypoint}">
             <DataGrid.Columns>
@@ -150,6 +115,151 @@
                 <DataGridTextColumn Binding="{Binding playerHeading}" Header="Direction" />
             </DataGrid.Columns>
         </DataGrid>
+
+
+
+        <DockPanel Grid.Column="3">
+            <Border
+                Width="200"
+                Height="137"
+                Margin="5,62,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                BorderBrush="#FFFCA703"
+                BorderThickness="1">
+
+
+                <StackPanel
+                    x:Name="Waypoint_Route_Load"
+                    Grid.Column="3"
+                    Margin="0,0,0,5">
+
+                    <Label
+                        Grid.Column="3"
+                        Width="180"
+                        Margin="10,10,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="Waypoint Route - Load"
+                        FontSize="14"
+                        FontWeight="Bold" />
+
+
+                    <ComboBox
+                        x:Name="cmbWaypointRouteLoad"
+                        Width="160"
+                        Margin="0,0,0,10" />
+
+                    <ui:Button
+                        Grid.Column="3"
+                        Width="160"
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Content="Load Route" />
+
+
+
+
+                </StackPanel>
+
+            </Border>
+
+        </DockPanel>
+
+
+
+        <Label
+            Grid.ColumnSpan="3"
+            Margin="10,10,130,417"
+            Content="Current Player Location:"
+            FontSize="14"
+            FontWeight="Bold" />
+
+
+
+
+
+        <DockPanel Grid.Column="3">
+            <Border
+                Width="200"
+                Height="230"
+                Margin="5,200,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                BorderBrush="#FFFCA703"
+                BorderThickness="1">
+
+                <StackPanel
+                    x:Name="Waypoint_Route_Save"
+                    Grid.Column="3"
+                    Margin="0,1,9,-61"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+
+
+
+                    <Label
+                        Grid.Column="3"
+                        Width="180"
+                        Margin="10,10,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="Waypoint Route - Save"
+                        FontSize="14"
+                        FontWeight="Bold" />
+
+                    <Label
+                        Grid.Column="3"
+                        Width="100"
+                        Margin="10,0,10,0"
+                        Content="Overwrite Route"
+                        FontWeight="Bold" />
+
+                    <ComboBox
+                        x:Name="cmbWaypointOverwriteRoute"
+                        Width="160"
+                        Margin="0,0,0,0" />
+
+
+                    <Label
+                        Grid.Column="3"
+                        Width="30"
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Content="or"
+                        FontSize="24"
+                        FontWeight="Bold" />
+
+
+                    <Label
+                        Grid.Column="3"
+                        Width="100"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Content="Save New Route"
+                        FontWeight="Bold" />
+
+                    <ui:TextBox
+                        x:Name="txtSaveNewRoute"
+                        Width="160 "
+                        Margin="0,0,0,10" />
+
+                    <ui:Button
+                        Width="160"
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Content="Save Route" />
+
+
+                </StackPanel>
+
+            </Border>
+
+        </DockPanel>
 
     </Grid>
 

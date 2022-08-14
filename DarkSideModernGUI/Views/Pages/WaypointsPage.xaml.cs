@@ -27,13 +27,10 @@ namespace DarkSideModernGUI.Views.Pages
     public partial class WaypointsPage : INavigableView<ViewModels.WaypointsViewModel>
     {
 
-        //To update the listview on waypoints addition
-
+        //To update the gridview on waypoints addition
         public ObservableCollection<Waypoint> waypoint { get; set; }
 
-      
-
-        //Player position struct
+       //Player position struct
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct PlayerPosition
         {
@@ -69,24 +66,11 @@ namespace DarkSideModernGUI.Views.Pages
             tLogStream.Elapsed += new System.Timers.ElapsedEventHandler(t_Elapsed);
             tLogStream.Start();
 
-
             InitializeComponent();
 
             //waypoint list
-            waypoint = new ObservableCollection<Waypoint>()
-            {
-                //new Waypoint(){
-                //waypointID = (grdWaypoints.Items.Count + 1).ToString(),
-                //playerPosX = "100",
-                //playerPosY = "101",
-                //playerPosZ = "102",
-                //playerHeading = "103"
-                //}
-            };
-
+            waypoint = new ObservableCollection<Waypoint>(){};
             grdWaypoints.ItemsSource = waypoint;
-
-
         }
 
 
@@ -100,9 +84,7 @@ namespace DarkSideModernGUI.Views.Pages
             int size = Marshal.SizeOf<PlayerPosition>();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
 
-
             GetPlayerPosition(TestPage.apiObject, buf);
-
 
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
@@ -113,7 +95,6 @@ namespace DarkSideModernGUI.Views.Pages
             lblWaypointDir.Content = (playerPos.heading).ToString();
             });
         }
-
 
 
         public class Waypoint
@@ -150,5 +131,6 @@ namespace DarkSideModernGUI.Views.Pages
 
         
         }
+
     }
 }
