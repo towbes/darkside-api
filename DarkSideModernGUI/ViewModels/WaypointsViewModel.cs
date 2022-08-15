@@ -1,5 +1,6 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+﻿using System.Diagnostics.Metrics;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Wpf.Ui.Common.Interfaces;
 
 namespace DarkSideModernGUI.ViewModels
@@ -17,7 +18,7 @@ namespace DarkSideModernGUI.ViewModels
         {
         }
 
-        [ICommand]
+        //[ICommand]
         private void OnCounterIncrement()
         {
             Counter++;

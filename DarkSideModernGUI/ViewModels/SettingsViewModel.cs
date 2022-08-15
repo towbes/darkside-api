@@ -1,7 +1,7 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using System;
+﻿using System;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Wpf.Ui.Common.Interfaces;
 
 namespace DarkSideModernGUI.ViewModels
@@ -39,7 +39,7 @@ namespace DarkSideModernGUI.ViewModels
             return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty;
         }
 
-        [ICommand]
+        //[ICommand]
         private void OnChangeTheme(string parameter)
         {
             switch (parameter)
