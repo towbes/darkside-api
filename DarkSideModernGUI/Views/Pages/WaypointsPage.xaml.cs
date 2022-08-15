@@ -299,41 +299,41 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void btnLoadRoute_Click(object sender, RoutedEventArgs e)
         {
-            String selectedFilename = (string)this.cmbWaypointRouteLoad.SelectedItem;
-            if (selectedFilename.Length > 0)
+            var selectedFilename = (string)this.cmbWaypointRouteLoad.SelectedItem;
+
+            if (selectedFilename.Length <= 0)
             {
-                string routepath = Path.Combine(this.currentDirectory, "Routes");
-                String fullPath = Path.Combine(routepath, selectedFilename);
-                fullPath = Path.ChangeExtension(fullPath, "json");
-
-                Waypoint importedWaypoints = JsonConvert.DeserializeObject<Waypoint>(File.ReadAllText(fullPath));
-
-               // Waypoint importedWaypoints = (Waypoint)importedJsonWaypoints;
-
-                waypoint.Clear();
-                waypoint.Append(importedWaypoints);
-
-               
-
-
-                //foreach (Waypoint waypoint in importedWaypoints) { 
-
-                //waypoint.Add(new Waypoint()
-                //{
-                //    waypointID = (grdWaypoints.Items.Count).ToString(),
-                //    playerPosX = (playerPos.pos_x).ToString(),
-                //    playerPosY = (playerPos.pos_y).ToString(),
-                //    playerPosZ = (playerPos.pos_z).ToString(),
-                //    playerHeading = (playerPos.heading).ToString()
-                //});
-
-                //}
-
-
-
-
-
+                return;
             }
+
+            var routepath = Path.Combine(this.currentDirectory, "Routes");
+            var fullPath = Path.Combine(routepath, selectedFilename);
+            fullPath = Path.ChangeExtension(fullPath, "json");
+            var importedWaypoints = JsonConvert.DeserializeObject<ObservableCollection<Waypoint>>(File.ReadAllText(fullPath));
+            waypoint.Clear();
+            
+            if (importedWaypoints == null)
+            {
+                return;
+            }
+
+            foreach (var importedWaypoint in importedWaypoints)
+            {
+                waypoint.Add(importedWaypoint);
+            }
+
+            //foreach (Waypoint waypoint in importedWaypoints) { 
+
+            //waypoint.Add(new Waypoint()
+            //{
+            //    waypointID = (grdWaypoints.Items.Count).ToString(),
+            //    playerPosX = (playerPos.pos_x).ToString(),
+            //    playerPosY = (playerPos.pos_y).ToString(),
+            //    playerPosZ = (playerPos.pos_z).ToString(),
+            //    playerHeading = (playerPos.heading).ToString()
+            //});
+
+            //}
 
         }
     }
