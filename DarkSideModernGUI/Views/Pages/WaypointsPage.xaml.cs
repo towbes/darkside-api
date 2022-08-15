@@ -26,6 +26,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 
+using Newtonsoft.Json;
+
 
 
 
@@ -119,7 +121,10 @@ namespace DarkSideModernGUI.Views.Pages
             lblWaypointY.Content = (playerPos.pos_y).ToString();
             lblWaypointZ.Content = (playerPos.pos_z).ToString();
             lblWaypointDir.Content = (playerPos.heading).ToString();
+
             });
+
+            scanDirectoryForWaypointRoute();
         }
 
 
@@ -136,7 +141,7 @@ namespace DarkSideModernGUI.Views.Pages
             {
                     waypoint.Add(new Waypoint()
                 {
-                    waypointID = (grdWaypoints.Items.Count - 1).ToString(),
+                    waypointID = (grdWaypoints.Items.Count).ToString(),
                     playerPosX = (playerPos.pos_x).ToString(),
                     playerPosY = (playerPos.pos_y).ToString(),
                     playerPosZ = (playerPos.pos_z).ToString(),
@@ -166,7 +171,7 @@ namespace DarkSideModernGUI.Views.Pages
 
            waypoint.Add(new Waypoint()
             {
-                waypointID = (grdWaypoints.Items.Count - 1).ToString(),
+                waypointID = (grdWaypoints.Items.Count).ToString(),
                 playerPosX = (playerPos.pos_x).ToString(),
                 playerPosY = (playerPos.pos_y).ToString(),
                 playerPosZ = (playerPos.pos_z).ToString(),
@@ -224,25 +229,19 @@ namespace DarkSideModernGUI.Views.Pages
                     Regex r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
                     txtSaveNewRouteFileName = r.Replace(txtSaveNewRouteFileName, "");
 
-                    String fullPath = Path.Combine(this.currentDirectory, txtSaveNewRouteFileName);
-                    fullPath = Path.ChangeExtension(fullPath, "wpr");
-
-                    using (FileStream fs = new FileStream(fullPath, FileMode.Create))
+                    string routepath = Path.Combine(this.currentDirectory, "Routes");
+                    if (!Directory.Exists(routepath))
                     {
-                        using (BinaryWriter binWriter = new BinaryWriter(fs))
-                        {
-                            Waypoint[] waypointpArray = waypoint.ToArray();
-                            for (int i = 0; i < waypointpArray.Length; ++i)
-                            {
-                                Waypoint item = waypointpArray[i];
-                                byte[] itemByte = this.getBytes(item);
-                                binWriter.Write(itemByte);
-                            }
-                            successSave = true;
-                            binWriter.Close();
-                        }
-                        fs.Close();
+                        Directory.CreateDirectory("Routes");
                     }
+
+                    String fullPath = Path.Combine(routepath, txtSaveNewRouteFileName);
+
+                    fullPath = Path.ChangeExtension(fullPath, "json");
+
+                    string output = JsonConvert.SerializeObject(waypoint);
+                    System.IO.File.WriteAllText(fullPath, output);
+
                 }
                 catch
                 {
@@ -251,29 +250,91 @@ namespace DarkSideModernGUI.Views.Pages
                 }
             }
 
-            if (successSave)
+        }
+
+
+        private void scanDirectoryForWaypointRoute()
+        {
+            string routepath = Path.Combine(this.currentDirectory, "Routes");
+            string[] wprs = Directory.GetFiles(routepath, "*.json");
+            if (wprs.Length > 0)
             {
-                //this.saveFinishDelegate(txtSaveNewRouteFileName);
-               // this.Close();
+                string[] fileName = new string[wprs.Length + 1];
+                
+                for (int i = 0; i < wprs.Length; ++i)
+                {
+                    fileName[i] = Path.GetFileNameWithoutExtension(wprs[i]);
+                }
+
+                Dispatcher.Invoke(() =>
+                {
+                    this.cmbWaypointRouteLoad.ItemsSource = fileName;
+                    this.cmbWaypointOverwriteRoute.ItemsSource = fileName;
+
+                });
             }
             else
             {
-                //this.scanDirectoryForWaypointRoute();
+                
+            }
+
+        }
+
+        private void cmbWaypointRouteLoad_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+  
+
+        private void cmbWaypointOverwriteRoute_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            String selectedFilename = (string)this.cmbWaypointOverwriteRoute.SelectedItem;
+            if (selectedFilename.Length > 0)
+            {
+                this.txtSaveNewRouteFileName.Text = selectedFilename;
             }
         }
 
-        byte[] getBytes(Waypoint str)
+
+        private void btnLoadRoute_Click(object sender, RoutedEventArgs e)
         {
-            int size = Marshal.SizeOf(str);
-            byte[] arr = new byte[size];
-            IntPtr ptr = Marshal.AllocHGlobal(size);
+            String selectedFilename = (string)this.cmbWaypointRouteLoad.SelectedItem;
+            if (selectedFilename.Length > 0)
+            {
+                string routepath = Path.Combine(this.currentDirectory, "Routes");
+                String fullPath = Path.Combine(routepath, selectedFilename);
+                fullPath = Path.ChangeExtension(fullPath, "json");
 
-            Marshal.StructureToPtr(str, ptr, true);
-            Marshal.Copy(ptr, arr, 0, size);
-            Marshal.FreeHGlobal(ptr);
+                Waypoint importedWaypoints = JsonConvert.DeserializeObject<Waypoint>(File.ReadAllText(fullPath));
 
-            return arr;
+               // Waypoint importedWaypoints = (Waypoint)importedJsonWaypoints;
+
+                waypoint.Clear();
+                waypoint.Append(importedWaypoints);
+
+               
+
+
+                //foreach (Waypoint waypoint in importedWaypoints) { 
+
+                //waypoint.Add(new Waypoint()
+                //{
+                //    waypointID = (grdWaypoints.Items.Count).ToString(),
+                //    playerPosX = (playerPos.pos_x).ToString(),
+                //    playerPosY = (playerPos.pos_y).ToString(),
+                //    playerPosZ = (playerPos.pos_z).ToString(),
+                //    playerHeading = (playerPos.heading).ToString()
+                //});
+
+                //}
+
+
+
+
+
+            }
+
         }
-
     }
 }

@@ -165,7 +165,7 @@
                     <ComboBox
                         x:Name="cmbWaypointRouteLoad"
                         Width="160"
-                        Margin="0,0,0,10" />
+                        Margin="0,0,0,10" SelectionChanged="cmbWaypointRouteLoad_SelectionChanged" />
 
                     <ui:Button
                         Grid.Column="3"
@@ -173,7 +173,8 @@
                         Margin="0,0,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
-                        Content="Load Route" />
+                        Content="Load Route" 
+                        Name="btnLoadRoute" Click="btnLoadRoute_Click"/>
 
 
 
@@ -236,7 +237,7 @@
                     <ComboBox
                         x:Name="cmbWaypointOverwriteRoute"
                         Width="160"
-                        Margin="0,0,0,0" />
+                        Margin="0,0,0,0" SelectionChanged="cmbWaypointOverwriteRoute_SelectionChanged" />
 
 
                     <Label
@@ -262,7 +263,7 @@
                     <ui:TextBox
                         x:Name="txtSaveNewRouteFileName"
                         Width="160 "
-                        Margin="0,0,0,10" />
+                        Margin="0,0,0,10"  />
 
                     <ui:Button
                         x:Name="btnSaveRoute"
