@@ -1,8 +1,8 @@
 ﻿using DarkSideModernGUI.Models;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Wpf.Ui.Common.Interfaces;
 
 namespace DarkSideModernGUI.ViewModels
