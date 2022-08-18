@@ -3,8 +3,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
-//using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+
+using DarkSideModernGUI.Models;
 
 using System.IO;
 using System.Text.RegularExpressions;
@@ -132,14 +133,7 @@ namespace DarkSideModernGUI.Views.Pages
             });
         }
 
-        public struct Waypoint
-        {
-            public string waypointID { get; set; }
-            public string playerPosX { get; set; }
-            public string playerPosY { get; set; }
-            public string playerPosZ { get; set; }
-            public string playerHeading { get; set; }
-        }
+ 
 
 
         private void btnAddWaypoint_Click(object sender, RoutedEventArgs e)
