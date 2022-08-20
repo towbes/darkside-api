@@ -95,7 +95,7 @@ namespace DarkSideModernGUI.Views.Pages
             int size = Marshal.SizeOf<PlayerPosition>();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
 
-            GetPlayerPosition(TestPage.apiObject, buf);
+            GetPlayerPosition(DashboardPage.apiObject, buf);
 
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
