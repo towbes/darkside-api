@@ -199,13 +199,18 @@ namespace DarkSideModernGUI.Views.Pages
 
                 }
 
+                // Ordering the list from small to big distance to waypoint
                 List <distancetowaypoints> OrderedWaypointsAndDistance = WaypointsAndDistance.OrderBy(x => x.DistanceBetweenPlayerAndWaypoint).ToList();
 
+                // First will be the closest Waypoint
                 distancetowaypoints closestWaypoint = OrderedWaypointsAndDistance.First();
 
                 tbMultiLine.Text += "--------------------------------------------" +  Environment.NewLine;
 
                 tbMultiLine.Text += "The closest waypoint is Waypoint: " + closestWaypoint.WaypointID + Environment.NewLine;
+
+
+
 
                 //do some fucking movement with the waypoints
 
