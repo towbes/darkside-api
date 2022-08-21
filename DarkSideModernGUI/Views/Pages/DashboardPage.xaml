@@ -45,7 +45,8 @@
             Margin="33,4,0,0"
             VerticalAlignment="Top"
             Background="#FFFCA703"
-            Content="Inject Game.DLL" Click="btnInjectGameDLL_Click" />
+            Click="btnInjectGameDLL_Click"
+            Content="Inject Game.DLL" />
 
 
 
@@ -80,7 +81,7 @@
 
 
                     <ComboBox
-                        x:Name="cmbRouteLoad"
+                        x:Name="cbxRouteLoad"
                         Width="160"
                         Margin="0,0,0,10" />
 
@@ -122,6 +123,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"
                     Background="#FFA80606"
+                    Click="btnLaunchBot_Click"
                     Content="Launch BOT" />
             </Border>
 
