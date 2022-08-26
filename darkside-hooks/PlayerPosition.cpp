@@ -30,7 +30,7 @@ PlayerPosition::PlayerPosition() {
 
     if (hMapFile == NULL)
     {
-        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+        _tprintf(TEXT("Plyr Pos Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 
@@ -57,7 +57,7 @@ PlayerPosition::PlayerPosition() {
 
     if (headingMapFile == NULL)
     {
-        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+        _tprintf(TEXT("Heading Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 
@@ -89,7 +89,7 @@ PlayerPosition::PlayerPosition() {
 
     if (arunMapFile == NULL)
     {
-        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+        _tprintf(TEXT("Autorun Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 

@@ -31,7 +31,7 @@ PartyMemberInfo::PartyMemberInfo() {
 
     if (hMapFile == NULL)
     {
-        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+        _tprintf(TEXT("Party Info Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 

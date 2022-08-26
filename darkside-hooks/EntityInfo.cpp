@@ -55,7 +55,7 @@ EntityInfo::EntityInfo() {
 
     if (entNameFile == NULL)
     {
-        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+        _tprintf(TEXT("EntityInfo Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 
@@ -92,16 +92,16 @@ EntityInfo::EntityInfo() {
                     memcpy(ptrShmBytePtr + entoffset, (entity_t*)ptrEntInfoBytePtr, sizeof(entity_t));
                     //Use game function to write the entity name to shared memory
                     daoc::GetEntityName(3, i, reinterpret_cast<entName_t*>((ptrEntNameShmBytePtr + nameoffset))->name, 48);
-                    //unsigned char* tempPtr = reinterpret_cast<unsigned char*>((ptrShmBytePtr + entoffset));
-                    //const auto type = *(uint8_t*)(tempPtr + 0x28e);
-                    //const auto objId = *(uint16_t*)(tempPtr + 0x23c);
-                    //const auto level = ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96) / 74) - 23;//unencode level: ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96)/74) - 23
-                    //const auto health = (*(uint32_t*)(tempPtr + 0x228) ^ 0xbe00) / 0x22 - 0x23;//unencode health: (*(uint32_t*)(tempPtr + 0x228) ^ 0xbe00) / 0x22 - 0x23
-                    //const auto posx = *(float*)(tempPtr + 0x48) - zoneXoffset;
-                    //const auto posy = *(float*)(tempPtr + 0x370) - zoneYoffset;
-                    //const auto posz = *(float*)(tempPtr + 0xE7C);
-                    //const auto heading = ((((*(uint16_t*)(tempPtr + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168); //from 0x41948d //from 0x41948d
-                    //std::printf("%d : 0x%x - Type: %d - %d - %s - Lvl: %d | hp: %d | %.0f %.0f %.0f %d\n", i, (ptrShmBytePtr + entoffset), type, objId, reinterpret_cast<entName_t*>((ptrEntNameShmBytePtr + nameoffset))->name, level, health, posx, posy, posz, heading);
+                    unsigned char* tempPtr = reinterpret_cast<unsigned char*>((ptrShmBytePtr + entoffset));
+                    const auto type = *(uint8_t*)(tempPtr + 0x28e);
+                    const auto objId = *(uint16_t*)(tempPtr + 0x23c);
+                    const auto level = ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96) / 74) - 23;//unencode level: ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96)/74) - 23
+                    const auto health = (*(uint32_t*)(tempPtr + 0x228) ^ 0xbe00) / 0x22 - 0x23;//unencode health: (*(uint32_t*)(tempPtr + 0x228) ^ 0xbe00) / 0x22 - 0x23
+                    const auto posx = *(float*)(tempPtr + 0x48) - zoneXoffset;
+                    const auto posy = *(float*)(tempPtr + 0x370) - zoneYoffset;
+                    const auto posz = *(float*)(tempPtr + 0xE7C);
+                    const auto heading = ((((*(uint16_t*)(tempPtr + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168); //from 0x41948d //from 0x41948d
+                    std::printf("%d : 0x%x - Type: %d - %d - %s - Lvl: %d | hp: %d | %.0f %.0f %.0f %d\n", i, (ptrShmBytePtr + entoffset), type, objId, reinterpret_cast<entName_t*>((ptrEntNameShmBytePtr + nameoffset))->name, level, health, posx, posy, posz, heading);
                 }
             }
             else {

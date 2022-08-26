@@ -166,6 +166,7 @@
     <ClInclude Include="PlayerPosition.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="daochooks.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EntityInfo.cpp" />
     <ClCompile Include="gh_d3d9.cpp" />

@@ -69,6 +69,9 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     WriteMem((char*)ptrPresent, oPresBytes, 5);
     WriteMem((char*)ptrReset, oResetBytes, 5);
 
+    //Sleep to give reset a time to run?
+    Sleep(100);
+
     FreeLibraryAndExitThread(ghModule, 0);
 }
 
@@ -144,6 +147,8 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
     }
     if (plyrInfo != NULL) {
         plyrInfo->GetPlayerInfo();
+        plyrInfo->QueueSkill();
+        plyrInfo->QueueSpell();
     }
 
     if (entInfo != NULL) {

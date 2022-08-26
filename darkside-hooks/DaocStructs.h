@@ -30,17 +30,19 @@ struct headingupdate_t {
 	short heading;
 };
 
-//player hp/pow/endu
-struct plyrinfo_t {
-    int hp;
-    int pow;
-    int endu;
-};
-
 //useSpell_t plyrUseSpellTable[150];
 struct useSpell_t {
     char name[32];
     char unknown[60];
+};
+
+
+//item structure starts at 0xf9b8d0
+struct item_t {
+    int itemId;
+    unsigned char unknown[72];
+    unsigned char itemName[80];
+    unsigned char unknown2[312];
 };
 
 //Player Buffs
@@ -63,6 +65,17 @@ struct useSkill_t {
     int unknown1;
 };
 
+//player hp/pow/endu
+struct plyrinfo_t {
+    int hp;
+    int pow;
+    int endu;
+    useSkill_t skills[150];
+    useSpell_t spells[150];
+    buff_t buffs[75];
+    item_t inventory[40];
+};
+
 //entList[2000]
 struct entity_t {
     char bytes[6518];
@@ -71,12 +84,4 @@ struct entity_t {
 //entNameList[2000]
 struct entName_t {
     char name[48];
-};
-
-//item structure starts at 0xf9b8d0
-struct item_t {
-    int itemId;
-    unsigned char unknown[72];
-    unsigned char itemName[80];
-    unsigned char unknown2[312];
 };
