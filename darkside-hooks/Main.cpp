@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "PlayerPosition.h"
 #include "PartyMemberInfo.h"
+#include "PlayerInfo.h"
 
 
 extern "C" __declspec(dllexport) void __cdecl MainThread() {
@@ -13,15 +14,17 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     std::cout << "DLL got injected!!" << std::endl;
 #endif 
 
-    PlayerPosition* pInfo = new PlayerPosition();
+    PlayerPosition* posInfo = new PlayerPosition();
     PartyMemberInfo* pMemInfo = new PartyMemberInfo();
+    PlayerInfo* plyrInfo = new PlayerInfo();
 
     //wait for user input
     while (true) {
-        pInfo->GetPlayerPosition();
-        pInfo->SetHeading();
-        pInfo->SetAutorun();
+        posInfo->GetPlayerPosition();
+        posInfo->SetHeading();
+        posInfo->SetAutorun();
         pMemInfo->GetPartyMembers();
+        plyrInfo->GetPlayerInfo();
         //break when user presses end
         if (GetAsyncKeyState(VK_END) & 1) {
             break;
