@@ -5,6 +5,7 @@
 #include "PlayerPosition.h"
 #include "PartyMemberInfo.h"
 #include "PlayerInfo.h"
+#include "EntityInfo.h"
 
 bool bInit = false;
 
@@ -29,6 +30,7 @@ DWORD WINAPI Init(HMODULE hModule);
 PlayerPosition* posInfo = NULL;
 PartyMemberInfo* pMemInfo = NULL;
 PlayerInfo* plyrInfo = NULL;
+EntityInfo* entInfo = NULL;
 
 extern "C" __declspec(dllexport) void __cdecl MainThread() {
 #ifdef _DEBUG
@@ -128,6 +130,7 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         posInfo = new PlayerPosition();
         pMemInfo = new PartyMemberInfo();
         plyrInfo = new PlayerInfo();
+        entInfo = new EntityInfo();
         bInit = true;
     }
 
@@ -141,6 +144,10 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
     }
     if (plyrInfo != NULL) {
         plyrInfo->GetPlayerInfo();
+    }
+
+    if (entInfo != NULL) {
+        entInfo->GetEntityInfo();
     }
         
     //draw stuff here like so:

@@ -54,6 +54,9 @@
     <ClInclude Include="DaocStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="daochooks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

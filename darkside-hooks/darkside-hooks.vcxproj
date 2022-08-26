@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="daocgame.h" />
+    <ClInclude Include="daochooks.h" />
     <ClInclude Include="DaocStructs.h" />
     <ClInclude Include="EntityInfo.h" />
     <ClInclude Include="framework.h" />

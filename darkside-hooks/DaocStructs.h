@@ -63,6 +63,11 @@ struct useSkill_t {
     int unknown1;
 };
 
+//entList[2000]
+struct entity_t {
+    char bytes[6518];
+};
+
 //entNameList[2000]
 struct entName_t {
     char name[48];

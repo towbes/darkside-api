@@ -35,7 +35,7 @@ void DarksideAPI::InjectPid(int pid) {
     std::wstring msg = std::format(L"Injected {}\n", pid);
     //MessageBox(0, msg.c_str(), L"Hi", MB_ICONINFORMATION);
     //Short sleep is needed to prevent a crash
-    Sleep(10);
+    Sleep(100);
     this->pidHandle = pid;
     std::string str = std::to_string(pid) + "_tshmem";
 
