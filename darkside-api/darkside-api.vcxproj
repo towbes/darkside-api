@@ -72,11 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
-    <IncludePath>C:\boost\boost_1_80_0_b1;C:\daoc;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\ritzgames\Desktop\daoc\darkside\darkside-api\darkside-hooks;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
-    <IncludePath>C:\boost\boost_1_80_0_b1;C:\daoc;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\ritzgames\Desktop\daoc\darkside\darkside-api\darkside-hooks;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -139,8 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="C:\daoc\daocgame.h" />
-    <ClInclude Include="C:\daoc\DaocStructs.h" />
+    <ClInclude Include="..\darkside-hooks\daocgame.h" />
+    <ClInclude Include="..\darkside-hooks\DaocStructs.h" />
     <ClInclude Include="DarksideAPI.h" />
     <ClInclude Include="DarksideAPICaller.h" />
     <ClInclude Include="simple-inject.h" />
