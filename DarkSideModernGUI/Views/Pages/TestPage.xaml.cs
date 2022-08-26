@@ -77,17 +77,6 @@ namespace DarkSideModernGUI.Views.Pages
         }
 
 
-        private void btnRunCommand_Click(object sender, RoutedEventArgs e)
-        {
-            apiObject = CreateDarksideAPI();
-            MessageBox.Show(String.Format("Created API object {0}", apiObject));
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            InjectPid(apiObject, Int32.Parse(NumberTextBox.Text));
-        }
-
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             int size = Marshal.SizeOf<PlayerPosition>();
@@ -95,7 +84,7 @@ namespace DarkSideModernGUI.Views.Pages
 
 
 
-            GetPlayerPosition(apiObject, buf);
+            GetPlayerPosition(DashboardPage.apiObject, buf);
 
 
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
@@ -107,7 +96,7 @@ namespace DarkSideModernGUI.Views.Pages
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             autorun = !autorun;
-            SetAutorun(apiObject, autorun);
+            SetAutorun(DashboardPage.apiObject, autorun);
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
@@ -115,7 +104,7 @@ namespace DarkSideModernGUI.Views.Pages
             int size = Marshal.SizeOf<PartyMemberInfo>();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
 
-            GetPartyMember(apiObject, Int32.Parse(MemberIndexBox.Text), buf);
+            GetPartyMember(DashboardPage.apiObject, Int32.Parse(MemberIndexBox.Text), buf);
 
             PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(buf, typeof(PartyMemberInfo));
 
@@ -134,7 +123,7 @@ namespace DarkSideModernGUI.Views.Pages
             //If changeheading toggled off, set it to false
             if (!changeHeading)
             {
-                SetPlayerHeading(apiObject, false, 0);
+                SetPlayerHeading(DashboardPage.apiObject, false, 0);
             }
         }
 

@@ -26,23 +26,6 @@
         </Grid.ColumnDefinitions>
 
 
-
-        <ui:TextBox
-            Name="NumberTextBox"
-            Height="34"
-            Margin="0,10,0,0"
-            VerticalAlignment="Top"
-            Text="game.dll id" />
-
-        <ui:Button
-            Margin="0,60,0,0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            Click="btnRunCommand_Click"
-            Content="Run Command"
-            Icon="Fluent24" />
-
-
         <Slider
             Name="HeadingSlider"
             Grid.Column="1"
@@ -68,17 +51,6 @@
             TextWrapping="Wrap">
             Filler
         </TextBlock>
-
-
-
-        <ui:Button
-            Width="138"
-            Margin="0,108,0,0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            Click="Button_Click_1">
-            Inject
-        </ui:Button>
 
         <ui:Button
             Grid.Column="1"

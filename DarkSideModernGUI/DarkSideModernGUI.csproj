@@ -9,6 +9,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>applicationIcon.ico</ApplicationIcon>
     <PlatformTarget>x86</PlatformTarget>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
