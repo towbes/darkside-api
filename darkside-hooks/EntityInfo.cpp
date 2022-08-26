@@ -66,40 +66,50 @@ EntityInfo::EntityInfo() {
 
     if (ptrShmEntities != NULL && ptrShmEntNames != NULL) {
         //Create a new pointer and cast as unsigned char to be able to offset by single byte values
+        //Stores entity pointer from game function
         uintptr_t ptrEntInfoBytePtr;
+        //Recast in order to offset the shared memory pointer
         unsigned char* ptrShmBytePtr = reinterpret_cast<unsigned char*>(ptrShmEntities);
         unsigned char* ptrEntNameShmBytePtr = reinterpret_cast<unsigned char*>(ptrShmEntNames);
+        //Offsets for the shared memory
         int entoffset = 0;
         int nameoffset = 0;
-        //Copy the entity_t structures into the shared memory
+        //current max of the entity list
         entityListMax = *(int*)ptrEntityListMax;
         //update the zone offset values
         zoneYoffset = *(float*)ptrZoneYoffset_x;
         zoneXoffset = *(float*)ptrZoneXoffset_x;
+        //Copy the entity_t structures into the shared memory
         for (int i = 0; i < entityListMax; i++) {
+            //reset the entity pointer
             ptrEntInfoBytePtr = 0;
+            //use game function to check if there is a valid entity at this offset
             if (daoc::EntityPtrSanityCheck(i)) {
+                //Get the entity pointer for this offset from game function
                 ptrEntInfoBytePtr = daoc::GetEntityPointer(i);
                 if (ptrEntInfoBytePtr) {
-                    //*(entity_t*)(ptrShmBytePtr) = *(entity_t*)ptrEntInfoBytePtr;
+                    //copy the entity to shared memory
                     memcpy(ptrShmBytePtr + entoffset, (entity_t*)ptrEntInfoBytePtr, sizeof(entity_t));
+                    //Use game function to write the entity name to shared memory
                     daoc::GetEntityName(3, i, reinterpret_cast<entName_t*>((ptrEntNameShmBytePtr + nameoffset))->name, 48);
-                    unsigned char* tempPtr = reinterpret_cast<unsigned char*>((ptrShmBytePtr + entoffset));
-                    const auto type = *(uint8_t*)(tempPtr + 0x28e);
-                    const auto objId = *(uint16_t*)(tempPtr + 0x23c);
-                    const auto level = ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96) / 74) - 23;//unencode level: ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96)/74) - 23
-                    const auto health = (*(uint32_t*)(tempPtr + 0x228) ^ 0xbe00) / 0x22 - 0x23;//unencode health: (*(uint32_t*)(tempPtr + 0x228) ^ 0xbe00) / 0x22 - 0x23
-                    const auto posx = *(float*)(tempPtr + 0x48) - zoneXoffset;
-                    const auto posy = *(float*)(tempPtr + 0x370) - zoneYoffset;
-                    const auto posz = *(float*)(tempPtr + 0xE7C);
-                    const auto heading = ((((*(uint16_t*)(tempPtr + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168); //from 0x41948d //from 0x41948d
-                    std::printf("%d : 0x%x - Type: %d - %d - %s - Lvl: %d | hp: %d | %.0f %.0f %.0f %d\n", i, (ptrShmBytePtr + entoffset), type, objId, reinterpret_cast<entName_t*>((ptrEntNameShmBytePtr + nameoffset))->name, level, health, posx, posy, posz, heading);
+                    //unsigned char* tempPtr = reinterpret_cast<unsigned char*>((ptrShmBytePtr + entoffset));
+                    //const auto type = *(uint8_t*)(tempPtr + 0x28e);
+                    //const auto objId = *(uint16_t*)(tempPtr + 0x23c);
+                    //const auto level = ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96) / 74) - 23;//unencode level: ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96)/74) - 23
+                    //const auto health = (*(uint32_t*)(tempPtr + 0x228) ^ 0xbe00) / 0x22 - 0x23;//unencode health: (*(uint32_t*)(tempPtr + 0x228) ^ 0xbe00) / 0x22 - 0x23
+                    //const auto posx = *(float*)(tempPtr + 0x48) - zoneXoffset;
+                    //const auto posy = *(float*)(tempPtr + 0x370) - zoneYoffset;
+                    //const auto posz = *(float*)(tempPtr + 0xE7C);
+                    //const auto heading = ((((*(uint16_t*)(tempPtr + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168); //from 0x41948d //from 0x41948d
+                    //std::printf("%d : 0x%x - Type: %d - %d - %s - Lvl: %d | hp: %d | %.0f %.0f %.0f %d\n", i, (ptrShmBytePtr + entoffset), type, objId, reinterpret_cast<entName_t*>((ptrEntNameShmBytePtr + nameoffset))->name, level, health, posx, posy, posz, heading);
                 }
             }
             else {
+                //if no valid entity, memset that part of shared memory to 0
                 memset(ptrShmBytePtr + entoffset, 0, sizeof(entity_t));
                 memset(ptrEntNameShmBytePtr + nameoffset, 0, sizeof(entName_t));
             }
+            //increase offsets for pointer
             entoffset += sizeof(entity_t);
             nameoffset += sizeof(entName_t);
         }
@@ -117,31 +127,42 @@ bool EntityInfo::GetEntityInfo() {
 
     if (ptrShmEntities != NULL && ptrShmEntNames != NULL) {
         //Create a new pointer and cast as unsigned char to be able to offset by single byte values
+        //Stores entity pointer from game function
         uintptr_t ptrEntInfoBytePtr;
+        //Recast in order to offset the shared memory pointer
         unsigned char* ptrShmBytePtr = reinterpret_cast<unsigned char*>(ptrShmEntities);
         unsigned char* ptrEntNameShmBytePtr = reinterpret_cast<unsigned char*>(ptrShmEntNames);
+        //Offsets for the shared memory
         int entoffset = 0;
         int nameoffset = 0;
-        //Copy the entity_t structures into the shared memory
+        //current max of the entity list
         entityListMax = *(int*)ptrEntityListMax;
+        //update the zone offset values
+        zoneYoffset = *(float*)ptrZoneYoffset_x;
+        zoneXoffset = *(float*)ptrZoneXoffset_x;
+        //Copy the entity_t structures into the shared memory
         for (int i = 0; i < entityListMax; i++) {
+            //reset the entity pointer
             ptrEntInfoBytePtr = 0;
+            //use game function to check if there is a valid entity at this offset
             if (daoc::EntityPtrSanityCheck(i)) {
+                //Get the entity pointer for this offset from game function
                 ptrEntInfoBytePtr = daoc::GetEntityPointer(i);
                 if (ptrEntInfoBytePtr) {
-                    //*(entity_t*)(ptrShmBytePtr) = *(entity_t*)ptrEntInfoBytePtr;
+                    //copy the entity to shared memory
                     memcpy(ptrShmBytePtr + entoffset, (entity_t*)ptrEntInfoBytePtr, sizeof(entity_t));
-                    daoc::GetEntityName(3, i, reinterpret_cast<entName_t*>((ptrEntNameShmBytePtr + nameoffset))->name, 48);
-                }
+                    //Use game function to write the entity name to shared memory
+                    daoc::GetEntityName(3, i, reinterpret_cast<entName_t*>((ptrEntNameShmBytePtr + nameoffset))->name, 48);                }
             }
             else {
+                //if no valid entity, memset that part of shared memory to 0
                 memset(ptrShmBytePtr + entoffset, 0, sizeof(entity_t));
                 memset(ptrEntNameShmBytePtr + nameoffset, 0, sizeof(entName_t));
             }
+            //increase offsets for pointer
             entoffset += sizeof(entity_t);
             nameoffset += sizeof(entName_t);
         }
-
     }//Todo add exception
     else {
         return false;
