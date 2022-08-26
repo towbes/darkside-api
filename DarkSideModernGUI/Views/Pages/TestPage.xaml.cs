@@ -130,7 +130,7 @@ namespace DarkSideModernGUI.Views.Pages
         private void HeadingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             //Change heading when the slider moves if changeHeading is toggled on, otherwise it will do nothing
-            SetPlayerHeading(apiObject, changeHeading, (short)HeadingSlider.Value);
+            SetPlayerHeading(DashboardPage.apiObject, changeHeading, (short)HeadingSlider.Value);
         }
 
     

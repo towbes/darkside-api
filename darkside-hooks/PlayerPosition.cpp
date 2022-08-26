@@ -8,7 +8,7 @@ PlayerPosition::PlayerPosition() {
     playerPositionInfo = *(playerpos_t**)ptrPlayerPosition;
 #ifdef _DEBUG
     std::cout << "PlayerPositionPtr: " << std::hex << (int)ptrPlayerPosition << std::endl;
-    std::cout << "Player Position X: " << std::fixed << std::setprecision(0) << playerPositionInfo->pos_z << std::endl;
+    std::cout << "Player Position Z: " << std::fixed << std::setprecision(0) << playerPositionInfo->pos_z << std::endl;
 #endif
 
     //Get Process ID

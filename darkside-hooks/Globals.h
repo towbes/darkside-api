@@ -21,3 +21,4 @@ extern uintptr_t ptrAutorunToggle2;
 extern uintptr_t funcRunSpeed;
 extern uintptr_t ptrPlayerPosition;
 extern uintptr_t playerPositionInfo;
+
