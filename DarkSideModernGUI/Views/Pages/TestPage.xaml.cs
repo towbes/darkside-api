@@ -89,7 +89,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
-            MessageBox.Show(String.Format("Created PlayerPosition object at {0}", buf));
+            //MessageBox.Show(String.Format("Created PlayerPosition object at {0}", buf));
             MessageBox.Show((playerPos.pos_x).ToString());
         }
 

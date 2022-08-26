@@ -21,4 +21,5 @@
 #include <strsafe.h>
 #include <atlstr.h>
 #include <mutex>
+#include <TlHelp32.h>
 #endif //PCH_H
