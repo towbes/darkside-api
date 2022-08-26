@@ -33,12 +33,6 @@
     <ClInclude Include="PartyMemberInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\daoc\daocgame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\daoc\DaocStructs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -53,6 +47,12 @@
     </ClInclude>
     <ClInclude Include="Hook.h">
       <Filter>hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="daocgame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DaocStructs.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
