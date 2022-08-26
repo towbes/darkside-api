@@ -27,10 +27,10 @@
     <ClInclude Include="simple-inject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\daoc\daocgame.h">
+    <ClInclude Include="..\darkside-hooks\daocgame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\daoc\DaocStructs.h">
+    <ClInclude Include="..\darkside-hooks\DaocStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
