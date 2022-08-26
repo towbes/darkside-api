@@ -57,6 +57,9 @@
     <ClInclude Include="daochooks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TargetInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -88,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="daochooks.cpp">
       <Filter>hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="TargetInfo.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include "daocgame.h"
 #include "DaocStructs.h"
 
+
 class EntityInfo
 {
 private:

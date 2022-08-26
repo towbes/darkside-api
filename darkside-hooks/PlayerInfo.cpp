@@ -106,7 +106,7 @@ PlayerInfo::PlayerInfo() {
             GetLastError());
     }
 
-    if (skillMapFile != 0) {
+    if (spellMapFile != 0) {
         pShmUseSpell = (int)MapViewOfFile(spellMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
@@ -117,6 +117,10 @@ PlayerInfo::PlayerInfo() {
 PlayerInfo::~PlayerInfo() {
     UnmapViewOfFile(pShmPlayerInfo);
     CloseHandle(hMapFile);
+    UnmapViewOfFile((LPCVOID)pShmUseSkill);
+    CloseHandle(skillMapFile);
+    UnmapViewOfFile((LPCVOID)pShmUseSpell);
+    CloseHandle(spellMapFile);
 }
 
 void PlayerInfo::GetPlayerInfo() {

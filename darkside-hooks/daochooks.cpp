@@ -19,7 +19,7 @@ namespace daoc {
         //typedef bool(__fastcall* _EntityPtrSanityCheck)(int entityListOffset);
         //_EntityPtrSanityCheck EntityPtrSanityCheck = (_EntityPtrSanityCheck)funcEntityPtrSanityCheck_x;
         
-        return reinterpret_cast<uintptr_t(__fastcall*)(uint32_t)>(funcEntityPtrSanityCheck_x)(entOffset);
+        return reinterpret_cast<bool(__fastcall*)(uint32_t)>(funcEntityPtrSanityCheck_x)(entOffset);
     }
 
     void __declspec(naked) __stdcall GetEntityName(int table_idx, int entity_idx, char* Destination, size_t Count) {
@@ -59,6 +59,7 @@ namespace daoc {
         }
     }
 
+    //Use spell and skill
     void UseSpell(int canCastSpell, int spellSlot) {
         //Use spell and use skill functions
         typedef void(__cdecl* _UseSpell)(int canCastSpell, int spellSlot);
@@ -76,5 +77,20 @@ namespace daoc {
         return UseSkill(skillSlot, hasSkillFlag);
     }
 
+    //Set target func
+    void SetTarget(int entIdx, bool hasTarget) {
+        typedef void(__cdecl* _SetTarget)(int entIdx, bool hasTarget);
+        _SetTarget SetTarget = (_SetTarget)funcSetTarget_x;
+
+        return SetTarget(entIdx, hasTarget);
+    }
+
+    void SetTargetUI() {
+        //This function updates the UI with current target set via SetTarget
+        typedef void(__cdecl* _SetTargetUI)();
+        _SetTargetUI SetTargetUI = (_SetTargetUI)funcSetTargetUI_x;
+        
+        return SetTargetUI();
+    }
 
 }

@@ -26,4 +26,15 @@ namespace daoc {
     //Use skill function
     //typedef void(__cdecl* _UseSkill)(int skillSlot, int hasSkillFlag);
     //_UseSkill UseSkill = (_UseSkill)funcUseSkill_x;
+
+    //Set target func
+    void SetTarget(int entIdx, bool hasTarget);
+    //typedef void(__cdecl* _SetTarget)(int entIdx, bool hasTarget);
+    //_SetTarget SetTarget;// = (_SetTarget)0x42b2e3;
+
+    void SetTargetUI();
+    //This function updates the UI with current target set via SetTarget
+    //typedef void(__cdecl* _SetTargetUI)();
+    //_SetTargetUI SetTargetUI; //= (_SetTargetUI)0x48f194;
+
 }

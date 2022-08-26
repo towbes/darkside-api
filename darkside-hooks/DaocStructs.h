@@ -85,3 +85,12 @@ struct entity_t {
 struct entName_t {
     char name[48];
 };
+
+struct targetInfo_t {
+    int entOffset;
+    int tarHp;
+    int tarColor;
+    char tarName[48];
+    bool hasTarget;
+    entity_t* tarEntPtr;
+};
