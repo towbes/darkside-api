@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Collections.Generic;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -42,8 +43,8 @@ namespace DarkSideModernGUI.Views.Pages
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct EntityInfo
         {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public char[] name;
-            public sbyte type { get; private set; }
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 48)] public String name;
+            public byte type { get; private set; }
             public short objectId { get; private set; }
             public int level { get; private set; }
             public int health { get; private set; }
@@ -78,7 +79,8 @@ namespace DarkSideModernGUI.Views.Pages
         bool autorun = false;
         bool changeHeading = false;
 
-        EntityInfo[] EntityList = new EntityInfo[2000];
+        //EntityInfo[] EntityList = new EntityInfo[2000];
+        List<EntityInfo> EntityList = new List<EntityInfo>();
 
 
         public ViewModels.TestViewModel ViewModel
@@ -118,7 +120,7 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            int size = Marshal.SizeOf<PartyMemberInfo>();
+
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
 
             GetPartyMember(DashboardPage.apiObject, Int32.Parse(MemberIndexBox.Text), buf);
@@ -146,30 +148,26 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
-            int size = Marshal.SizeOf<EntityInfo>();
-            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
+            EntityList.Clear();
+            for (int i = 0; i < 2000; i++)
+            {
+                IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
+                EntityInfo tmpentity;
+                GetEntityInfo(DashboardPage.apiObject, i, buf);
+                tmpentity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
+                EntityList.Add(tmpentity);
+                Marshal.FreeHGlobal(buf);
+            }
+            
+            EntityInfo entity = EntityList[14];
 
-            //for (int i = 0; i < 2000; i++)
-            //{
-            //    if (GetEntityInfo(DashboardPage.apiObject, i, buf))
-            //    {
-            //        EntityList[i] = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
-            //    } else
-            //    {
-            //        EntityList[i] = new EntityInfo();
-            //    }
-            //
-            //}
-            //
-            //EntityInfo entity = EntityList[5];
+            //GetEntityInfo(DashboardPage.apiObject, 4, buf);
+            //EntityInfo entity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
 
-            GetEntityInfo(DashboardPage.apiObject, 4, buf);
-
-            EntityInfo entity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
             String cname = new string(entity.name);
 
             String msg = String.Format("Entity Name is {0}" + Environment.NewLine + "HP: {1}%"
-                + Environment.NewLine + "Type: {2}" + Environment.NewLine + "Level: {3}",
+                + Environment.NewLine + "Type: {2}" + Environment.NewLine + "Level: {3}" + Environment.NewLine,
                 cname, entity.health, entity.type, entity.level);
 
             EntityInfoTextBlock.Text = msg;

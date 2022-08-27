@@ -54,6 +54,12 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         ptrEntList = (entity_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
+    if (ptrEntList == NULL) {
+        _tprintf(TEXT("Could not create entList map view object (%d).\n"),
+            GetLastError());
+        return false;
+    }
+
     //Setup the EntName mmf
     std::wstring entNamemmf_name = std::to_wstring(pidHandle) + L"_EntName";
     //Set the size for 2000 entities
@@ -79,11 +85,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         ptrEntName = (entName_t*)MapViewOfFile(entNameFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
-    if (ptrEntList == NULL) {
-        _tprintf(TEXT("Could not create entList map view object (%d).\n"),
-            GetLastError());
-        return false;
-    }
+
     if (ptrEntName == NULL) {
         _tprintf(TEXT("Could not create entName map view object (%d).\n"),
             GetLastError());
@@ -103,6 +105,10 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     const auto objId = *(uint16_t*)(ptrShmBytePtr + 0x23c);
     //if objId is 0 this offset was empty
     if (objId == 0) {
+        UnmapViewOfFile(ptrEntList);
+        CloseHandle(hMapFile);
+        UnmapViewOfFile(ptrEntName);
+        CloseHandle(entNameFile);
         return false;
     }
     const auto level = ((*(uint32_t*)(ptrShmBytePtr + 0x60) ^ 0xCB96) / 74) - 23;//unencode level: ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96)/74) - 23
@@ -112,19 +118,20 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     const auto posz = *(float*)(ptrShmBytePtr + 0xE7C);
     const auto heading = ((((*(uint16_t*)(ptrShmBytePtr + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168); //from 0x41948d //from 0x41948d
     //Create struct to hold the entity data for API
-    entityInfoAPI_t tempEnt;
-    memcpy(tempEnt.name, ptrEntNameShmBytePtr, sizeof(entName_t));
-    tempEnt.health = health;
-    tempEnt.type = type;
-    tempEnt.objectId = objId;
-    tempEnt.level = level;
-    tempEnt.pos_x = posx;
-    tempEnt.pos_y = posy;
-    tempEnt.pos_z = posz;
-    tempEnt.heading = heading;
+    entityInfoAPI_t* tempEnt = new entityInfoAPI_t();
+    memcpy(tempEnt->name, ptrEntNameShmBytePtr, sizeof(entName_t));
+    tempEnt->health = health;
+    tempEnt->type = type;
+    tempEnt->objectId = objId;
+    tempEnt->level = level;
+    tempEnt->pos_x = posx;
+    tempEnt->pos_y = posy;
+    tempEnt->pos_z = posz;
+    tempEnt->heading = heading;
     //Copy the entityInfoAPI_t to buffer
-    memcpy(lpBuffer, &tempEnt, sizeof(entityInfoAPI_t));
+    memcpy(lpBuffer, tempEnt, sizeof(entityInfoAPI_t));
 
+    free(tempEnt);
     UnmapViewOfFile(ptrEntList);
     CloseHandle(hMapFile);
     UnmapViewOfFile(ptrEntName);
