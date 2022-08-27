@@ -6,6 +6,7 @@
 #include "PartyMemberInfo.h"
 #include "PlayerInfo.h"
 #include "EntityInfo.h"
+#include "TargetInfo.h"
 
 bool bInit = false;
 
@@ -31,6 +32,7 @@ PlayerPosition* posInfo = NULL;
 PartyMemberInfo* pMemInfo = NULL;
 PlayerInfo* plyrInfo = NULL;
 EntityInfo* entInfo = NULL;
+TargetInfo* targInfo = NULL;
 
 extern "C" __declspec(dllexport) void __cdecl MainThread() {
 #ifdef _DEBUG
@@ -134,6 +136,7 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         pMemInfo = new PartyMemberInfo();
         plyrInfo = new PlayerInfo();
         entInfo = new EntityInfo();
+        targInfo = new TargetInfo();
         bInit = true;
     }
 
@@ -150,9 +153,11 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         plyrInfo->QueueSkill();
         plyrInfo->QueueSpell();
     }
-
     if (entInfo != NULL) {
         entInfo->GetEntityInfo();
+    }
+    if (targInfo != NULL) {
+        targInfo->GetTargetInfo();
     }
         
     //draw stuff here like so:

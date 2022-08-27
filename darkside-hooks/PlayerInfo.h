@@ -30,6 +30,10 @@ private:
     int pShmUseSpell;
     void* spellMapFile;
     std::wstring spellmmf_name;
+    std::queue<int> skillQueue;
+    int currSkill;
+    std::queue<int> spellQueue;
+    int currSpell;
 
 public:
     PlayerInfo();

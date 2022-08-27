@@ -53,3 +53,12 @@ bool GetPartyMember(DarksideAPI* apiObject, int memberIndex, LPVOID lpBuffer) {
 	}
 	return false;
 }
+
+bool GetEntityInfo(DarksideAPI* apiObject, int entIndex, LPVOID lpBuffer) {
+	if (apiObject != NULL) {
+		if (apiObject->GetEntityInfo(entIndex, lpBuffer)) {
+			return true;
+		}
+	}
+	return false;
+}

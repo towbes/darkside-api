@@ -91,6 +91,12 @@ struct targetInfo_t {
     int tarHp;
     int tarColor;
     char tarName[48];
-    bool hasTarget;
+    char hasTarget[4];
     entity_t* tarEntPtr;
+};
+
+//Not a game struct, but used to update API with zone offsets
+struct zoneoffset_t {
+    float zoneYoffset;
+    float zoneXoffset;
 };

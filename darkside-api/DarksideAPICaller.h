@@ -19,6 +19,8 @@ extern "C" {
 	extern __declspec(dllexport) bool SetAutorun(DarksideAPI* apiObject, bool autorun);
 
 	extern __declspec(dllexport) bool GetPartyMember(DarksideAPI* apiObject, int memberIndex, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool GetEntityInfo(DarksideAPI* apiObject, int entIndex, LPVOID lpBuffer);
 #ifdef __cplusplus
 }
 #endif

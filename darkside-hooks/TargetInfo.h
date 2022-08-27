@@ -6,6 +6,7 @@ private:
     //Current process id
     int pid;
 
+
     //player info shared memory
     targetInfo_t* pShmTargetInfo;
     void* hMapFile;
@@ -17,14 +18,19 @@ private:
     int pShmSetTarget;
     std::wstring setTargmmf_name;
 
+    //Target info - target object id is at +0x4 of entity offset
     uintptr_t ptrCurrTargetOffset;
+    //color is at +0x4 of hp
+    uintptr_t ptrTargHp;
+    //Has target is at +0x200 of targetName - '\0' is no target
+    uintptr_t ptrTargName;
 
 public:
     TargetInfo();
     ~TargetInfo();
 
     //Player Hp/pow/endu
-    void GetTargetInfo();
+    bool GetTargetInfo();
 
     void SetTarget();
 };

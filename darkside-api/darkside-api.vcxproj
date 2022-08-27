@@ -149,7 +149,10 @@
   <ItemGroup>
     <ClCompile Include="DarksideAPI.cpp" />
     <ClCompile Include="DarksideAPICaller.cpp" />
+    <ClCompile Include="EntityInfoAPI.cpp" />
+    <ClCompile Include="PartyMemberAPI.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="PlayerPositionAPI.cpp" />
     <ClCompile Include="simple-inject.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -22,4 +22,5 @@
 #include <atlstr.h>
 #include <mutex>
 #include <TlHelp32.h>
+#include <queue>
 #endif //PCH_H

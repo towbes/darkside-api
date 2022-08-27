@@ -138,14 +138,24 @@ void PlayerInfo::GetPlayerInfo() {
 
 void PlayerInfo::QueueSkill() {
     if (pShmUseSkill >= 0) {
-        daoc::UseSkill(pShmUseSkill, 1);
+        skillQueue.push(pShmUseSkill);
         pShmUseSkill = -1;
+    }
+    if (!skillQueue.empty()) {
+        currSkill = skillQueue.front();
+        skillQueue.pop();
+        daoc::UseSkill(currSkill, 1);
     }
 }
 
 void PlayerInfo::QueueSpell() {
     if (pShmUseSpell >= 0) {
-        daoc::UseSkill(1, pShmUseSpell);
+        skillQueue.push(pShmUseSpell);
         pShmUseSpell = -1;
+    }
+    if (!spellQueue.empty()) {
+        currSpell = spellQueue.front();
+        spellQueue.pop();
+        daoc::UseSpell(1, currSpell);
     }
 }

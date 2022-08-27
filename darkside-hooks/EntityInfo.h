@@ -19,15 +19,19 @@ private:
     entity_t* entityInfo;
     //Pointer to in game memory
     uintptr_t ptrEntityInfo;
-    //Shared memory for party member array
+    //Shared memory for entity list
     entity_t* ptrShmEntities;
     void* hMapFile;
     std::wstring entInfommf_name;
-
+    //shared memory for entity names
     entName_t* ptrShmEntNames;
     void* entNameFile;
     std::wstring entNamemmf_name;
 
+    //Shared memory for zone offsets
+    zoneoffset_t* ptrZoneOffsets;
+    void* zoneOffsetFile;
+    std::wstring zoneOffommf_name;
 
 public:
     EntityInfo();

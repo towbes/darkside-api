@@ -38,6 +38,21 @@ namespace DarkSideModernGUI.Views.Pages
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4616)] public char[] unknown2;
         }
 
+        //EntityInfo
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct EntityInfo
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public char[] name;
+            public sbyte type { get; private set; }
+            public short objectId { get; private set; }
+            public int level { get; private set; }
+            public int health { get; private set; }
+            public float pos_x { get; private set; }
+            public float pos_y { get; private set; }
+            public float pos_z { get; private set; }
+            public short heading { get; private set; }
+        }
+
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateDarksideAPI();
@@ -55,13 +70,15 @@ namespace DarkSideModernGUI.Views.Pages
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetAutorun(IntPtr pApiObject, bool autorun);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetPartyMember(IntPtr pApiObject, int memberIndex, IntPtr lpBuffer);
+        public static extern bool GetPartyMember(IntPtr pApiObject, int memberIndex, IntPtr lpBuffer);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GetEntityInfo(IntPtr pApiObject, int entityIndex, IntPtr lpBuffer);
 
         public static IntPtr apiObject;
         bool autorun = false;
         bool changeHeading = false;
 
-
+        EntityInfo[] EntityList = new EntityInfo[2000];
 
 
         public ViewModels.TestViewModel ViewModel
@@ -125,6 +142,37 @@ namespace DarkSideModernGUI.Views.Pages
             {
                 SetPlayerHeading(DashboardPage.apiObject, false, 0);
             }
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            int size = Marshal.SizeOf<EntityInfo>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
+
+            //for (int i = 0; i < 2000; i++)
+            //{
+            //    if (GetEntityInfo(DashboardPage.apiObject, i, buf))
+            //    {
+            //        EntityList[i] = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
+            //    } else
+            //    {
+            //        EntityList[i] = new EntityInfo();
+            //    }
+            //
+            //}
+            //
+            //EntityInfo entity = EntityList[5];
+
+            GetEntityInfo(DashboardPage.apiObject, 4, buf);
+
+            EntityInfo entity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
+            String cname = new string(entity.name);
+
+            String msg = String.Format("Entity Name is {0}" + Environment.NewLine + "HP: {1}%"
+                + Environment.NewLine + "Type: {2}" + Environment.NewLine + "Level: {3}",
+                cname, entity.health, entity.type, entity.level);
+
+            EntityInfoTextBlock.Text = msg;
         }
 
         private void HeadingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

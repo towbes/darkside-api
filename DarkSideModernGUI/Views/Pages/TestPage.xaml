@@ -23,6 +23,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
 
@@ -86,7 +87,28 @@
             Get Member Index
         </ui:Button>
 
+        <ui:Button
+            Grid.Column="2"
+            Width="159"
+            Margin="42,23,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_6">
+            Get Entity List
+        </ui:Button>
 
+        <ScrollViewer
+            Name="EntScroll"
+            Grid.Column="2" Margin="21,68,-21,10">
+            <TextBlock
+            Name="EntityInfoTextBlock"
+            Grid.Column="2"
+            Margin="9,9,0,85"
+            FontSize="16"
+            Foreground="Orange"
+            TextWrapping="Wrap" Height="Auto" Width="Auto">
+            Filler
+            </TextBlock>
+        </ScrollViewer>
 
 
     </Grid>

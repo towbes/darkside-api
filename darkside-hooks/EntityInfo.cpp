@@ -14,6 +14,38 @@ EntityInfo::EntityInfo() {
     //https://stackoverflow.com/questions/5235647/c-concat-lpctstr
     //https://stackoverflow.com/questions/12602526/how-can-i-convert-an-int-to-a-cstring
 
+    //Zone offset mmf
+    zoneOffommf_name = std::to_wstring(pid) + L"_ZoneOffsets";
+    //Set the size for 8 party members
+    std::size_t zoneOffsetfileSize = sizeof(zoneoffset_t);
+
+    //Create a handle to memory mapped file
+    auto zoneOffsetFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        zoneOffsetfileSize,                // maximum object size (low-order DWORD)
+        zoneOffommf_name.c_str());                 // name of mapping object
+
+    if (zoneOffsetFile == NULL)
+    {
+        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+            GetLastError());
+    }
+
+    if (zoneOffsetFile != 0) {
+        //Map a view of the memory mapped file from above
+        ptrZoneOffsets = (zoneoffset_t*)MapViewOfFile(zoneOffsetFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    }//Todo add exception
+    //Copy the offsets into shm
+    //update the zone offset values
+    zoneYoffset = *(float*)ptrZoneYoffset_x;
+    zoneXoffset = *(float*)ptrZoneXoffset_x;
+    ptrZoneOffsets->zoneYoffset = zoneYoffset;
+    ptrZoneOffsets->zoneXoffset = zoneXoffset;
+
+
     //Setup the Ent Info mmf
     entInfommf_name = std::to_wstring(pid) + L"_EntInfo";
     //Set the size for 8 party members
@@ -76,9 +108,7 @@ EntityInfo::EntityInfo() {
         int nameoffset = 0;
         //current max of the entity list
         entityListMax = *(int*)ptrEntityListMax;
-        //update the zone offset values
-        zoneYoffset = *(float*)ptrZoneYoffset_x;
-        zoneXoffset = *(float*)ptrZoneXoffset_x;
+
         //Copy the entity_t structures into the shared memory
         for (int i = 0; i < entityListMax; i++) {
             //reset the entity pointer
@@ -113,6 +143,14 @@ EntityInfo::EntityInfo() {
             entoffset += sizeof(entity_t);
             nameoffset += sizeof(entName_t);
         }
+        //0 out the rest of the entity list memory
+        for (int j = entityListMax; j < 2000; j++) {
+            memset(ptrShmBytePtr + entoffset, 0, sizeof(entity_t));
+            memset(ptrEntNameShmBytePtr + nameoffset, 0, sizeof(entName_t));
+            //increase offsets for pointer
+            entoffset += sizeof(entity_t);
+            nameoffset += sizeof(entName_t);
+        }
     }//Todo add exception
 }
 
@@ -126,6 +164,12 @@ EntityInfo::~EntityInfo() {
 bool EntityInfo::GetEntityInfo() {
 
     if (ptrShmEntities != NULL && ptrShmEntNames != NULL) {
+        //Update zone offset shm
+        zoneYoffset = *(float*)ptrZoneYoffset_x;
+        zoneXoffset = *(float*)ptrZoneXoffset_x;
+        ptrZoneOffsets->zoneYoffset = zoneYoffset;
+        ptrZoneOffsets->zoneXoffset = zoneXoffset;
+
         //Create a new pointer and cast as unsigned char to be able to offset by single byte values
         //Stores entity pointer from game function
         uintptr_t ptrEntInfoBytePtr;
@@ -159,6 +203,14 @@ bool EntityInfo::GetEntityInfo() {
                 memset(ptrShmBytePtr + entoffset, 0, sizeof(entity_t));
                 memset(ptrEntNameShmBytePtr + nameoffset, 0, sizeof(entName_t));
             }
+            //increase offsets for pointer
+            entoffset += sizeof(entity_t);
+            nameoffset += sizeof(entName_t);
+        }
+        //0 out the rest of the entity list memory
+        for (int j = entityListMax; j < 2000; j++) {
+            memset(ptrShmBytePtr + entoffset, 0, sizeof(entity_t));
+            memset(ptrEntNameShmBytePtr + nameoffset, 0, sizeof(entName_t));
             //increase offsets for pointer
             entoffset += sizeof(entity_t);
             nameoffset += sizeof(entName_t);

@@ -5,6 +5,8 @@
 TargetInfo::TargetInfo() {
     //Initialize daocgame pointers
     ptrCurrTargetOffset = ptrCurrentTargetEntOffset_x;
+    ptrTargHp = ptrCurrentTargetHp_x;
+    ptrTargName = ptrCurrentTargetName_x;
 
 #ifdef _DEBUG
     std::cout << "ptrCurrTargetOffset: " << std::hex << (int)ptrCurrTargetOffset << std::endl;
@@ -39,9 +41,46 @@ TargetInfo::TargetInfo() {
 
 
     if (pShmTargetInfo != NULL) {
+        //struct targetInfo_t {
+        //    int entOffset;
+        //    int tarHp;
+        //    int tarColor;
+        //    char tarName[48];
+        //    char hasTarget[4];
+        //    entity_t* tarEntPtr;
+        //};
+        pShmTargetInfo->entOffset = *(int*)ptrCurrTargetOffset;
+        unsigned char* tempPtr = reinterpret_cast<unsigned char*>(ptrTargHp);
+        pShmTargetInfo->tarHp = *(int*)tempPtr;
+        pShmTargetInfo->tarColor = *(int*)(tempPtr + 0x4);
+        tempPtr = reinterpret_cast<unsigned char*>(ptrTargName);
+        memcpy(pShmTargetInfo->tarName, (tempPtr + 0x400), 47);
+        //If the name was longer and the last character in the array isn't a null terminator, terminate it
+        if (pShmTargetInfo->tarName[47] != '\0') {
+            memset((char*)pShmTargetInfo->tarName[47], 0, 1);
+        }
+        memcpy(pShmTargetInfo->hasTarget, tempPtr + 0x600, 4);
+        if (pShmTargetInfo->entOffset > 0) {
+            pShmTargetInfo->tarEntPtr = (entity_t*)daoc::GetEntityPointer(pShmTargetInfo->entOffset);
+        }
+        else {
+            pShmTargetInfo->tarEntPtr = NULL;
+        }
+        
 
 
 #ifdef _DEBUG
+        std::cout << "targOffset: " << std::dec << pShmTargetInfo->entOffset << std::endl;
+        std::cout << "targHp: " << std::dec << pShmTargetInfo->tarHp << std::endl;
+        std::cout << "targColor: " << std::dec << pShmTargetInfo->tarColor << std::endl;
+        std::cout << "targName: " << std::dec << pShmTargetInfo->tarName << std::endl;
+        std::cout << "hasTarget: " << std::dec << pShmTargetInfo->hasTarget << std::endl;
+        std::cout << "entPtr: 0x" << std::hex << (uintptr_t)pShmTargetInfo->tarEntPtr << std::endl;
+        if (pShmTargetInfo->tarEntPtr != NULL) {
+            tempPtr = reinterpret_cast<unsigned char*>(pShmTargetInfo->tarEntPtr);
+            const auto level = ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96) / 74) - 23;
+            std::cout << "Target Level: " << std::dec << level << std::endl;
+        }
 
 #endif
     }//Todo add exception
@@ -78,4 +117,37 @@ TargetInfo::~TargetInfo() {
     CloseHandle(hMapFile);
     UnmapViewOfFile((LPCVOID)pShmSetTarget);
     CloseHandle(hSetTargFile);
+}
+
+bool TargetInfo::GetTargetInfo() {
+    if (pShmTargetInfo) {
+        pShmTargetInfo->entOffset = *(int*)ptrCurrTargetOffset;
+        unsigned char* tempPtr = reinterpret_cast<unsigned char*>(ptrTargHp);
+        pShmTargetInfo->tarHp = *(int*)tempPtr;
+        pShmTargetInfo->tarColor = *(int*)(tempPtr + 0x4);
+        tempPtr = reinterpret_cast<unsigned char*>(ptrTargName);
+        memcpy(pShmTargetInfo->tarName, (tempPtr + 0x400), 47);
+        //If the name was longer and the last character in the array isn't a null terminator, terminate it
+        if (pShmTargetInfo->tarName[47] != '\0') {
+            memset((char*)pShmTargetInfo->tarName[47], 0, 1);
+        }
+        memcpy(pShmTargetInfo->hasTarget, tempPtr + 0x600, 4);
+        if (pShmTargetInfo->entOffset > 0) {
+            pShmTargetInfo->tarEntPtr = (entity_t*)daoc::GetEntityPointer(pShmTargetInfo->entOffset);
+        }
+        else {
+            pShmTargetInfo->tarEntPtr = NULL;
+        }
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+void TargetInfo::SetTarget() {
+    if (pShmSetTarget >= 0) {
+        daoc::SetTarget(pShmSetTarget, 0);
+        pShmSetTarget = -1;
+    }
 }
