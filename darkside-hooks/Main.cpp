@@ -57,7 +57,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
         //pMemInfo->GetPartyMembers();
         //plyrInfo->GetPlayerInfo();
         //break when user presses end
-        if (GetAsyncKeyState(VK_END) & 1) {
+        if (GetAsyncKeyState(VK_RCONTROL) & 1) {
             break;
         }
     }
