@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using System.Windows.Input;
+using System.Xml.Linq;
+using System.Linq;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -143,6 +145,10 @@ namespace DarkSideModernGUI.Views.Pages
         public static extern bool GetTargetInfo(IntPtr pApiObject, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SetTarget(IntPtr pApiObject, int entOffset);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool UseSkill(IntPtr pApiObject, int skillOffset);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool UseSpell(IntPtr pApiObject, int spellOffset);
 
         public static IntPtr apiObject;
         bool autorun = false;
@@ -186,6 +192,7 @@ namespace DarkSideModernGUI.Views.Pages
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0,0, 100);
             dispatcherTimer.Start();
         }
+
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
@@ -372,10 +379,44 @@ namespace DarkSideModernGUI.Views.Pages
 
             MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
         }
+        int findEntityByName(String entName)
+        {
+            for (int i = 0; i < 2000; i++)
+            {
+                if (!String.IsNullOrEmpty(EntityList[i].name))
+                {
+                    if (String.Equals(entName, EntityList[i].name))
+                    {
+                        return i;
+                    }
+                }
+
+            }
+            return -1;
+        }
 
         private void Button_Click_SetTarget(object sender, RoutedEventArgs e)
         {
-            SetTarget(DashboardPage.apiObject, Int32.Parse(SetTargetOffset.Text));
+            String tmp = SetTargetOffset.Text;
+            int offset = -1;
+            //If there are letters, get the offset by name
+            if (!tmp.All(char.IsDigit)) {
+                offset = findEntityByName(tmp);
+            } else
+            {
+                offset = Int32.Parse(SetTargetOffset.Text);
+            }
+            SetTarget(DashboardPage.apiObject, offset);
+        }
+
+        private void Button_Click_UseSkill(object sender, RoutedEventArgs e)
+        {
+            UseSkill(DashboardPage.apiObject, Int32.Parse(UseSkillOffset.Text));
+        }
+
+        private void Button_Click_UseSpell(object sender, RoutedEventArgs e)
+        {
+            UseSpell(DashboardPage.apiObject, Int32.Parse(UseSpellOffset.Text));
         }
 
         private void Button_Click_6(object sender, RoutedEventArgs e)

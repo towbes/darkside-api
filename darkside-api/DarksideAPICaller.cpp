@@ -88,3 +88,21 @@ bool SetTarget(DarksideAPI* apiObject, int entIndex) {
 	}
 	return false;
 }
+
+bool UseSkill(DarksideAPI* apiObject, int skillOffset) {
+	if (apiObject != NULL) {
+		if (apiObject->UseSkill(skillOffset)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UseSpell(DarksideAPI* apiObject, int spellOffset) {
+	if (apiObject != NULL) {
+		if (apiObject->UseSpell(spellOffset)) {
+			return true;
+		}
+	}
+	return false;
+}

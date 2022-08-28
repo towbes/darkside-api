@@ -27,6 +27,10 @@ extern "C" {
 	extern __declspec(dllexport) bool GetTargetInfo(DarksideAPI* apiObject, LPVOID lpBuffer);
 
 	extern __declspec(dllexport) bool SetTarget(DarksideAPI* apiObject, int entIndex);
+
+	extern __declspec(dllexport) bool UseSkill(DarksideAPI* apiObject, int skillOffset);
+
+	extern __declspec(dllexport) bool UseSpell(DarksideAPI* apiObject, int spellOffset);
 #ifdef __cplusplus
 }
 #endif

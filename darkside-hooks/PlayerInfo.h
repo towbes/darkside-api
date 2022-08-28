@@ -24,10 +24,10 @@ private:
     //Function will check this every frame
     //Cast if values present, then reset to 0
 
-    int pShmUseSkill;
+    int* pShmUseSkill;
     void* skillMapFile;
     std::wstring skillmmf_name;
-    int pShmUseSpell;
+    int* pShmUseSpell;
     void* spellMapFile;
     std::wstring spellmmf_name;
     std::queue<int> skillQueue;

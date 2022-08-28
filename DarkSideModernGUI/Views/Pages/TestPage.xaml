@@ -43,7 +43,7 @@
         <TextBlock
             Name="MemberInfo"
             Grid.Column="1"
-            Margin="0,221,0,10"
+            Margin="0,401,0,10"
             Foreground="Orange"
             TextWrapping="Wrap">
             Filler
@@ -79,7 +79,7 @@
         <ui:Button
             Grid.Column="1"
             Width="136"
-            Margin="4,97,0,0"
+            Margin="5,300,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_3">
             Toggle Autorun
@@ -96,9 +96,9 @@
         <ui:Button
             Grid.Column="1"
             Width="159"
-            Margin="0,183,0,0"
+            Margin="0,364,0,0"
             VerticalAlignment="Top"
-            Click="Button_Click_4">
+            Click="Button_Click_4" Grid.ColumnSpan="2">
             Get Party Members
         </ui:Button>
 
@@ -126,6 +126,23 @@
         <ScrollViewer 
             Grid.Column="0" Margin="0,490,0,0"
             Height="75"/>
+        <TextBox x:Name="UseSkillOffset" 
+            Grid.Column="1"
+            FontSize="12" VerticalAlignment="Top" Text="UseSkill Offset" Margin="0,100,0,0"/>
+        <ui:Button
+            Grid.Column="1"
+            Width="156"
+            Margin="1,145,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_UseSkill" Content="Use Skill" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="UseSpellOffset" 
+            Grid.Column="1"
+            FontSize="12" VerticalAlignment="Top" Text="UseSpell Offset" Margin="3,194,372,0" Grid.ColumnSpan="2"/>
+        <ui:Button
+            Width="156"
+            Margin="274,242,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_UseSpell" Content="Use Spell" Grid.ColumnSpan="3"/>
 
     </Grid>
 

@@ -82,11 +82,11 @@ PlayerInfo::PlayerInfo() {
     }
 
     if (skillMapFile != 0) {
-        pShmUseSkill = (int)MapViewOfFile(skillMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+        pShmUseSkill = (int*)MapViewOfFile(skillMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
     //Set to -1 while waiting for skill
-    pShmUseSkill = -1;
+    *pShmUseSkill = -1;
 
         //set up skill and spell casting function shaerd memory
     spellmmf_name = std::to_wstring(pid) + L"_plyrUseSpell";
@@ -107,11 +107,11 @@ PlayerInfo::PlayerInfo() {
     }
 
     if (spellMapFile != 0) {
-        pShmUseSpell = (int)MapViewOfFile(spellMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+        pShmUseSpell = (int*)MapViewOfFile(spellMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
     //Set to -1 while waiting for spell
-    pShmUseSpell = -1;
+    *pShmUseSpell = -1;
 }
 
 PlayerInfo::~PlayerInfo() {
@@ -137,9 +137,9 @@ void PlayerInfo::GetPlayerInfo() {
 }
 
 void PlayerInfo::QueueSkill() {
-    if (pShmUseSkill >= 0) {
-        skillQueue.push(pShmUseSkill);
-        pShmUseSkill = -1;
+    if (*pShmUseSkill >= 0) {
+        skillQueue.push(*pShmUseSkill);
+        *pShmUseSkill = -1;
     }
     if (!skillQueue.empty()) {
         currSkill = skillQueue.front();
@@ -149,9 +149,9 @@ void PlayerInfo::QueueSkill() {
 }
 
 void PlayerInfo::QueueSpell() {
-    if (pShmUseSpell >= 0) {
-        skillQueue.push(pShmUseSpell);
-        pShmUseSpell = -1;
+    if (*pShmUseSpell >= 0) {
+        skillQueue.push(*pShmUseSpell);
+        *pShmUseSpell = -1;
     }
     if (!spellQueue.empty()) {
         currSpell = spellQueue.front();

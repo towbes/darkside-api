@@ -41,6 +41,8 @@ public:
 
     //Player Info
     bool GetPlayerInfo(LPVOID lpBuffer);
+    bool UseSkill(int skillOffset);
+    bool UseSpell(int spellOffset);
 
     //Party Members
     bool GetPartyMember(int memberIndex, LPVOID lpBuffer);
