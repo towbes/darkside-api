@@ -4,12 +4,6 @@
 
 bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
 
-    zoneOffsetFile = NULL;
-    ptrZoneOffsets = NULL;
-    entListFile = NULL;
-    ptrEntList = NULL;
-    entNameFile = NULL;
-    ptrEntName = NULL;
 
     //Setup zone offset shm for loc calcs
     //Zone offset mmf
@@ -33,6 +27,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         if (zoneOffsetFile != NULL) {
             CloseHandle(zoneOffsetFile);
         }
+        memset(lpBuffer, 0, sizeof(entityInfoAPI_t));
         return false;
     }
 
@@ -74,6 +69,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         if (zoneOffsetFile != NULL) {
             CloseHandle(zoneOffsetFile);
         }
+        memset(lpBuffer, 0, sizeof(entityInfoAPI_t));
         return false;
     }
 
@@ -100,6 +96,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         if (zoneOffsetFile != NULL) {
             CloseHandle(zoneOffsetFile);
         }
+        memset(lpBuffer, 0, sizeof(entityInfoAPI_t));
         return false;
     }
 
@@ -139,6 +136,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         if (zoneOffsetFile != NULL) {
             CloseHandle(zoneOffsetFile);
         }
+        memset(lpBuffer, 0, sizeof(entityInfoAPI_t));
         return false;
     }
 
@@ -169,6 +167,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         if (zoneOffsetFile != NULL) {
             CloseHandle(zoneOffsetFile);
         }
+        memset(lpBuffer, 0, sizeof(entityInfoAPI_t));
         return false;
     }
 
@@ -227,7 +226,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     //Copy the entityInfoAPI_t to buffer
     memcpy(lpBuffer, tempEnt, sizeof(entityInfoAPI_t));
 
-    free(tempEnt);
+    delete tempEnt;
     if (ptrEntList != NULL) {
         UnmapViewOfFile(ptrEntList);
     }

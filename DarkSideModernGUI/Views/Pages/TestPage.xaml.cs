@@ -82,8 +82,13 @@ namespace DarkSideModernGUI.Views.Pages
         bool autorun = false;
         bool changeHeading = false;
 
-        //EntityInfo[] EntityList = new EntityInfo[2000];
         List<EntityInfo> EntityList = new List<EntityInfo>();
+        List<String> strEntityList = new List<String>();
+        //PartyList
+        List<PartyMemberInfo> partyMemberList = new List<PartyMemberInfo>();
+        List<String> strPartyList = new List<String>();
+
+
         DispatcherTimer dispatcherTimer;
         //Flag to prevent race condition updating EntityList from other threads
         bool ListUpdating = false;
@@ -183,6 +188,33 @@ namespace DarkSideModernGUI.Views.Pages
                 EntityInfoTextBlock.Text = entmsg;
                 ListUpdating = false;
             }
+            partyMemberList.Clear();
+            strPartyList.Clear();
+            //party list
+            for (int i = 0; i < 8; i++)
+            {
+                IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+                GetPartyMember(DashboardPage.apiObject, i, pbuf);
+                PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(pbuf, typeof(PartyMemberInfo));
+                if (partyMember.hp_pct > 0)
+                {
+                    partyMemberList.Add(partyMember);
+                }
+                Marshal.FreeHGlobal(pbuf);
+
+            }
+            for (int j = 0; j < partyMemberList.Count; j++)
+            {
+                String cname = new string(partyMemberList[j].name);
+
+                String pmsg = String.Format("{0} - HP: {1}% - Endu: {2}% - Pow: {3}%",
+                    cname, partyMemberList[j].hp_pct, partyMemberList[j].endu_pct, partyMemberList[j].pow_pct);
+
+                strPartyList.Add(pmsg);
+            }
+
+            MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
+
 
             // Forcing the CommandManager to raise the RequerySuggested event
             CommandManager.InvalidateRequerySuggested();
@@ -196,20 +228,31 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
+            partyMemberList.Clear();
+            strPartyList.Clear();
+            for (int i = 0; i < 8; i++)
+            {
+                IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+                GetPartyMember(DashboardPage.apiObject, i, buf);
+                PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(buf, typeof(PartyMemberInfo));
+                if (partyMember.hp_pct > 0)
+                {
+                    partyMemberList.Add(partyMember);
+                }
+                Marshal.FreeHGlobal(buf);
 
-            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+            }
+            for (int j = 0; j < partyMemberList.Count; j++)
+            {
+                String cname = new string(partyMemberList[j].name);
 
-            GetPartyMember(DashboardPage.apiObject, Int32.Parse(MemberIndexBox.Text), buf);
+                String msg = String.Format("{0} - HP: {1}% - Endu: {2}% - Pow: {3}%",
+                    cname, partyMemberList[j].hp_pct, partyMemberList[j].endu_pct, partyMemberList[j].pow_pct);
 
-            PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(buf, typeof(PartyMemberInfo));
+                strPartyList.Add(msg);
+            }
 
-            String cname = new string(partyMember.name);
-
-            String msg = String.Format("PartyMember Name is {0}" + Environment.NewLine + "HP: {1}%"
-                + Environment.NewLine + "Endu: {2}%" + Environment.NewLine + "Pow: {3}%",
-                cname, partyMember.hp_pct, partyMember.endu_pct, partyMember.pow_pct);
-
-            MemberInfo.Text = msg;
+            MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
@@ -246,10 +289,11 @@ namespace DarkSideModernGUI.Views.Pages
                     Marshal.FreeHGlobal(buf);
                 }
 
-
-                String msg = "";
+                strEntityList.Clear();
+                
                 for (int j = 0; j < EntityList.Count; j++)
                 {
+                    String msg = "";
                     if (EntityList[j].objectId > 0)
                     {
                         EntityInfo entity = EntityList[j];
@@ -258,15 +302,15 @@ namespace DarkSideModernGUI.Views.Pages
                         {
                             String cname = new string(entity.name);
 
-                            msg += String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}"
-                                + Environment.NewLine,
+                            msg = String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}",
                                 j, cname, entity.health, entity.type, entity.level);
+                            strEntityList.Add(msg);
                         }
 
                     }
 
                 }
-                EntityInfoTextBlock.Text = msg;
+                EntityInfoTextBlock.Text = String.Join(Environment.NewLine, strEntityList);
                 ListUpdating = false;
             }
 

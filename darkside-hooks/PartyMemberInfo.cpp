@@ -52,6 +52,7 @@ PartyMemberInfo::PartyMemberInfo() {
             ptrShmBytePtr += sizeof(partymemberinfo_t);
             ptrPInfoBytePtr += sizeof(partymemberinfo_t);
         }
+    } else {
     }//Todo add exception
 }
 

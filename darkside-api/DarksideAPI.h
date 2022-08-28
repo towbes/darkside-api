@@ -21,20 +21,8 @@ class __declspec(dllexport) DarksideAPI {
 private:
     int pidHandle;
     void setPid(int pid);
-    //Entity SHM
-    void* zoneOffsetFile;
-    void* ptrZoneOffsets;
-    void* entListFile;
-    void* ptrEntList;
-    void* entNameFile;
-    void* ptrEntName;
-    //PlayerPos SHM
-    void* hPlayerPosFile;
-    void* pPlayerPos;
-    void* headingMapFile;
-    void* headingUpdate;
-    void* arunMapFile;
-    void* shmAutorunToggle;
+
+
 
 public:
     DarksideAPI();

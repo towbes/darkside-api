@@ -21,6 +21,7 @@ bool DarksideAPI::GetPartyMember(int memberIndex, LPVOID lpBuffer) {
     {
         _tprintf(TEXT("Could not create file mapping object (%d).\n"),
             GetLastError());
+        memset(lpBuffer, 0, sizeof(partymemberinfo_t));
         return false;
     }
 
@@ -31,6 +32,8 @@ bool DarksideAPI::GetPartyMember(int memberIndex, LPVOID lpBuffer) {
     if (ptrPartyMembers == NULL) {
         _tprintf(TEXT("Could not create map view object (%d).\n"),
             GetLastError());
+        memset(lpBuffer, 0, sizeof(partymemberinfo_t));
+        CloseHandle(hMapFile);
         return false;
     }
     //cast as unsigned char* to be able to use single byte offsets to move the pointer

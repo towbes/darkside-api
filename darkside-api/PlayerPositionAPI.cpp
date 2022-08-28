@@ -4,8 +4,6 @@
 
 
 bool DarksideAPI::GetPlayerPosition(LPVOID lpBuffer) {
-    hPlayerPosFile = NULL;
-    pPlayerPos = NULL;
 
     std::size_t fileSize = sizeof(playerpos_t);
     std::wstring mmf_name = std::to_wstring(pidHandle) + L"_pInfo";
@@ -26,6 +24,7 @@ bool DarksideAPI::GetPlayerPosition(LPVOID lpBuffer) {
         if (hPlayerPosFile != NULL) {
             CloseHandle(hPlayerPosFile);
         }
+        memset(lpBuffer, 0, sizeof(playerpos_t));
         return false;
     }
 
@@ -41,6 +40,7 @@ bool DarksideAPI::GetPlayerPosition(LPVOID lpBuffer) {
         if (hPlayerPosFile != NULL) {
             CloseHandle(hPlayerPosFile);
         }
+        memset(lpBuffer, 0, sizeof(playerpos_t));
         return false;
     }
 
@@ -58,9 +58,6 @@ bool DarksideAPI::GetPlayerPosition(LPVOID lpBuffer) {
 }
 
 bool DarksideAPI::SetPlayerHeading(bool changeHeading, short newHeading) {
-
-    headingMapFile = NULL;
-    headingUpdate = NULL;
 
     //Setup the MMF
         //setup the heading overwrite flag mmf
@@ -117,8 +114,6 @@ bool DarksideAPI::SetPlayerHeading(bool changeHeading, short newHeading) {
 }
 
 bool DarksideAPI::SetAutorun(bool autorun) {
-    arunMapFile = NULL;
-    shmAutorunToggle = NULL;
 
     std::wstring posInfommf_name = std::to_wstring(pidHandle) + L"_arun";
     std::size_t fileSize = sizeof(BYTE);
