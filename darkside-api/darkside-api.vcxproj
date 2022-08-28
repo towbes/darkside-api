@@ -72,11 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
-    <IncludePath>C:\Users\ritzgames\Desktop\daoc\darkside\darkside-api\darkside-hooks;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)darkside-hooks;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
-    <IncludePath>C:\Users\ritzgames\Desktop\daoc\darkside\darkside-api\darkside-hooks;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)darkside-hooks;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

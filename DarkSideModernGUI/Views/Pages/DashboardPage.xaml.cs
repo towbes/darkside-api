@@ -43,7 +43,8 @@ namespace DarkSideModernGUI.Views.Pages
 
         //Timer to be used for reading the Existing Processes  every 5 seconds
         public static System.Timers.Timer tReadGameDll = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
-        
+        bool firstRun = true;
+
         //Load or Save variables
         private String currentDirectory;
         private string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -57,6 +58,11 @@ namespace DarkSideModernGUI.Views.Pages
 
         public DashboardPage(ViewModels.DashboardViewModel viewModel)
         {
+            if (firstRun)
+            {
+                InitializeComponent();
+                firstRun = false;
+            }
             ViewModel = viewModel;
 
             tReadGameDll.AutoReset = true;
@@ -65,7 +71,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             this.currentDirectory = Path.GetDirectoryName(strExeFilePath);
 
-            //InitializeComponent();
+            
 
             //gameproccess list
             gameproccess = new ObservableCollection<GameDLL>() { };
