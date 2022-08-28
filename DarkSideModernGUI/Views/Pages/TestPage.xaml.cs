@@ -164,6 +164,8 @@ namespace DarkSideModernGUI.Views.Pages
 
         DispatcherTimer dispatcherTimer;
 
+        bool loopRunning = false;
+
         public ViewModels.TestViewModel ViewModel
         {
             get;
@@ -186,11 +188,20 @@ namespace DarkSideModernGUI.Views.Pages
             ////MessageBox.Show(String.Format("Created PlayerPosition object at {0}", buf));
             //MessageBox.Show((playerPos.pos_x).ToString());
             //Start a timer to update the player position textbox
-            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            //update ever 100ms
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0,0, 100);
-            dispatcherTimer.Start();
+            if (!loopRunning)
+            {
+                dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+                dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+                //update ever 100ms
+                dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+                dispatcherTimer.Start();
+                loopRunning = true;
+            } else
+            {
+                dispatcherTimer.Stop();
+                loopRunning = false;
+            }
+
         }
 
 
@@ -336,9 +347,20 @@ namespace DarkSideModernGUI.Views.Pages
                     cname, partyMemberList[j].hp_pct, partyMemberList[j].endu_pct, partyMemberList[j].pow_pct);
 
                 strPartyList.Add(pmsg);
+
+                //Check if someone needs heal
+                if (partyMemberList[j].hp_pct < 100)
+                {
+                    int targ = findEntityByName("Suzyqueue");
+                    SetTarget(DashboardPage.apiObject, targ);
+                    UseSkill(DashboardPage.apiObject, 17);
+                }
+
             }
 
             MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
+
+
 
 
             // Forcing the CommandManager to raise the RequerySuggested event
