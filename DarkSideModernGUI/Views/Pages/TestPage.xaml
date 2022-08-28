@@ -10,14 +10,14 @@
     Title="testPage"
     d:DataContext="{d:DesignInstance local:TestPage,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="450"
+    d:DesignHeight="600"
     d:DesignWidth="800"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
 
 
     <Grid
-        Height="374"
+        Height="574"
         Margin="0,0,0,0"
         VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
@@ -38,9 +38,8 @@
         <TextBlock
             Name="PlayerPositionInfo"
             Grid.Column="0"
-            Margin="10,66,15,108"
+            Margin="10,66,15,275"
             Width="250"
-            Height="200"
             Foreground="Orange"
             TextWrapping="Wrap">
             PlayerPosition
@@ -61,6 +60,26 @@
             Click="Button_Click_2">
             StartGetLoop
         </ui:Button>
+        <ui:Button
+            Width="136"
+            Margin="67,161,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_PlayerInfo">
+            GetPlayerInfo
+        </ui:Button>
+        <ScrollViewer 
+            Grid.Column="0" Margin="0,90,0,0"
+            Height="250">
+            <TextBlock
+                Name="PlayerInfoText"
+                Grid.Column="0"
+                Margin="0,0,0,0"
+                Width="250"
+                Foreground="Orange"
+                TextWrapping="Wrap">
+                PlayerInfo
+            </TextBlock>
+        </ScrollViewer>
         <ui:Button
             Grid.Column="1"
             Width="136"
@@ -108,7 +127,9 @@
             Filler
             </TextBlock>
         </ScrollViewer>
-
+        <ScrollViewer 
+            Grid.Column="0" Margin="0,490,0,0"
+            Height="75"/>
 
     </Grid>
 

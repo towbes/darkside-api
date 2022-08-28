@@ -21,6 +21,10 @@ extern "C" {
 	extern __declspec(dllexport) bool GetPartyMember(DarksideAPI* apiObject, int memberIndex, LPVOID lpBuffer);
 
 	extern __declspec(dllexport) bool GetEntityInfo(DarksideAPI* apiObject, int entIndex, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool GetTargetInfo(DarksideAPI* apiObject, LPVOID lpBuffer);
 #ifdef __cplusplus
 }
 #endif

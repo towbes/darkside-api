@@ -41,14 +41,6 @@ TargetInfo::TargetInfo() {
 
 
     if (pShmTargetInfo != NULL) {
-        //struct targetInfo_t {
-        //    int entOffset;
-        //    int tarHp;
-        //    int tarColor;
-        //    char tarName[48];
-        //    char hasTarget[4];
-        //    entity_t* tarEntPtr;
-        //};
         pShmTargetInfo->entOffset = *(int*)ptrCurrTargetOffset;
         unsigned char* tempPtr = reinterpret_cast<unsigned char*>(ptrTargHp);
         pShmTargetInfo->tarHp = *(int*)tempPtr;
@@ -60,12 +52,6 @@ TargetInfo::TargetInfo() {
             memset((char*)pShmTargetInfo->tarName[47], 0, 1);
         }
         memcpy(pShmTargetInfo->hasTarget, tempPtr + 0x600, 4);
-        if (pShmTargetInfo->entOffset > 0) {
-            pShmTargetInfo->tarEntPtr = (entity_t*)daoc::GetEntityPointer(pShmTargetInfo->entOffset);
-        }
-        else {
-            pShmTargetInfo->tarEntPtr = NULL;
-        }
         
 
 
@@ -75,12 +61,6 @@ TargetInfo::TargetInfo() {
         std::cout << "targColor: " << std::dec << pShmTargetInfo->tarColor << std::endl;
         std::cout << "targName: " << std::dec << pShmTargetInfo->tarName << std::endl;
         std::cout << "hasTarget: " << std::dec << pShmTargetInfo->hasTarget << std::endl;
-        std::cout << "entPtr: 0x" << std::hex << (uintptr_t)pShmTargetInfo->tarEntPtr << std::endl;
-        if (pShmTargetInfo->tarEntPtr != NULL) {
-            tempPtr = reinterpret_cast<unsigned char*>(pShmTargetInfo->tarEntPtr);
-            const auto level = ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96) / 74) - 23;
-            std::cout << "Target Level: " << std::dec << level << std::endl;
-        }
 
 #endif
     }//Todo add exception
@@ -132,12 +112,6 @@ bool TargetInfo::GetTargetInfo() {
             memset((char*)pShmTargetInfo->tarName[47], 0, 1);
         }
         memcpy(pShmTargetInfo->hasTarget, tempPtr + 0x600, 4);
-        if (pShmTargetInfo->entOffset > 0) {
-            pShmTargetInfo->tarEntPtr = (entity_t*)daoc::GetEntityPointer(pShmTargetInfo->entOffset);
-        }
-        else {
-            pShmTargetInfo->tarEntPtr = NULL;
-        }
         return true;
     }
     else {

@@ -57,6 +57,66 @@ namespace DarkSideModernGUI.Views.Pages
             public short heading { get; private set; }
         }
 
+        //useSkill_t
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct Skill_t
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 72)] public String name;
+            public int unknown1 { get; private set; }
+        }
+        //useSpell_t
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct Spell_t
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public String name;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 60)] public char[] unknown1;
+        }
+        //item_t
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct Item_t
+        {
+            public int id { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 72)] public char[] unknown1;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)] public String name;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 312)] public char[] unknown2;
+        }
+        //buff_t
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct Buff_t
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)] public String name;
+            public int unknown1 { get; private set; }
+            public int timeRemaining { get; private set; }
+            public int slotNum { get; private set; }
+            public int tooltipId { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)] public char[] unknown2;
+            public int buffId { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)] public char[] unknown3;
+        }
+
+        //Playerinfo struct
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct PlayerInfo
+        {
+            public int health { get; private set; }
+            public int power { get; private set; }
+            public int endu { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 150)] public Skill_t[] Skills;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 150)] public Spell_t[] Spells;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 75)] public Buff_t[] Buffs;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public Item_t[] Inventory;
+        }
+        //Playerinfo struct
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TargetInfo
+        {
+            public int entOffset { get; private set; }
+            public int health { get; private set; }
+            public int color { get; private set; }
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 48)] public String name;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 4)] public String hasTarget;
+        }
+
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateDarksideAPI();
@@ -77,6 +137,10 @@ namespace DarkSideModernGUI.Views.Pages
         public static extern bool GetPartyMember(IntPtr pApiObject, int memberIndex, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetEntityInfo(IntPtr pApiObject, int entityIndex, IntPtr lpBuffer);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GetPlayerInfo(IntPtr pApiObject, IntPtr lpBuffer);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GetTargetInfo(IntPtr pApiObject, IntPtr lpBuffer);
 
         public static IntPtr apiObject;
         bool autorun = false;
@@ -87,11 +151,10 @@ namespace DarkSideModernGUI.Views.Pages
         //PartyList
         List<PartyMemberInfo> partyMemberList = new List<PartyMemberInfo>();
         List<String> strPartyList = new List<String>();
-
+        List<String> strPlayerInfo = new List<String>();
+        List<String> strPlayerPos = new List<String>();
 
         DispatcherTimer dispatcherTimer;
-        //Flag to prevent race condition updating EntityList from other threads
-        bool ListUpdating = false;
 
         public ViewModels.TestViewModel ViewModel
         {
@@ -104,7 +167,6 @@ namespace DarkSideModernGUI.Views.Pages
 
             InitializeComponent();
         }
-
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
@@ -125,7 +187,46 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            int size = Marshal.SizeOf<PlayerPosition>();
+            //Update entity table
+            EntityList.Clear();
+            strEntityList.Clear();
+            for (int i = 0; i < 2000; i++)
+            {
+                IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
+                EntityInfo tmpentity;
+                GetEntityInfo(DashboardPage.apiObject, i, entbuf);
+                tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                if (tmpentity.objectId > 0)
+                {
+                    EntityList.Add(tmpentity);
+                }
+                else
+                {
+                    EntityList.Add(new EntityInfo());
+                }
+                Marshal.FreeHGlobal(entbuf);
+            }
+            String entmsg = "";
+            for (int j = 0; j < EntityList.Count; j++)
+            {
+                if (EntityList[j].objectId > 0)
+                {
+                    EntityInfo entity = EntityList[j];
+
+                    if (entity.objectId > 0)
+                    {
+                        String cname = new string(entity.name);
+
+                        entmsg = String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}",
+                            j, cname, entity.health, entity.type, entity.level);
+
+                        strEntityList.Add(entmsg);
+                    }
+                }
+            }
+            EntityInfoTextBlock.Text = String.Join(Environment.NewLine, strEntityList);
+
+            strPlayerPos.Clear();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
             GetPlayerPosition(DashboardPage.apiObject, buf);
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
@@ -135,59 +236,74 @@ namespace DarkSideModernGUI.Views.Pages
                 playerPos.pos_y,
                 playerPos.pos_z,
                 playerPos.heading);
-            //
+            strPlayerPos.Add(msg);
             // Updating the Label which displays the current second
             Marshal.FreeHGlobal(buf);
-            PlayerPositionInfo.Text = msg;
-
-            if (!ListUpdating)
+            strPlayerPos.Add("Target");
+            //Target info
+            //Size should be 0xdcd4
+            IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+            GetTargetInfo(DashboardPage.apiObject, tInfobuf);
+            string tInfoMsg = "";
+            TargetInfo targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
+            if (!String.IsNullOrEmpty(targetInfo.hasTarget))
             {
-                ListUpdating = true;
-            
-            
-                //Update entity table
-                EntityList.Clear();
-                for (int i = 0; i < 2000; i++)
-                {
-                    IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
-                    EntityInfo tmpentity;
-                    GetEntityInfo(DashboardPage.apiObject, i, entbuf);
-                    tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
-                    if (tmpentity.objectId > 0)
-                    {
-                        EntityList.Add(tmpentity);
-                    }
-                    else
-                    {
-                        EntityList.Add(new EntityInfo());
-                    }
-            
-                    Marshal.FreeHGlobal(entbuf);
-                }
-            
-            
-                String entmsg = "";
-                for (int j = 0; j < EntityList.Count; j++)
-                {
-                    if (EntityList[j].objectId > 0)
-                    {
-                        EntityInfo entity = EntityList[j];
-            
-                        if (entity.objectId > 0)
-                        {
-                            String cname = new string(entity.name);
-            
-                            entmsg += String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}"
-                                + Environment.NewLine,
-                                j, cname, entity.health, entity.type, entity.level);
-                        }
-            
-                    }
-            
-                }
-                EntityInfoTextBlock.Text = entmsg;
-                ListUpdating = false;
+                tInfoMsg = String.Format("Ent: {0} - HP:{1} - Col:{2} - {3} - Lvl:{4}",
+                    targetInfo.entOffset,
+                    targetInfo.health,
+                    targetInfo.color,
+                    targetInfo.name,
+                    EntityList[targetInfo.entOffset].level);
             }
+            else
+            {
+                tInfoMsg = "No target";
+            }
+            strPlayerPos.Add(tInfoMsg);
+            //
+            // Updating the Label which displays the current second
+            Marshal.FreeHGlobal(tInfobuf);
+
+            PlayerPositionInfo.Text = String.Join(Environment.NewLine, strPlayerPos);
+
+
+            //PlayerInfo
+            strPlayerInfo.Clear();
+            //Size should be 0xdcd4
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
+            PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+            string pInfoMsg = String.Format("PlayerInfo:" + Environment.NewLine +
+                "HP:{0:0} - Pow:{1:0} - Endu:{2:0}",
+                playerInfo.health,
+                playerInfo.power,
+                playerInfo.endu);
+
+            strPlayerInfo.Add(pInfoMsg);
+            strPlayerInfo.Add("---Buffs---");
+            //items
+            for (int i = 0; i < 75; i++)
+            {
+                string pBuff = String.Format("{0}: {1} ", i, playerInfo.Buffs[i].name);
+                if (playerInfo.Buffs[i].buffId > 0 )
+                {
+                    strPlayerInfo.Add(pBuff);
+                }
+            }
+            strPlayerInfo.Add("---Items---");
+            //items
+            for (int i = 0; i < 40; i++)
+            {
+                string pItem = String.Format("{0}: {1} {2}", i, playerInfo.Inventory[i].id, playerInfo.Inventory[i].name);
+                if (!String.IsNullOrEmpty(playerInfo.Inventory[i].name)) {
+                    strPlayerInfo.Add(pItem);
+                }
+                
+            }
+            //
+            Marshal.FreeHGlobal(pInfobuf);
+            PlayerInfoText.Text = String.Join(Environment.NewLine, strPlayerInfo);
+
             partyMemberList.Clear();
             strPartyList.Clear();
             //party list
@@ -267,53 +383,65 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
-            if (!ListUpdating)
+            EntityList.Clear();
+            for (int i = 0; i < 2000; i++)
             {
-                ListUpdating = true;
-                EntityList.Clear();
-                for (int i = 0; i < 2000; i++)
+                IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
+                EntityInfo tmpentity;
+                GetEntityInfo(DashboardPage.apiObject, i, buf);
+                tmpentity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
+                if (tmpentity.objectId > 0)
                 {
-                    IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
-                    EntityInfo tmpentity;
-                    GetEntityInfo(DashboardPage.apiObject, i, buf);
-                    tmpentity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
-                    if (tmpentity.objectId > 0)
-                    {
-                        EntityList.Add(tmpentity);
-                    }
-                    else
-                    {
-                        EntityList.Add(new EntityInfo());
-                    }
-
-                    Marshal.FreeHGlobal(buf);
+                    EntityList.Add(tmpentity);
+                }
+                else
+                {
+                    EntityList.Add(new EntityInfo());
                 }
 
-                strEntityList.Clear();
-                
-                for (int j = 0; j < EntityList.Count; j++)
-                {
-                    String msg = "";
-                    if (EntityList[j].objectId > 0)
-                    {
-                        EntityInfo entity = EntityList[j];
-
-                        if (entity.objectId > 0)
-                        {
-                            String cname = new string(entity.name);
-
-                            msg = String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}",
-                                j, cname, entity.health, entity.type, entity.level);
-                            strEntityList.Add(msg);
-                        }
-
-                    }
-
-                }
-                EntityInfoTextBlock.Text = String.Join(Environment.NewLine, strEntityList);
-                ListUpdating = false;
+                Marshal.FreeHGlobal(buf);
             }
 
+            strEntityList.Clear();
+                
+            for (int j = 0; j < EntityList.Count; j++)
+            {
+                String msg = "";
+                if (EntityList[j].objectId > 0)
+                {
+                    EntityInfo entity = EntityList[j];
+
+                    if (entity.objectId > 0)
+                    {
+                        String cname = new string(entity.name);
+
+                        msg = String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}",
+                            j, cname, entity.health, entity.type, entity.level);
+                        strEntityList.Add(msg);
+                    }
+
+                }
+
+            }
+            EntityInfoTextBlock.Text = String.Join(Environment.NewLine, strEntityList);
+
+        }
+
+        private void Button_Click_PlayerInfo(object sender, RoutedEventArgs e)
+        {
+            //Size should be 0xdcd4
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
+            PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+            string pInfoMsg = String.Format("PlayerInfo:" + Environment.NewLine +
+                "HP:{0:0} - Pow:{1:0} - Endu:{2:0}",
+                playerInfo.health,
+                playerInfo.power,
+                playerInfo.endu);
+            //
+            // Updating the Label which displays the current second
+            Marshal.FreeHGlobal(pInfobuf);
+            PlayerInfoText.Text = pInfoMsg;
         }
 
         private void HeadingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

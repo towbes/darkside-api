@@ -39,7 +39,13 @@ public:
     bool SetPlayerHeading(bool changeHeading, short newHeading);
     bool SetAutorun(bool autorun);
 
+    //Player Info
+    bool GetPlayerInfo(LPVOID lpBuffer);
+
     //Party Members
     bool GetPartyMember(int memberIndex, LPVOID lpBuffer);
+
+    //Target Info
+    bool GetTargetInfo(LPVOID lpBuffer);
 
 };

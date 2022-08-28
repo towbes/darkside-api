@@ -92,7 +92,6 @@ struct targetInfo_t {
     int tarColor;
     char tarName[48];
     char hasTarget[4];
-    entity_t* tarEntPtr;
 };
 
 //Not a game struct, but used to update API with zone offsets

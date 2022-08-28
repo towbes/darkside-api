@@ -22,7 +22,6 @@ bool GetPlayerPosition(DarksideAPI* apiObject, LPVOID lpBuffer) {
 		if (apiObject->GetPlayerPosition(lpBuffer)) {
 			return true;
 		}
-		
 	}
 	return false;
 }
@@ -57,6 +56,24 @@ bool GetPartyMember(DarksideAPI* apiObject, int memberIndex, LPVOID lpBuffer) {
 bool GetEntityInfo(DarksideAPI* apiObject, int entIndex, LPVOID lpBuffer) {
 	if (apiObject != NULL) {
 		if (apiObject->GetEntityInfo(entIndex, lpBuffer)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer) {
+	if (apiObject != NULL) {
+		if (apiObject->GetPlayerInfo(lpBuffer)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool GetTargetInfo(DarksideAPI* apiObject, LPVOID lpBuffer) {
+	if (apiObject != NULL) {
+		if (apiObject->GetTargetInfo(lpBuffer)) {
 			return true;
 		}
 	}
