@@ -136,7 +136,10 @@ namespace DarkSideModernGUI.Views.Pages
         private void btnInjectGameDLL_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             apiObject = CreateDarksideAPI();
-            InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString()));
+            if (cbxgameproccess.SelectedIndex != -1)
+            {
+                InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString()));
+            }
         }
 
         public static IntPtr apiObject;

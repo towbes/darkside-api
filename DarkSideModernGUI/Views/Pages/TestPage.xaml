@@ -18,19 +18,19 @@
 
     <Grid
         Height="374"
-        Margin="56,0,56,0"
+        Margin="0,0,0,0"
         VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="275" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="375" />
         </Grid.ColumnDefinitions>
 
 
         <Slider
             Name="HeadingSlider"
             Grid.Column="1"
-            Margin="282,136,0,204"
+            Margin="0,136,0,204"
             Maximum="4000"
             TickFrequency="200"
             TickPlacement="BottomRight"
@@ -39,14 +39,23 @@
         <ui:TextBox
             Name="MemberIndexBox"
             Grid.Column="1"
-            Margin="282,221,0,0"
+            Margin="0,221,0,0"
             VerticalAlignment="Top"
             Text="MemberIndexBox" />
-
+        <TextBlock
+            Name="PlayerPositionInfo"
+            Grid.Column="0"
+            Margin="0,6,0,168"
+            Width="250"
+            Height="200"
+            Foreground="Orange"
+            TextWrapping="Wrap">
+            PlayerPosition
+        </TextBlock>
         <TextBlock
             Name="MemberInfo"
             Grid.Column="1"
-            Margin="286,261,0,85"
+            Margin="0,261,0,85"
             FontSize="16"
             Foreground="Orange"
             TextWrapping="Wrap">
@@ -54,17 +63,16 @@
         </TextBlock>
 
         <ui:Button
-            Grid.Column="1"
             Width="136"
-            Margin="70,97,0,0"
+            Margin="0,221,0,0"
             VerticalAlignment="Top"
-            Click="Button_Click_2">
+            Click="Button_Click_2" HorizontalAlignment="Center">
             GetPlayerInfo
         </ui:Button>
         <ui:Button
             Grid.Column="1"
             Width="136"
-            Margin="70,137,0,0"
+            Margin="12,47,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_3">
             Toggle Autorun
@@ -73,7 +81,7 @@
         <ui:Button
             Grid.Column="1"
             Width="155"
-            Margin="286,97,0,0"
+            Margin="0,97,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_5">
             Change heading
@@ -81,7 +89,7 @@
         <ui:Button
             Grid.Column="1"
             Width="159"
-            Margin="282,183,0,0"
+            Margin="0,183,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_4">
             Get Member Index
@@ -90,7 +98,7 @@
         <ui:Button
             Grid.Column="2"
             Width="159"
-            Margin="42,23,0,0"
+            Margin="0,23,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_6">
             Get Entity List
@@ -98,14 +106,13 @@
 
         <ScrollViewer
             Name="EntScroll"
-            Grid.Column="2" Margin="21,68,-21,10">
+            Grid.Column="2" Margin="14,63,10,15">
             <TextBlock
             Name="EntityInfoTextBlock"
             Grid.Column="2"
-            Margin="9,9,0,85"
-            FontSize="16"
+            Margin="0,9,0,85"
             Foreground="Orange"
-            TextWrapping="Wrap" Height="Auto" Width="Auto">
+            TextWrapping="Wrap" Height="275" Width="333">
             Filler
             </TextBlock>
         </ScrollViewer>

@@ -3,6 +3,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Collections.Generic;
+using System.Windows.Interop;
+using System.Windows.Threading;
+using System.Windows.Input;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -81,7 +84,9 @@ namespace DarkSideModernGUI.Views.Pages
 
         //EntityInfo[] EntityList = new EntityInfo[2000];
         List<EntityInfo> EntityList = new List<EntityInfo>();
-
+        DispatcherTimer dispatcherTimer;
+        //Flag to prevent race condition updating EntityList from other threads
+        bool ListUpdating = false;
 
         public ViewModels.TestViewModel ViewModel
         {
@@ -98,18 +103,89 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            //int size = Marshal.SizeOf<PlayerPosition>();
+            //IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            //GetPlayerPosition(DashboardPage.apiObject, buf);
+            //PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+            //
+            ////MessageBox.Show(String.Format("Created PlayerPosition object at {0}", buf));
+            //MessageBox.Show((playerPos.pos_x).ToString());
+            //Start a timer to update the player position textbox
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            //update ever 100ms
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0,0, 100);
+            dispatcherTimer.Start();
+        }
+
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
             int size = Marshal.SizeOf<PlayerPosition>();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
-
-
-
             GetPlayerPosition(DashboardPage.apiObject, buf);
-
-
             PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+            string msg = String.Format("PlayerPosition:" + Environment.NewLine +
+                "{0:0}, {1:0}, {2:0} {3:0}",
+                playerPos.pos_x,
+                playerPos.pos_y,
+                playerPos.pos_z,
+                playerPos.heading);
+            //
+            // Updating the Label which displays the current second
+            Marshal.FreeHGlobal(buf);
+            PlayerPositionInfo.Text = msg;
 
-            //MessageBox.Show(String.Format("Created PlayerPosition object at {0}", buf));
-            MessageBox.Show((playerPos.pos_x).ToString());
+            if (!ListUpdating)
+            {
+                ListUpdating = true;
+            
+            
+                //Update entity table
+                EntityList.Clear();
+                for (int i = 0; i < 2000; i++)
+                {
+                    IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
+                    EntityInfo tmpentity;
+                    GetEntityInfo(DashboardPage.apiObject, i, entbuf);
+                    tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                    if (tmpentity.objectId > 0)
+                    {
+                        EntityList.Add(tmpentity);
+                    }
+                    else
+                    {
+                        EntityList.Add(new EntityInfo());
+                    }
+            
+                    Marshal.FreeHGlobal(entbuf);
+                }
+            
+            
+                String entmsg = "";
+                for (int j = 0; j < EntityList.Count; j++)
+                {
+                    if (EntityList[j].objectId > 0)
+                    {
+                        EntityInfo entity = EntityList[j];
+            
+                        if (entity.objectId > 0)
+                        {
+                            String cname = new string(entity.name);
+            
+                            entmsg += String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}"
+                                + Environment.NewLine,
+                                j, cname, entity.health, entity.type, entity.level);
+                        }
+            
+                    }
+            
+                }
+                EntityInfoTextBlock.Text = entmsg;
+                ListUpdating = false;
+            }
+
+            // Forcing the CommandManager to raise the RequerySuggested event
+            CommandManager.InvalidateRequerySuggested();
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
@@ -148,29 +224,52 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
-            EntityList.Clear();
-            for (int i = 0; i < 2000; i++)
+            if (!ListUpdating)
             {
-                IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
-                EntityInfo tmpentity;
-                GetEntityInfo(DashboardPage.apiObject, i, buf);
-                tmpentity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
-                EntityList.Add(tmpentity);
-                Marshal.FreeHGlobal(buf);
+                ListUpdating = true;
+                EntityList.Clear();
+                for (int i = 0; i < 2000; i++)
+                {
+                    IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityInfo>());
+                    EntityInfo tmpentity;
+                    GetEntityInfo(DashboardPage.apiObject, i, buf);
+                    tmpentity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
+                    if (tmpentity.objectId > 0)
+                    {
+                        EntityList.Add(tmpentity);
+                    }
+                    else
+                    {
+                        EntityList.Add(new EntityInfo());
+                    }
+
+                    Marshal.FreeHGlobal(buf);
+                }
+
+
+                String msg = "";
+                for (int j = 0; j < EntityList.Count; j++)
+                {
+                    if (EntityList[j].objectId > 0)
+                    {
+                        EntityInfo entity = EntityList[j];
+
+                        if (entity.objectId > 0)
+                        {
+                            String cname = new string(entity.name);
+
+                            msg += String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}"
+                                + Environment.NewLine,
+                                j, cname, entity.health, entity.type, entity.level);
+                        }
+
+                    }
+
+                }
+                EntityInfoTextBlock.Text = msg;
+                ListUpdating = false;
             }
-            
-            EntityInfo entity = EntityList[14];
 
-            //GetEntityInfo(DashboardPage.apiObject, 4, buf);
-            //EntityInfo entity = (EntityInfo)Marshal.PtrToStructure(buf, typeof(EntityInfo));
-
-            String cname = new string(entity.name);
-
-            String msg = String.Format("Entity Name is {0}" + Environment.NewLine + "HP: {1}%"
-                + Environment.NewLine + "Type: {2}" + Environment.NewLine + "Level: {3}" + Environment.NewLine,
-                cname, entity.health, entity.type, entity.level);
-
-            EntityInfoTextBlock.Text = msg;
         }
 
         private void HeadingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

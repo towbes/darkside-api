@@ -1,7 +1,15 @@
 #include "pch.h"
 #include "DarksideAPI.h"
 
+
 bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
+
+    zoneOffsetFile = NULL;
+    ptrZoneOffsets = NULL;
+    entListFile = NULL;
+    ptrEntList = NULL;
+    entNameFile = NULL;
+    ptrEntName = NULL;
 
     //Setup zone offset shm for loc calcs
     //Zone offset mmf
@@ -22,6 +30,10 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     {
         _tprintf(TEXT("Could not create file mapping object (%d).\n"),
             GetLastError());
+        if (zoneOffsetFile != NULL) {
+            CloseHandle(zoneOffsetFile);
+        }
+        return false;
     }
 
     //Todo add exception
@@ -35,7 +47,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     entName_t* ptrEntName = NULL;
 
     //Create a handle to memory mapped file
-    auto hMapFile = CreateFileMapping(
+    auto entListFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
         PAGE_READWRITE,          // read/write access
@@ -43,20 +55,51 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         fileSize,                // maximum object size (low-order DWORD)
         entInfommf_name.c_str());                 // name of mapping object
 
-    if (hMapFile == NULL)
+    if (entListFile == NULL)
     {
         _tprintf(TEXT("Could not create file mapping object (%d).\n"),
             GetLastError());
+        if (ptrEntList != NULL) {
+            UnmapViewOfFile(ptrEntList);
+        }
+        if (entListFile != NULL) {
+            CloseHandle(entListFile);
+        }
+        if (ptrEntName != NULL) {
+            UnmapViewOfFile(ptrEntName);
+        }
+        if (ptrZoneOffsets != NULL) {
+            UnmapViewOfFile(ptrZoneOffsets);
+        }
+        if (zoneOffsetFile != NULL) {
+            CloseHandle(zoneOffsetFile);
+        }
+        return false;
     }
 
-    if (hMapFile != 0) {
+    if (entListFile != 0) {
         //Map a view of the memory mapped file from above
-        ptrEntList = (entity_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+        ptrEntList = (entity_t*)MapViewOfFile(entListFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
     if (ptrEntList == NULL) {
         _tprintf(TEXT("Could not create entList map view object (%d).\n"),
             GetLastError());
+        if (ptrEntList != NULL) {
+            UnmapViewOfFile(ptrEntList);
+        }
+        if (entListFile != NULL) {
+            CloseHandle(entListFile);
+        }
+        if (ptrEntName != NULL) {
+            UnmapViewOfFile(ptrEntName);
+        }
+        if (ptrZoneOffsets != NULL) {
+            UnmapViewOfFile(ptrZoneOffsets);
+        }
+        if (zoneOffsetFile != NULL) {
+            CloseHandle(zoneOffsetFile);
+        }
         return false;
     }
 
@@ -78,6 +121,25 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     {
         _tprintf(TEXT("EntityInfo Could not create file mapping object (%d).\n"),
             GetLastError());
+        if (ptrEntList != NULL) {
+            UnmapViewOfFile(ptrEntList);
+        }
+        if (entListFile != NULL) {
+            CloseHandle(entListFile);
+        }
+        if (ptrEntName != NULL) {
+            UnmapViewOfFile(ptrEntName);
+        }
+        if (entNameFile != NULL) {
+            CloseHandle(entNameFile);
+        }
+        if (ptrZoneOffsets != NULL) {
+            UnmapViewOfFile(ptrZoneOffsets);
+        }
+        if (zoneOffsetFile != NULL) {
+            CloseHandle(zoneOffsetFile);
+        }
+        return false;
     }
 
     if (entNameFile != 0) {
@@ -89,6 +151,24 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     if (ptrEntName == NULL) {
         _tprintf(TEXT("Could not create entName map view object (%d).\n"),
             GetLastError());
+        if (ptrEntList != NULL) {
+            UnmapViewOfFile(ptrEntList);
+        }
+        if (entListFile != NULL) {
+            CloseHandle(entListFile);
+        }
+        if (ptrEntName != NULL) {
+            UnmapViewOfFile(ptrEntName);
+        }
+        if (entNameFile != NULL) {
+            CloseHandle(entNameFile);
+        }
+        if (ptrZoneOffsets != NULL) {
+            UnmapViewOfFile(ptrZoneOffsets);
+        }
+        if (zoneOffsetFile != NULL) {
+            CloseHandle(zoneOffsetFile);
+        }
         return false;
     }
 
@@ -105,10 +185,26 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     const auto objId = *(uint16_t*)(ptrShmBytePtr + 0x23c);
     //if objId is 0 this offset was empty
     if (objId == 0) {
-        UnmapViewOfFile(ptrEntList);
-        CloseHandle(hMapFile);
-        UnmapViewOfFile(ptrEntName);
-        CloseHandle(entNameFile);
+        //zero out the buffer to prevent dirty memory going to c#
+        memset(lpBuffer, 0, sizeof(entityInfoAPI_t));
+        if (ptrEntList != NULL) {
+            UnmapViewOfFile(ptrEntList);
+        }
+        if (entListFile != NULL) {
+            CloseHandle(entListFile);
+        }
+        if (ptrEntName != NULL) {
+            UnmapViewOfFile(ptrEntName);
+        }
+        if (entNameFile != NULL) {
+            CloseHandle(entNameFile);
+        }
+        if (ptrZoneOffsets != NULL) {
+            UnmapViewOfFile(ptrZoneOffsets);
+        }
+        if (zoneOffsetFile != NULL) {
+            CloseHandle(zoneOffsetFile);
+        }
         return false;
     }
     const auto level = ((*(uint32_t*)(ptrShmBytePtr + 0x60) ^ 0xCB96) / 74) - 23;//unencode level: ((*(uint32_t*)(tempPtr + 0x60) ^ 0xCB96)/74) - 23
@@ -132,10 +228,25 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     memcpy(lpBuffer, tempEnt, sizeof(entityInfoAPI_t));
 
     free(tempEnt);
-    UnmapViewOfFile(ptrEntList);
-    CloseHandle(hMapFile);
-    UnmapViewOfFile(ptrEntName);
-    CloseHandle(entNameFile);
+    if (ptrEntList != NULL) {
+        UnmapViewOfFile(ptrEntList);
+    }
+    if (entListFile != NULL) {
+        CloseHandle(entListFile);
+    }
+    if (ptrEntName != NULL) {
+        UnmapViewOfFile(ptrEntName);
+    }
+    if (entNameFile != NULL) {
+        CloseHandle(entNameFile);
+    }
+    if (ptrZoneOffsets != NULL) {
+        UnmapViewOfFile(ptrZoneOffsets);
+    }
+    if (zoneOffsetFile != NULL) {
+        CloseHandle(zoneOffsetFile);
+    }
+    //CleanupEntity();
 
     return true;
 }

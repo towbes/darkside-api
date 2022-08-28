@@ -2,14 +2,16 @@
 #include "DarksideAPI.h"
 
 
-bool DarksideAPI::GetPlayerPosition(LPVOID lpBuffer) {
 
+bool DarksideAPI::GetPlayerPosition(LPVOID lpBuffer) {
+    hPlayerPosFile = NULL;
+    pPlayerPos = NULL;
 
     std::size_t fileSize = sizeof(playerpos_t);
     std::wstring mmf_name = std::to_wstring(pidHandle) + L"_pInfo";
 
 
-    auto hMapFile = CreateFileMapping(
+    auto hPlayerPosFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
         PAGE_READWRITE,          // read/write access
@@ -17,32 +19,49 @@ bool DarksideAPI::GetPlayerPosition(LPVOID lpBuffer) {
         fileSize,                // maximum object size (low-order DWORD)
         mmf_name.c_str());                 // name of mapping object
 
-    if (hMapFile == NULL)
+    if (hPlayerPosFile == NULL)
     {
         _tprintf(TEXT("Could not create file mapping object (%d).\n"),
             GetLastError());
+        if (hPlayerPosFile != NULL) {
+            CloseHandle(hPlayerPosFile);
+        }
         return false;
     }
 
 
-    playerpos_t* pPlayerPos = (playerpos_t*)MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    playerpos_t* pPlayerPos = (playerpos_t*)MapViewOfFile(hPlayerPosFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
     if (pPlayerPos == NULL) {
         _tprintf(TEXT("Could not find pPlayerPos (%d).\n"),
             GetLastError());
+        if (pPlayerPos != NULL) {
+            UnmapViewOfFile(pPlayerPos);
+        }
+        if (hPlayerPosFile != NULL) {
+            CloseHandle(hPlayerPosFile);
+        }
         return false;
     }
 
     playerpos_t sPlayerPos = *pPlayerPos;
 
     memcpy(lpBuffer, &sPlayerPos, sizeof(playerpos_t));
-    UnmapViewOfFile(pPlayerPos);
-    CloseHandle(hMapFile);
+    if (pPlayerPos != NULL) {
+        UnmapViewOfFile(pPlayerPos);
+    }
+    if (hPlayerPosFile != NULL) {
+        CloseHandle(hPlayerPosFile);
+    }
 
     return true;
 }
 
 bool DarksideAPI::SetPlayerHeading(bool changeHeading, short newHeading) {
+
+    headingMapFile = NULL;
+    headingUpdate = NULL;
+
     //Setup the MMF
         //setup the heading overwrite flag mmf
     std::wstring headingmmf_name = std::to_wstring(pidHandle) + L"_heading";
@@ -61,6 +80,10 @@ bool DarksideAPI::SetPlayerHeading(bool changeHeading, short newHeading) {
     {
         _tprintf(TEXT("Could not create file mapping object (%d).\n"),
             GetLastError());
+        if (headingMapFile != NULL) {
+            CloseHandle(headingMapFile);
+        }
+
         return false;
     }
 
@@ -70,6 +93,12 @@ bool DarksideAPI::SetPlayerHeading(bool changeHeading, short newHeading) {
     if (headingUpdate == NULL) {
         _tprintf(TEXT("Could not create map view object (%d).\n"),
             GetLastError());
+        if (headingUpdate != NULL) {
+            UnmapViewOfFile(headingUpdate);
+        }
+        if (headingMapFile != NULL) {
+            CloseHandle(headingMapFile);
+        }
         return false;
     }
 
@@ -77,13 +106,20 @@ bool DarksideAPI::SetPlayerHeading(bool changeHeading, short newHeading) {
     headingUpdate->heading = newHeading;
 
     //clean up the shared mem
-    UnmapViewOfFile(headingUpdate);
-    CloseHandle(headingMapFile);
+    if (headingUpdate != NULL) {
+        UnmapViewOfFile(headingUpdate);
+    }
+    if (headingMapFile != NULL) {
+        CloseHandle(headingMapFile);
+    }
 
     return true;
 }
 
 bool DarksideAPI::SetAutorun(bool autorun) {
+    arunMapFile = NULL;
+    shmAutorunToggle = NULL;
+
     std::wstring posInfommf_name = std::to_wstring(pidHandle) + L"_arun";
     std::size_t fileSize = sizeof(BYTE);
 
@@ -100,15 +136,21 @@ bool DarksideAPI::SetAutorun(bool autorun) {
     {
         _tprintf(TEXT("Could not create file mapping object (%d).\n"),
             GetLastError());
-    }
-
-    if (arunMapFile == 0) {
-        //Todo add exception
+        if (arunMapFile != NULL) {
+            CloseHandle(arunMapFile);
+        }
         return false;
     }
+
     BYTE* shmAutorunToggle = (BYTE*)MapViewOfFile(arunMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
     if (shmAutorunToggle == NULL) {
+        if (shmAutorunToggle != NULL) {
+            UnmapViewOfFile(shmAutorunToggle);
+        }
+        if (arunMapFile != NULL) {
+            CloseHandle(arunMapFile);
+        }
         return false;
     }
 
@@ -121,6 +163,10 @@ bool DarksideAPI::SetAutorun(bool autorun) {
     }
 
     //clean up the shared mem
-    UnmapViewOfFile(shmAutorunToggle);
-    CloseHandle(arunMapFile);
+    if (shmAutorunToggle != NULL) {
+        UnmapViewOfFile(shmAutorunToggle);
+    }
+    if (arunMapFile != NULL) {
+        CloseHandle(arunMapFile);
+    }
 }
