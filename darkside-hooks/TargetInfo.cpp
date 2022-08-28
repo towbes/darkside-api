@@ -67,14 +67,14 @@ TargetInfo::TargetInfo() {
 
     //set up skill and spell casting function shaerd memory
     setTargmmf_name = std::to_wstring(pid) + L"_SetTarg";
-    std::size_t useSkillfileSize = sizeof(int);
+    std::size_t setTargFileSize = sizeof(int);
 
     auto hSetTargFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
         PAGE_READWRITE,          // read/write access
         0,                       // maximum object size (high-order DWORD)
-        useSkillfileSize,                // maximum object size (low-order DWORD)
+        setTargFileSize,                // maximum object size (low-order DWORD)
         setTargmmf_name.c_str());                 // name of mapping object
 
     if (hSetTargFile == NULL)
@@ -84,18 +84,18 @@ TargetInfo::TargetInfo() {
     }
 
     if (hSetTargFile != 0) {
-        pShmSetTarget = (int)MapViewOfFile(hSetTargFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+        pShmSetTarget = (int*)MapViewOfFile(hSetTargFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
     //Set to -1 while waiting for target
-    pShmSetTarget = -1;
+    *pShmSetTarget = -1;
 
 }
 
 TargetInfo::~TargetInfo() {
     UnmapViewOfFile(pShmTargetInfo);
     CloseHandle(hMapFile);
-    UnmapViewOfFile((LPCVOID)pShmSetTarget);
+    UnmapViewOfFile(pShmSetTarget);
     CloseHandle(hSetTargFile);
 }
 
@@ -120,8 +120,9 @@ bool TargetInfo::GetTargetInfo() {
 }
 
 void TargetInfo::SetTarget() {
-    if (pShmSetTarget >= 0) {
-        daoc::SetTarget(pShmSetTarget, 0);
-        pShmSetTarget = -1;
+    if (*pShmSetTarget >= 0) {
+        daoc::SetTarget(*pShmSetTarget, 0);
+        daoc::SetTargetUI();
+        *pShmSetTarget = -1;
     }
 }

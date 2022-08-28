@@ -141,6 +141,8 @@ namespace DarkSideModernGUI.Views.Pages
         public static extern bool GetPlayerInfo(IntPtr pApiObject, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetTargetInfo(IntPtr pApiObject, IntPtr lpBuffer);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SetTarget(IntPtr pApiObject, int entOffset);
 
         public static IntPtr apiObject;
         bool autorun = false;
@@ -371,14 +373,9 @@ namespace DarkSideModernGUI.Views.Pages
             MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
         }
 
-        private void Button_Click_5(object sender, RoutedEventArgs e)
+        private void Button_Click_SetTarget(object sender, RoutedEventArgs e)
         {
-            changeHeading = !changeHeading;
-            //If changeheading toggled off, set it to false
-            if (!changeHeading)
-            {
-                SetPlayerHeading(DashboardPage.apiObject, false, 0);
-            }
+            SetTarget(DashboardPage.apiObject, Int32.Parse(SetTargetOffset.Text));
         }
 
         private void Button_Click_6(object sender, RoutedEventArgs e)
@@ -443,13 +440,6 @@ namespace DarkSideModernGUI.Views.Pages
             Marshal.FreeHGlobal(pInfobuf);
             PlayerInfoText.Text = pInfoMsg;
         }
-
-        private void HeadingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            //Change heading when the slider moves if changeHeading is toggled on, otherwise it will do nothing
-            SetPlayerHeading(DashboardPage.apiObject, changeHeading, (short)HeadingSlider.Value);
-        }
-
     
     }
 }

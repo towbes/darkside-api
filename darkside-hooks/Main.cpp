@@ -158,6 +158,7 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
     }
     if (targInfo != NULL) {
         targInfo->GetTargetInfo();
+        targInfo->SetTarget();
     }
         
     //draw stuff here like so:

@@ -2,7 +2,7 @@
 #include "DarksideAPI.h"
 
 
-bool  DarksideAPI::GetTargetInfo(LPVOID lpBuffer) {
+bool DarksideAPI::GetTargetInfo(LPVOID lpBuffer) {
     //Setup the PlayerInfo mmf
     std::wstring targetInfommf_name = std::to_wstring(pidHandle) + L"_targInfo";
     std::size_t fileSize = sizeof(targetInfo_t);
@@ -51,4 +51,37 @@ bool  DarksideAPI::GetTargetInfo(LPVOID lpBuffer) {
     UnmapViewOfFile(pShmTargetInfo);
     CloseHandle(hMapFile);
     return true;
+}
+
+bool DarksideAPI::SetTarget(int entIndex) {
+    //set up skill and spell casting function shaerd memory
+    std::wstring setTargmmf_name = std::to_wstring(pidHandle) + L"_SetTarg";
+    std::size_t useSkillfileSize = sizeof(int);
+
+    auto hSetTargFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        useSkillfileSize,                // maximum object size (low-order DWORD)
+        setTargmmf_name.c_str());                 // name of mapping object
+
+    if (hSetTargFile == NULL)
+    {
+        _tprintf(TEXT("Set Target Could not create file mapping object (%d).\n"),
+            GetLastError());
+        return false;
+    }
+
+    int* pShmSetTarget = (int*)MapViewOfFile(hSetTargFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+
+    if (*pShmSetTarget == -1) {
+        *pShmSetTarget = entIndex;
+        UnmapViewOfFile(pShmSetTarget);
+        CloseHandle(hSetTargFile);
+        return true;
+    }
+    UnmapViewOfFile(pShmSetTarget);
+    CloseHandle(hSetTargFile);
+    return false;
 }

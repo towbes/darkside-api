@@ -15,7 +15,7 @@ private:
     //Set target shared memory
     // will wait until value is greater than -1 and set target to that ent offset
     void* hSetTargFile;
-    int pShmSetTarget;
+    int* pShmSetTarget;
     std::wstring setTargmmf_name;
 
     //Target info - target object id is at +0x4 of entity offset

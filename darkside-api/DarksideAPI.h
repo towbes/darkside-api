@@ -47,5 +47,6 @@ public:
 
     //Target Info
     bool GetTargetInfo(LPVOID lpBuffer);
+    bool SetTarget(int entIndex);
 
 };

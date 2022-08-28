@@ -26,15 +26,11 @@
             <ColumnDefinition Width="375" />
         </Grid.ColumnDefinitions>
 
-
-        <Slider
-            Name="HeadingSlider"
-            Grid.Column="1"
-            Margin="0,136,0,204"
-            Maximum="4000"
-            TickFrequency="200"
-            TickPlacement="BottomRight"
-            ValueChanged="HeadingSlider_ValueChanged" />
+        <TextBox Name="SetTargetOffset" 
+                 Grid.Column="1"
+                 Margin="0,0,0,0" FontSize="12" VerticalAlignment="Top">
+            SetTarget Entity Offset
+        </TextBox>
         <TextBlock
             Name="PlayerPositionInfo"
             Grid.Column="0"
@@ -83,7 +79,7 @@
         <ui:Button
             Grid.Column="1"
             Width="136"
-            Margin="12,47,0,0"
+            Margin="4,97,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_3">
             Toggle Autorun
@@ -92,10 +88,10 @@
         <ui:Button
             Grid.Column="1"
             Width="155"
-            Margin="0,97,0,0"
+            Margin="0,50,0,0"
             VerticalAlignment="Top"
-            Click="Button_Click_5">
-            Change heading
+            Click="Button_Click_SetTarget">
+            Set Target
         </ui:Button>
         <ui:Button
             Grid.Column="1"

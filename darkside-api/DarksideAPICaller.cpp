@@ -79,3 +79,12 @@ bool GetTargetInfo(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	}
 	return false;
 }
+
+bool SetTarget(DarksideAPI* apiObject, int entIndex) {
+	if (apiObject != NULL) {
+		if (apiObject->SetTarget(entIndex)) {
+			return true;
+		}
+	}
+	return false;
+}
