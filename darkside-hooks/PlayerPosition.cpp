@@ -8,7 +8,7 @@ PlayerPosition::PlayerPosition() {
     playerPositionInfo = *(playerpos_t**)ptrPlayerPosition;
 #ifdef _DEBUG
     std::cout << "PlayerPositionPtr: " << std::hex << (int)ptrPlayerPosition << std::endl;
-    std::cout << "Player Position X: " << std::fixed << std::setprecision(0) << playerPositionInfo->pos_z << std::endl;
+    std::cout << "Player Position Z: " << std::fixed << std::setprecision(0) << playerPositionInfo->pos_z << std::endl;
 #endif
 
     //Get Process ID
@@ -30,7 +30,7 @@ PlayerPosition::PlayerPosition() {
 
     if (hMapFile == NULL)
     {
-        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+        _tprintf(TEXT("Plyr Pos Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 
@@ -39,7 +39,14 @@ PlayerPosition::PlayerPosition() {
     }//Todo add exception
     
     if (pShmPlayerPos != NULL) {
-        *pShmPlayerPos = *playerPositionInfo;
+        //Create new playerPositionInfo in order to update x/y offsets
+        zoneYoffset = *(float*)ptrZoneYoffset_x;
+        zoneXoffset = *(float*)ptrZoneXoffset_x;
+        playerpos_t tempPos = *playerPositionInfo;
+        tempPos.pos_x = tempPos.pos_x - zoneXoffset;
+        tempPos.pos_y = tempPos.pos_y - zoneYoffset;
+        tempPos.heading = (((((tempPos.heading + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168);
+        *pShmPlayerPos = tempPos;
     }//Todo add exception
 
     //setup the heading overwrite flag mmf
@@ -57,7 +64,7 @@ PlayerPosition::PlayerPosition() {
 
     if (headingMapFile == NULL)
     {
-        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+        _tprintf(TEXT("Heading Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 
@@ -89,7 +96,7 @@ PlayerPosition::PlayerPosition() {
 
     if (arunMapFile == NULL)
     {
-        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+        _tprintf(TEXT("Autorun Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 
@@ -115,7 +122,13 @@ PlayerPosition::~PlayerPosition() {
 bool PlayerPosition::GetPlayerPosition() {
     //Lock the pointer when we read it
     std::lock_guard<std::mutex> lg(posUpdateMutex);
-    *pShmPlayerPos = *playerPositionInfo;
+    zoneYoffset = *(float*)ptrZoneYoffset_x;
+    zoneXoffset = *(float*)ptrZoneXoffset_x;
+    playerpos_t tempPos = *playerPositionInfo;
+    tempPos.pos_x = tempPos.pos_x - zoneXoffset;
+    tempPos.pos_y = tempPos.pos_y - zoneYoffset;
+    tempPos.heading = (((((tempPos.heading + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168);
+    *pShmPlayerPos = tempPos;
     return true;
 }
 

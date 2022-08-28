@@ -29,8 +29,12 @@
 #define ptrPlyrSpells_x		0x161da70
 #define ptrPlyrBuffs_x		0xfdd300
 #define ptrPlyrUseSkill_x		0x9a9730
-#define ptrCurrentTargetEntOffset_x		0x10498b0
 #define ptrInventory_x		0xf9b8d0
+
+// Target related
+#define ptrCurrentTargetEntOffset_x		0x10498b0
+#define ptrCurrentTargetHp_x		0xf69e04
+#define ptrCurrentTargetName_x		0xf69e78
 
 // Party related
 #define ptrPartyMemberInfo_x		0x1672ae0

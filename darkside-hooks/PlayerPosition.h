@@ -22,6 +22,8 @@ private:
     //Mutex for the player position pointer
     //Prevents writing/reading at the same time
     std::mutex posUpdateMutex;
+    float zoneYoffset;
+    float zoneXoffset;
 
     //Player autorun toggle
     void* arunMapFile;

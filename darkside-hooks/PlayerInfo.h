@@ -1,37 +1,39 @@
 #pragma once
 #include "daocgame.h"
 #include "DaocStructs.h"
+
 class PlayerInfo
 {
 private:
     //Current process id
     int pid;
 
-    //Player Health/Pow/Endu Info
-    void* ptrPlayerHp;
+    //player info shared memory
     plyrinfo_t* pShmPlayerInfo;
     void* hMapFile;
     std::wstring plyrInfommf_name;
 
-    //Setup mmf to track heading overwrite
-    void* headingMapFile;
-    std::wstring headingmmf_name;
-    //Pointer to heading update struct in shared memory
-    headingupdate_t* headingUpdate;
-    //Mutex for the player position pointer
-    //Prevents writing/reading at the same time
-    std::mutex posUpdateMutex;
+    //Player Health/Pow/Endu Info
+    void* ptrPlayerHp;
+    void* ptrUseSkills;
+    void* ptrUseSpells;
+    void* ptrBuffs;
+    void* ptrInventory;
 
-    //Player autorun toggle
-    void* arunMapFile;
-    std::wstring arunmmf_name;
-    BYTE* shmAutorunToggle;
-    BYTE* ptrAutorunToggle;
-    //Stores previous value of mmf autorun toggle
-    //This keeps track of whether an autorun was sent or not
-    BYTE preValAutorunToggle;
+    //Use Skill and usespell Shared memory
+    //Function will check this every frame
+    //Cast if values present, then reset to 0
 
-
+    int* pShmUseSkill;
+    void* skillMapFile;
+    std::wstring skillmmf_name;
+    int* pShmUseSpell;
+    void* spellMapFile;
+    std::wstring spellmmf_name;
+    std::queue<int> skillQueue;
+    int currSkill;
+    std::queue<int> spellQueue;
+    int currSpell;
 
 public:
     PlayerInfo();
@@ -39,6 +41,9 @@ public:
 
     //Player Hp/pow/endu
     void GetPlayerInfo();
+
+    void QueueSkill();
+    void QueueSpell();
 
 
 };

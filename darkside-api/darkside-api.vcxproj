@@ -72,11 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
-    <IncludePath>C:\Users\ritzgames\Desktop\daoc\darkside\darkside-api\darkside-hooks;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)darkside-hooks;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
-    <IncludePath>C:\Users\ritzgames\Desktop\daoc\darkside\darkside-api\darkside-hooks;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)darkside-hooks;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -149,8 +149,13 @@
   <ItemGroup>
     <ClCompile Include="DarksideAPI.cpp" />
     <ClCompile Include="DarksideAPICaller.cpp" />
+    <ClCompile Include="EntityInfoAPI.cpp" />
+    <ClCompile Include="PartyMemberAPI.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="PlayerInfoAPI.cpp" />
+    <ClCompile Include="PlayerPositionAPI.cpp" />
     <ClCompile Include="simple-inject.cpp" />
+    <ClCompile Include="TargetInfoAPI.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

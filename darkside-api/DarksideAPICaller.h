@@ -19,6 +19,18 @@ extern "C" {
 	extern __declspec(dllexport) bool SetAutorun(DarksideAPI* apiObject, bool autorun);
 
 	extern __declspec(dllexport) bool GetPartyMember(DarksideAPI* apiObject, int memberIndex, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool GetEntityInfo(DarksideAPI* apiObject, int entIndex, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool GetTargetInfo(DarksideAPI* apiObject, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool SetTarget(DarksideAPI* apiObject, int entIndex);
+
+	extern __declspec(dllexport) bool UseSkill(DarksideAPI* apiObject, int skillOffset);
+
+	extern __declspec(dllexport) bool UseSpell(DarksideAPI* apiObject, int spellOffset);
 #ifdef __cplusplus
 }
 #endif

@@ -9,7 +9,7 @@ private:
     //Current process id
     int pid;
 
-    //Player Position Info
+    //Party Member Info
     partymemberinfo_t* partyMemberInfo;
     //Pointer to in game memory
     uintptr_t ptrPartyMemberInfo;

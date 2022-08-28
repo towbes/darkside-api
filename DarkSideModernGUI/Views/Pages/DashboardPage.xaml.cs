@@ -42,8 +42,8 @@ namespace DarkSideModernGUI.Views.Pages
         public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
 
         //Timer to be used for reading the Existing Processes  every 5 seconds
-        public static System.Timers.Timer tReadGameDll = new System.Timers.Timer(5000); // 1 sec = 1000, 60 sec = 60000
-        
+        public static System.Timers.Timer tReadGameDll = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
+
         //Load or Save variables
         private String currentDirectory;
         private string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -57,6 +57,8 @@ namespace DarkSideModernGUI.Views.Pages
 
         public DashboardPage(ViewModels.DashboardViewModel viewModel)
         {
+
+            InitializeComponent();
             ViewModel = viewModel;
 
             tReadGameDll.AutoReset = true;
@@ -65,7 +67,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             this.currentDirectory = Path.GetDirectoryName(strExeFilePath);
 
-            InitializeComponent();
+            
 
             //gameproccess list
             gameproccess = new ObservableCollection<GameDLL>() { };
@@ -80,25 +82,29 @@ namespace DarkSideModernGUI.Views.Pages
 
             //dummyproof ==> If injected == 1 then.. otherwise do nothing.
 
-
             //get all GameDLL processes
             Process[] localByName = Process.GetProcessesByName("game.dll");
             Dispatcher.Invoke(() => {
-                gameproccess.Clear();
+                    //gameproccess.Clear();
             });
 
             foreach (var localGameProcess in localByName)
             {
                 Dispatcher.Invoke(() => {
-                    gameproccess.Add(new GameDLL()
+                    //Check if the ID already exists in the colleciton
+                    if (!gameproccess.Any(u => u.GameDLLID == localGameProcess.Id))
                     {
-                       GameDLLID = localGameProcess.Id
+                        gameproccess.Add(new GameDLL()
+                        {
+                            GameDLLID = localGameProcess.Id,
+                            Name = localGameProcess.MainWindowTitle
+                        });
+                    }
 
-                    });
                 });
             }
 
-
+            
             scanDirectoryForWaypointRoute();
 
             //private static Process p = Process.GetProcessesByName("game.dll").FirstOrDefault(); // get  DAoCMWC
@@ -119,6 +125,9 @@ namespace DarkSideModernGUI.Views.Pages
         public struct GameDLL
         {
             public int GameDLLID { get; set; }
+            public string Name { get; set; }
+            public bool isInjected { get; set; }
+
           
         }
 
@@ -136,7 +145,10 @@ namespace DarkSideModernGUI.Views.Pages
         private void btnInjectGameDLL_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             apiObject = CreateDarksideAPI();
-            InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString()));
+            if (cbxgameproccess.SelectedIndex != -1)
+            {
+                InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString()));
+            }
         }
 
         public static IntPtr apiObject;
