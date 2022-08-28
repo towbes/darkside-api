@@ -43,7 +43,6 @@ namespace DarkSideModernGUI.Views.Pages
 
         //Timer to be used for reading the Existing Processes  every 5 seconds
         public static System.Timers.Timer tReadGameDll = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
-        bool firstRun = true;
 
         //Load or Save variables
         private String currentDirectory;
@@ -58,11 +57,8 @@ namespace DarkSideModernGUI.Views.Pages
 
         public DashboardPage(ViewModels.DashboardViewModel viewModel)
         {
-            if (firstRun)
-            {
-                InitializeComponent();
-                firstRun = false;
-            }
+
+            InitializeComponent();
             ViewModel = viewModel;
 
             tReadGameDll.AutoReset = true;
@@ -86,25 +82,29 @@ namespace DarkSideModernGUI.Views.Pages
 
             //dummyproof ==> If injected == 1 then.. otherwise do nothing.
 
-
             //get all GameDLL processes
             Process[] localByName = Process.GetProcessesByName("game.dll");
             Dispatcher.Invoke(() => {
-                gameproccess.Clear();
+                    //gameproccess.Clear();
             });
 
             foreach (var localGameProcess in localByName)
             {
                 Dispatcher.Invoke(() => {
-                    gameproccess.Add(new GameDLL()
+                    //Check if the ID already exists in the colleciton
+                    if (!gameproccess.Any(u => u.GameDLLID == localGameProcess.Id))
                     {
-                       GameDLLID = localGameProcess.Id,
-                       Name = localGameProcess.MainWindowTitle
-                    });
+                        gameproccess.Add(new GameDLL()
+                        {
+                            GameDLLID = localGameProcess.Id,
+                            Name = localGameProcess.MainWindowTitle
+                        });
+                    }
+
                 });
             }
 
-
+            
             scanDirectoryForWaypointRoute();
 
             //private static Process p = Process.GetProcessesByName("game.dll").FirstOrDefault(); // get  DAoCMWC
@@ -126,6 +126,8 @@ namespace DarkSideModernGUI.Views.Pages
         {
             public int GameDLLID { get; set; }
             public string Name { get; set; }
+            public bool isInjected { get; set; }
+
           
         }
 
