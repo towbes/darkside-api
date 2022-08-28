@@ -42,7 +42,7 @@ namespace DarkSideModernGUI.Views.Pages
         public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
 
         //Timer to be used for reading the Existing Processes  every 5 seconds
-        public static System.Timers.Timer tReadGameDll = new System.Timers.Timer(5000); // 1 sec = 1000, 60 sec = 60000
+        public static System.Timers.Timer tReadGameDll = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
         
         //Load or Save variables
         private String currentDirectory;
@@ -65,7 +65,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             this.currentDirectory = Path.GetDirectoryName(strExeFilePath);
 
-            InitializeComponent();
+            //InitializeComponent();
 
             //gameproccess list
             gameproccess = new ObservableCollection<GameDLL>() { };
@@ -92,8 +92,8 @@ namespace DarkSideModernGUI.Views.Pages
                 Dispatcher.Invoke(() => {
                     gameproccess.Add(new GameDLL()
                     {
-                       GameDLLID = localGameProcess.Id
-
+                       GameDLLID = localGameProcess.Id,
+                       Name = localGameProcess.MainWindowTitle
                     });
                 });
             }
@@ -119,6 +119,7 @@ namespace DarkSideModernGUI.Views.Pages
         public struct GameDLL
         {
             public int GameDLLID { get; set; }
+            public string Name { get; set; }
           
         }
 
