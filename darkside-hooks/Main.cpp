@@ -60,6 +60,8 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
         if (GetAsyncKeyState(VK_RCONTROL) & 1) {
             break;
         }
+        //Sleep to prevent CPU drain
+        Sleep(50);
     }
 #ifdef _DEBUG
     if (f != 0) {
@@ -71,7 +73,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     WriteMem((char*)ptrPresent, oPresBytes, 5);
     WriteMem((char*)ptrReset, oResetBytes, 5);
 
-    //Sleep to give reset a time to run?
+    //Sleep to give reset a time to run? Prevents crashing on unload
     Sleep(100);
 
     FreeLibraryAndExitThread(ghModule, 0);
