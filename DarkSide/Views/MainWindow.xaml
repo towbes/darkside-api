@@ -8,6 +8,7 @@
     Width="525"
     Height="350"
     prism:ViewModelLocator.AutoWireViewModel="True"
+    Background="{ui:ThemeResource ApplicationBackgroundBrush}"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
@@ -26,7 +27,77 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="1" Grid.Column="1">Hello from main darkside</TextBlock>
+
+            <!--  This is the main navigation of the application.  -->
+            <ui:NavigationStore
+                x:Name="RootNavigation"
+                Grid.Column="0"
+                Margin="6,0,6,0"
+                Frame="{Binding ElementName=RootFrame, Mode=OneWay}"
+                Navigated="RootNavigation_OnNavigated"
+                SelectedPageIndex="0">
+                <ui:NavigationStore.Items>
+                    <ui:NavigationItem
+                        Content="Home"
+                        Icon="Home24"
+                        PageTag="dashboard"
+                        PageType="{x:Type pages:Dashboard}" />
+                </ui:NavigationStore.Items>
+                <ui:NavigationStore.Footer>
+                    <ui:NavigationItem
+                        Content="Settings"
+                        Icon="Diversity24"
+                        PageType="{x:Type pages:Settings}" />
+                    <!--  A navigation element that does not point to the page can be used as a button.  -->
+                    <ui:NavigationItem
+                        Click="NavigationButtonTheme_OnClick"
+                        Content="Theme"
+                        Icon="DarkTheme24" />
+                </ui:NavigationStore.Footer>
+            </ui:NavigationStore>
+
+            <!--  We display our pages inside this element.  -->
+            <Border
+                Grid.Column="1"
+                Background="{ui:ThemeResource ControlFillColorDefaultBrush}"
+                CornerRadius="8,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Frame x:Name="RootFrame" Grid.Row="1" />
+                    <ui:Breadcrumb
+                        Grid.Row="0"
+                        Margin="18"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontSize="24"
+                        Navigation="{Binding ElementName=RootNavigation, Mode=OneWay}" />
+                </Grid>
+            </Border>
         </Grid>
+
+        <!--  The title bar contains window navigation elements and some Tray related extras.  -->
+        <!--  You can put additional controls in the header, such as a search bar.  -->
+        <!--  <ui:TitleBar.Header />  -->
+        <ui:TitleBar Title="WPF UI - Fluent design system" Grid.Row="0">
+            <ui:TitleBar.Tray>
+                <ui:NotifyIcon
+                    FocusOnLeftClick="True"
+                    MenuOnRightClick="True"
+                    TooltipText="WPF UI">
+                    <ui:NotifyIcon.Menu>
+                        <ContextMenu>
+                            <ui:MenuItem
+                                Header="Home"
+                                SymbolIcon="Library28"
+                                Tag="home" />
+                        </ContextMenu>
+                    </ui:NotifyIcon.Menu>
+                </ui:NotifyIcon>
+            </ui:TitleBar.Tray>
+        </ui:TitleBar>
     </Grid>
+
 </ui:UiWindow>
