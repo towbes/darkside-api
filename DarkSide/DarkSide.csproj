@@ -8,4 +8,8 @@
     <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
     <PackageReference Include="WPF-UI" Version="2.0.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DarkSide.Core\DarkSide.Core.csproj" />
+    <ProjectReference Include="..\Modules\DarkSide.Modules.Main\DarkSide.Modules.Main.csproj" />
+  </ItemGroup>
 </Project>

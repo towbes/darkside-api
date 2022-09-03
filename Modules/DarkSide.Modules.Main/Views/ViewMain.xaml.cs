@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace DarkSide.Modules.Main.Views
 {
     /// <summary>
-    /// Interaction logic for ViewA.xaml
+    /// Interaction logic for ViewMain.xaml
     /// </summary>
-    public partial class ViewA : UserControl
+    public partial class ViewMain : UserControl
     {
-        public ViewA()
+        public ViewMain()
         {
             InitializeComponent();
         }

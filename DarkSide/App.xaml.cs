@@ -1,6 +1,7 @@
 ﻿using DarkSide.Views;
 using Prism.Ioc;
 using System.Windows;
+using DarkSide.Modules.Main;
 using Prism.Modularity;
 
 namespace DarkSide
@@ -22,7 +23,7 @@ namespace DarkSide
 
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
-           
+            moduleCatalog.AddModule<MainModule>();
         }
     }
 }
