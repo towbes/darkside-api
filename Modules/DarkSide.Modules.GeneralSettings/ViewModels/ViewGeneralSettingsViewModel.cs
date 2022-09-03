@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DarkSide.Modules.GeneralSettings.ViewModels
 {
-    public class ViewAViewModel : BindableBase
+    public class ViewGeneralSettingsViewModel : BindableBase
     {
         private string _message;
         public string Message
@@ -17,7 +17,7 @@ namespace DarkSide.Modules.GeneralSettings.ViewModels
             set { SetProperty(ref _message, value); }
         }
 
-        public ViewAViewModel()
+        public ViewGeneralSettingsViewModel()
         {
             Message = "View A from your Prism Module";
         }

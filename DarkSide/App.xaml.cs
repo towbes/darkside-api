@@ -1,6 +1,7 @@
 ﻿using DarkSide.Views;
 using Prism.Ioc;
 using System.Windows;
+using Prism.Modularity;
 
 namespace DarkSide
 {
@@ -17,6 +18,11 @@ namespace DarkSide
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
 
+        }
+
+        protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
+        {
+           
         }
     }
 }

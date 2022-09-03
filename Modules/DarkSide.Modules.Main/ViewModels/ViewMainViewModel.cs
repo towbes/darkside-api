@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DarkSide.Modules.BotLogs.ViewModels
+namespace DarkSide.Modules.Main.ViewModels
 {
-    public class ViewAViewModel : BindableBase
+    public class ViewMainViewModel : BindableBase
     {
         private string _message;
         public string Message
@@ -17,7 +17,7 @@ namespace DarkSide.Modules.BotLogs.ViewModels
             set { SetProperty(ref _message, value); }
         }
 
-        public ViewAViewModel()
+        public ViewMainViewModel()
         {
             Message = "View A from your Prism Module";
         }
