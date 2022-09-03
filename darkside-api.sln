@@ -7,19 +7,23 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "darkside-api", "darkside-ap
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "darkside-hooks", "darkside-hooks\darkside-hooks.vcxproj", "{F50145F6-FEBF-4625-9697-1C4C46CE62E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSide", "DarkSide\DarkSide.csproj", "{6FE89AFC-6E6C-4B27-BABB-CABE0A378ED8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DarkSide", "DarkSide\DarkSide.csproj", "{6FE89AFC-6E6C-4B27-BABB-CABE0A378ED8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSide.Core", "DarkSide.Core\DarkSide.Core.csproj", "{56F99985-B8BB-423B-A647-E81A3D30E354}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DarkSide.Core", "DarkSide.Core\DarkSide.Core.csproj", "{56F99985-B8BB-423B-A647-E81A3D30E354}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{17B797F9-BF5E-4C94-9A05-A90FC0137921}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{70BB64FB-0DDD-4F5B-9D54-43060371CDCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSide.Modules.Main", "Modules\DarkSide.Modules.Main\DarkSide.Modules.Main.csproj", "{FFFAB191-E2AC-4F77-A9C6-DAAB8633F86C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DarkSide.Modules.Main", "Modules\DarkSide.Modules.Main\DarkSide.Modules.Main.csproj", "{FFFAB191-E2AC-4F77-A9C6-DAAB8633F86C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSide.Modules.GeneralSettings", "Modules\DarkSide.Modules.GeneralSettings\DarkSide.Modules.GeneralSettings.csproj", "{E73988EA-7D39-4E73-B24B-A1467AB77CC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DarkSide.Modules.GeneralSettings", "Modules\DarkSide.Modules.GeneralSettings\DarkSide.Modules.GeneralSettings.csproj", "{E73988EA-7D39-4E73-B24B-A1467AB77CC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSide.Modules.BotLogs", "Modules\DarkSide.Modules.BotLogs\DarkSide.Modules.BotLogs.csproj", "{DE74F14A-00D2-4898-861F-430ABE202076}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DarkSide.Modules.BotLogs", "Modules\DarkSide.Modules.BotLogs\DarkSide.Modules.BotLogs.csproj", "{DE74F14A-00D2-4898-861F-430ABE202076}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSide.Modules.NavigationMenu", "Modules\DarkSide.Modules.NavigationMenu\DarkSide.Modules.NavigationMenu.csproj", "{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSide.Modules.Header", "Modules\DarkSide.Modules.Header\DarkSide.Modules.Header.csproj", "{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +117,30 @@ Global
 		{DE74F14A-00D2-4898-861F-430ABE202076}.Release|x64.Build.0 = Release|Any CPU
 		{DE74F14A-00D2-4898-861F-430ABE202076}.Release|x86.ActiveCfg = Release|Any CPU
 		{DE74F14A-00D2-4898-861F-430ABE202076}.Release|x86.Build.0 = Release|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Debug|x64.Build.0 = Debug|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Debug|x86.Build.0 = Debug|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Release|x64.ActiveCfg = Release|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Release|x64.Build.0 = Release|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Release|x86.ActiveCfg = Release|Any CPU
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798}.Release|x86.Build.0 = Release|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Debug|x64.Build.0 = Debug|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Debug|x86.Build.0 = Debug|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Release|x64.ActiveCfg = Release|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Release|x64.Build.0 = Release|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Release|x86.ActiveCfg = Release|Any CPU
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +149,8 @@ Global
 		{FFFAB191-E2AC-4F77-A9C6-DAAB8633F86C} = {70BB64FB-0DDD-4F5B-9D54-43060371CDCB}
 		{E73988EA-7D39-4E73-B24B-A1467AB77CC1} = {70BB64FB-0DDD-4F5B-9D54-43060371CDCB}
 		{DE74F14A-00D2-4898-861F-430ABE202076} = {70BB64FB-0DDD-4F5B-9D54-43060371CDCB}
+		{DAEC1E2A-ACDE-4FD0-9751-AE5C01A00798} = {70BB64FB-0DDD-4F5B-9D54-43060371CDCB}
+		{EDEC2FE7-98B8-44D5-8BCA-CE1F4BE55B7B} = {70BB64FB-0DDD-4F5B-9D54-43060371CDCB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAB12D03-13B1-417E-906F-BBE49A39FCA0}
