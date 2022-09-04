@@ -1,8 +1,8 @@
 ﻿using DarkSide.Views;
 using Prism.Ioc;
 using System.Windows;
-using DarkSide.Modules.Main;
 using Prism.Modularity;
+using Prism.Regions;
 
 namespace DarkSide
 {
@@ -23,7 +23,14 @@ namespace DarkSide
 
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
-            moduleCatalog.AddModule<MainModule>();
+           // moduleCatalog.AddModule<MainModule>();
+        }
+
+        protected override void ConfigureRegionAdapterMappings(RegionAdapterMappings regionAdapterMappings)
+        {
+           base.ConfigureRegionAdapterMappings(regionAdapterMappings);
+          // regionAdapterMappings.RegisterMapping(typeof(NavigationStore),Container.Resolve<NavigationStoreRegionAdapter>());
+
         }
     }
 }

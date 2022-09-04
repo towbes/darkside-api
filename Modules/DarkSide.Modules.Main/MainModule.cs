@@ -17,7 +17,7 @@ namespace DarkSide.Modules.Main
         }
         public void OnInitialized(IContainerProvider containerProvider)
         {
-            _regionManager.RegisterViewWithRegion(RegionNames.RootFrameRegion, typeof(ViewMain));
+            _regionManager.RegisterViewWithRegion(RegionNames.MainRegion, typeof(ViewMain));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)

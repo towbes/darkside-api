@@ -8,6 +8,6 @@ namespace DarkSide.Core
 {
     public static class RegionNames
     {
-        public static string RootFrameRegion = "RootFrameRegion";
+        public const string ContentRegion="ContentRegion";
     }
 }

@@ -1,12 +1,12 @@
 ﻿using System.Windows;
-using Wpf.Ui.Controls;
+using MahApps.Metro.Controls;
 
 namespace DarkSide.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : UiWindow
+    public partial class MainWindow : MetroWindow
     {
         public MainWindow()
         {
