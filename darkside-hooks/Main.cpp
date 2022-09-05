@@ -30,17 +30,19 @@ uintptr_t ptrPrintChat = funcPrintChat_x;
 void GrabChat(const char* buffer);
 char chatBuf[512];
 std::mutex chatBufMutex;
+bool newMsg = false;
+
 //Chat Hooks
 //Incoming chat hook
 void GrabChat(const char* buffer) {
-    ::OutputDebugStringA(std::format("Text: {}", buffer).c_str());
+    //::OutputDebugStringA(std::format("Text: {}", buffer).c_str());
     std::lock_guard<std::mutex> lg(chatBufMutex);
+    newMsg = true;
     strcpy_s(chatBuf, buffer);
 }
 
 __declspec(naked) void __stdcall PrintChat() {
     const char* ptrBuff;
-    uintptr_t oPrintChat;
     //save the registers/flags;
     _asm pushad;
     _asm pushfd;
@@ -181,8 +183,12 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         targInfo->SetTarget();
     }
     if (chatMan != NULL) {
-        std::lock_guard<std::mutex> lg(chatBufMutex);
-        chatMan->CopyChat(chatBuf);
+        if (newMsg) {
+            std::lock_guard<std::mutex> lg(chatBufMutex);
+            chatMan->CopyChat(chatBuf);
+            newMsg = false;
+        }
+        
     }
         
     //draw stuff here like so:

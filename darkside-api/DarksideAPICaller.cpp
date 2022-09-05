@@ -106,3 +106,12 @@ bool UseSpell(DarksideAPI* apiObject, int spellOffset) {
 	}
 	return false;
 }
+
+bool GetChatline(DarksideAPI* apiObject, LPVOID lpBuffer) {
+	if (apiObject != NULL) {
+		if (apiObject->GetChatline(lpBuffer)) {
+			return true;
+		}
+	}
+	return false;
+}

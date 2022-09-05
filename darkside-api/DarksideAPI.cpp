@@ -21,7 +21,11 @@ static LPVOID lpMemFile;
 
 DarksideAPI::DarksideAPI() {}
 
-DarksideAPI::~DarksideAPI() {}
+DarksideAPI::~DarksideAPI() {
+    if (chatThread != nullptr) {
+        chatThread->join();
+    }
+}
 
 void DarksideAPI::InjectPid(int pid) {
     //Get the current directory
@@ -71,7 +75,11 @@ void DarksideAPI::InjectPid(int pid) {
                 _tprintf(TEXT("Could not create remote thread (%d).\n"),
                     GetLastError());
             }
-           
+           //Start the chat listener
+            if (chatThread == nullptr) {
+                chatThread = new std::thread(&DarksideAPI::ChatListener, this);
+            }
+            
         }
     }
 }

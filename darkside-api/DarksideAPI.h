@@ -22,7 +22,10 @@ private:
     int pidHandle;
     void setPid(int pid);
 
-
+    //Queue to hold the chatLog, does not need to be accessed from C#
+    std::queue<std::string> chatLog;
+    //New thread for chat listener
+    std::thread* chatThread = nullptr;
 
 public:
     DarksideAPI();
@@ -50,5 +53,9 @@ public:
     //Target Info
     bool GetTargetInfo(LPVOID lpBuffer);
     bool SetTarget(int entIndex);
+
+    //Chat manager, listener will start in a new thread
+    void ChatListener();
+    bool GetChatline(LPVOID lpBuffer);
 
 };

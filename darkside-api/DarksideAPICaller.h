@@ -31,6 +31,8 @@ extern "C" {
 	extern __declspec(dllexport) bool UseSkill(DarksideAPI* apiObject, int skillOffset);
 
 	extern __declspec(dllexport) bool UseSpell(DarksideAPI* apiObject, int spellOffset);
+
+	extern __declspec(dllexport) bool GetChatline(DarksideAPI* apiObject, LPVOID lpBuffer);
 #ifdef __cplusplus
 }
 #endif

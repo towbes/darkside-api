@@ -101,5 +101,8 @@ struct zoneoffset_t {
 };
 
 struct chatManager_t {
+    std::mutex cmMutex;
+    //Flag if API is ready for a new message
+    bool rdySend;
     char buffer[512];
 };
