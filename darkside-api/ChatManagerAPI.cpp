@@ -27,6 +27,8 @@ void DarksideAPI::ChatListener() {
             GetLastError());
         UnmapViewOfFile(hMapFile);
     }
+    //Add a sleep to give injected DLL time to set up shared memory
+    Sleep(100);
 
     while (true) {
         if (pShmChatmanager->rdySend == false) {

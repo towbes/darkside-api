@@ -8,6 +8,7 @@ using System.Windows.Threading;
 using System.Windows.Input;
 using System.Xml.Linq;
 using System.Linq;
+using System.Collections;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -134,7 +135,7 @@ namespace DarkSideModernGUI.Views.Pages
         public static extern IntPtr DisposeDarksideAPI(IntPtr pApiObject);
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void InjectPid(IntPtr pApiObject, int pid);
+        public static extern bool InjectPid(IntPtr pApiObject, int pid);
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
@@ -295,13 +296,14 @@ namespace DarkSideModernGUI.Views.Pages
             TargetInfo targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
             if (!String.IsNullOrEmpty(targetInfo.hasTarget))
             {
-                tInfoMsg = String.Format("Ent: {0} - HP:{1} - Col:{2} - {3} - Lvl:{4} DistToTarget:{5:0.0}",
+                tInfoMsg = String.Format("Ent: {0} - HP:{1} - Col:{2} - {3} - Lvl:{4} DistToTarget:{5:0.0} CalcHead:{6:0}",
                     targetInfo.entOffset,
                     targetInfo.health,
                     targetInfo.color,
                     targetInfo.name,
                     EntityList[targetInfo.entOffset].level,
-                    DistanceToPoint(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y, EntityList[targetInfo.entOffset].pos_z));
+                    DistanceToPoint(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y, EntityList[targetInfo.entOffset].pos_z),
+                    CalcHeading(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y));
             }
             else
             {
@@ -539,5 +541,20 @@ namespace DarkSideModernGUI.Views.Pages
             return dist;
         }
     
+        private float CalcHeading(PlayerPosition playerPos, float targX, float targY)
+        {
+            float xDiff = playerPos.pos_x - targX;
+            float yDiff = playerPos.pos_y - targY;
+            //https://stackoverflow.com/questions/70511665/how-to-calculate-rotation-needed-to-face-an-object
+            return (float)((Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI + 630.0) % 360.0);
+            //var deltaX = Math.Pow((targX - playerPos.pos_x), 2);
+            //var deltaY = Math.Pow((targY - playerPos.pos_y), 2);
+            //
+            //var radian = Math.Atan2((targY - playerPos.pos_y), (targX - playerPos.pos_x));
+            //var angle = (radian * (180.0 / Math.PI) + 630.0) % 360.0;
+            //
+            //return (float)angle;
+        }
+
     }
 }

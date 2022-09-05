@@ -120,7 +120,10 @@ namespace DarkSideModernGUI.Views.Pages
             apiObject = TestPage.CreateDarksideAPI();
             if (cbxgameproccess.SelectedIndex != -1)
             {
-                TestPage.InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString()));
+                if (TestPage.InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString())))
+                {
+
+                }
             }
         }
 

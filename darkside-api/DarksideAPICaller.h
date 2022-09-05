@@ -10,7 +10,7 @@ extern "C" {
 
 	extern __declspec(dllexport) void DisposeDarksideAPI(DarksideAPI* apiObject);
 
-	extern __declspec(dllexport) void InjectPid(DarksideAPI* apiObject, int pid);
+	extern __declspec(dllexport) bool InjectPid(DarksideAPI* apiObject, int pid);
 
 	extern __declspec(dllexport) bool GetPlayerPosition(DarksideAPI* apiObject, LPVOID lpBuffer);
 

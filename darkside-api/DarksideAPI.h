@@ -32,7 +32,7 @@ public:
     ~DarksideAPI();
 
     //Injector
-    void InjectPid(int pid);
+    bool InjectPid(int pid);
 
     //Entity
     bool GetEntityInfo(int entIndex, LPVOID lpBuffer);

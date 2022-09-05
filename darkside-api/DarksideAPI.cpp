@@ -27,7 +27,7 @@ DarksideAPI::~DarksideAPI() {
     }
 }
 
-void DarksideAPI::InjectPid(int pid) {
+bool DarksideAPI::InjectPid(int pid) {
     //Get the current directory
     CHAR buffer[MAX_PATH] = { 0 };
     GetModuleFileNameA(NULL, buffer, MAX_PATH);
@@ -51,12 +51,14 @@ void DarksideAPI::InjectPid(int pid) {
     hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, SHMEMSIZE, str.c_str());
     if (hMapFile == nullptr) {
         MessageBoxA(nullptr, "API Failed to create file mapping!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return false;
     }
     else {
         // Get our shared memory pointer
         lpMemFile = MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, 0);
         if (lpMemFile == nullptr) {
             MessageBoxA(nullptr, "API Failed to map shared memory!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+            return false;
         }
         else {
             // Copy from shared memory
@@ -82,6 +84,7 @@ void DarksideAPI::InjectPid(int pid) {
             }
             
         }
+        return true;
     }
 }
 
