@@ -5,6 +5,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Views\logo_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
   </ItemGroup>
   <ItemGroup>
@@ -12,5 +15,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Regions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\logo_icon.png" />
   </ItemGroup>
 </Project>
