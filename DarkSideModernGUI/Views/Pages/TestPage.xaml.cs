@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Xml.Linq;
 using System.Linq;
 using System.Collections;
+using System.Windows.Documents;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -172,12 +173,17 @@ namespace DarkSideModernGUI.Views.Pages
         List<String> strPartyList = new List<String>();
         List<String> strPlayerInfo = new List<String>();
         List<String> strPlayerPos = new List<String>();
-
         List<String> chatLog = new List<String>();
 
         DispatcherTimer dispatcherTimer;
+        DispatcherTimer navTargetTimer;
+        bool navRunning = false;
 
         bool loopRunning = false;
+
+        PlayerPosition playerPos;
+        TargetInfo targetInfo;
+
 
         public ViewModels.TestViewModel ViewModel
         {
@@ -277,7 +283,7 @@ namespace DarkSideModernGUI.Views.Pages
             strPlayerPos.Clear();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
             GetPlayerPosition(DashboardPage.apiObject, buf);
-            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+            playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
             string msg = String.Format("PlayerPosition:" + Environment.NewLine +
                 "{0:0}, {1:0}, {2:0} {3:0}",
                 playerPos.pos_x,
@@ -293,7 +299,7 @@ namespace DarkSideModernGUI.Views.Pages
             IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
             GetTargetInfo(DashboardPage.apiObject, tInfobuf);
             string tInfoMsg = "";
-            TargetInfo targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
+            targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
             if (!String.IsNullOrEmpty(targetInfo.hasTarget))
             {
                 tInfoMsg = String.Format("Ent: {0} - HP:{1} - Col:{2} - {3} - Lvl:{4} DistToTarget:{5:0.0} CalcHead:{6:0}",
@@ -303,7 +309,7 @@ namespace DarkSideModernGUI.Views.Pages
                     targetInfo.name,
                     EntityList[targetInfo.entOffset].level,
                     DistanceToPoint(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y, EntityList[targetInfo.entOffset].pos_z),
-                    CalcHeading(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y));
+                    GetDegreesHeading(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y));
             }
             else
             {
@@ -517,43 +523,124 @@ namespace DarkSideModernGUI.Views.Pages
 
         }
 
-        private void Button_Click_PlayerInfo(object sender, RoutedEventArgs e)
+        //private void Button_Click_PlayerInfo(object sender, RoutedEventArgs e)
+        //{
+        //    //Size should be 0xdcd4
+        //    IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+        //    GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
+        //    PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+        //    string pInfoMsg = String.Format("PlayerInfo:" + Environment.NewLine +
+        //        "HP:{0:0} - Pow:{1:0} - Endu:{2:0}",
+        //        playerInfo.health,
+        //        playerInfo.power,
+        //        playerInfo.endu);
+        //    //
+        //    // Updating the Label which displays the current second
+        //    Marshal.FreeHGlobal(pInfobuf);
+        //    PlayerInfoText.Text = pInfoMsg;
+        //}
+
+        private void Button_Click_RunTarget(object sender, RoutedEventArgs e)
         {
-            //Size should be 0xdcd4
-            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
-            GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
-            PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
-            string pInfoMsg = String.Format("PlayerInfo:" + Environment.NewLine +
-                "HP:{0:0} - Pow:{1:0} - Endu:{2:0}",
-                playerInfo.health,
-                playerInfo.power,
-                playerInfo.endu);
-            //
-            // Updating the Label which displays the current second
-            Marshal.FreeHGlobal(pInfobuf);
-            PlayerInfoText.Text = pInfoMsg;
+            if (!navRunning)
+            {
+                navTargetTimer = new System.Windows.Threading.DispatcherTimer();
+                navTargetTimer.Tick += new EventHandler(navTimer_Tick);
+                //update ever 100ms
+                navTargetTimer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+                navTargetTimer.Start();
+                navRunning = true;
+            }
+            else
+            {
+                navTargetTimer.Stop();
+                navRunning = false;
+                SetAutorun(DashboardPage.apiObject, false);
+                SetPlayerHeading(DashboardPage.apiObject, false, 0);
+            }
+
         }
 
+        int currentTarget = 0;
 
-        private double DistanceToPoint(PlayerPosition playerPos, float targX, float targY, float targZ)
+        private void navTimer_Tick(object sender, EventArgs e)
         {
-            double dist = Math.Sqrt((playerPos.pos_x - targX) * (playerPos.pos_x - targX) + (playerPos.pos_y - targY) * (playerPos.pos_y - targY));
-            return dist;
+            if (currentTarget == 0) {
+                float stoppingDist = 40.0f;
+                int trackerTarget = findEntityByName("Tracker");
+                SetTarget(DashboardPage.apiObject, trackerTarget);
+
+                float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                short newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
+                if (dist > stoppingDist)
+                {
+                    SetAutorun(DashboardPage.apiObject, true);
+                    SetPlayerHeading(DashboardPage.apiObject, true, newheading);
+                    dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                    newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
+                } else
+                {
+                    SetAutorun(DashboardPage.apiObject, false);
+                    SetPlayerHeading(DashboardPage.apiObject, false, 0);
+                    currentTarget++;
+                }
+
+            } else if (currentTarget == 1)
+            {
+                float stoppingDist = 40.0f;
+                int trackerTarget = findEntityByName("Nera");
+                SetTarget(DashboardPage.apiObject, trackerTarget);
+
+                float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                short newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
+                if (dist > stoppingDist)
+                {
+                    SetAutorun(DashboardPage.apiObject, true);
+                    SetPlayerHeading(DashboardPage.apiObject, true, newheading);
+                    dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                    newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
+                } else
+                {
+                    SetAutorun(DashboardPage.apiObject, false);
+                    SetPlayerHeading(DashboardPage.apiObject, false, 0);
+                    currentTarget++;
+                }
+
+            } else
+            {
+                SetAutorun(DashboardPage.apiObject, false);
+                SetPlayerHeading(DashboardPage.apiObject, false, 0);
+            }
+
+        }
+
+        private float DistanceToPoint(PlayerPosition playerPos, float targX, float targY, float targZ)
+        {
+            float dist = (float)(Math.Sqrt((playerPos.pos_x - targX) * (playerPos.pos_x - targX) + (playerPos.pos_y - targY) * (playerPos.pos_y - targY)));
+            return (float)dist;
         }
     
-        private float CalcHeading(PlayerPosition playerPos, float targX, float targY)
+        private short GetDegreesHeading(PlayerPosition playerPos, float targX, float targY)
         {
             float xDiff = playerPos.pos_x - targX;
             float yDiff = playerPos.pos_y - targY;
             //https://stackoverflow.com/questions/70511665/how-to-calculate-rotation-needed-to-face-an-object
-            return (float)((Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI + 630.0) % 360.0);
-            //var deltaX = Math.Pow((targX - playerPos.pos_x), 2);
-            //var deltaY = Math.Pow((targY - playerPos.pos_y), 2);
-            //
-            //var radian = Math.Atan2((targY - playerPos.pos_y), (targX - playerPos.pos_x));
-            //var angle = (radian * (180.0 / Math.PI) + 630.0) % 360.0;
-            //
-            //return (float)angle;
+            return (short)((Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI + 630.0) % 360.0);
+        }
+
+        //DOL heading func
+        //https://github.com/Dawn-of-Light/DOLSharp/blob/9af87af011497c3fda852559b01a269c889b162e/GameServer/world/Point2D.cs
+        public short GetGameHeading(PlayerPosition playerPos, float posx, float posy)
+        {
+            float dx = posx - playerPos.pos_x;
+            float dy = posy - playerPos.pos_y;
+
+            double heading = Math.Atan2(-dx, dy) * (180.0 / Math.PI) * (4096.0 / 360.0);
+
+            if (heading < 0)
+                heading += 4096;
+
+            return (short)heading;
         }
 
     }

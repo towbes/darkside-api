@@ -60,8 +60,8 @@
             Width="136"
             Margin="67,161,0,0"
             VerticalAlignment="Top"
-            Click="Button_Click_PlayerInfo">
-            GetPlayerInfo
+            Click="Button_Click_RunTarget">
+            RunTarget
         </ui:Button>
         <ScrollViewer 
             Grid.Column="0" Margin="0,90,0,0"

@@ -136,6 +136,11 @@ void PlayerPosition::SetHeading() {
     if ((bool)headingUpdate->changeHeading) {
         //lock the pointer when we write it
         std::lock_guard<std::mutex> lg(posUpdateMutex);
+        //convert radian to heading
+        //https://github.com/Dawn-of-Light/DOLSharp/blob/9af87af011497c3fda852559b01a269c889b162e/GameServer/world/Point2D.cs
+        //short oHeading = headingUpdate->heading * (4096.0 / 360.0);
+        //S = 0/4096  E = 3072  N = 2048  W = 1024
+        //headingUpdate->heading * 0x1000 / 0x168 
         playerPositionInfo->heading = headingUpdate->heading;
     }
 }
