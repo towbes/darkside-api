@@ -7,6 +7,7 @@
 #include "PlayerInfo.h"
 #include "EntityInfo.h"
 #include "TargetInfo.h"
+#include "ChatManager.h"
 
 bool bInit = false;
 
@@ -16,15 +17,56 @@ LPDIRECT3DDEVICE9 pD3DDevice = nullptr;
 static WNDPROC origWndProc = nullptr;
 static WNDPROC oWndProc = nullptr;
 void* d3d9Device[119];
+HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
+HRESULT APIENTRY hkReset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters);
 
 void* ptrPresent = NULL;
 void* ptrReset = NULL;
 char oPresBytes[11];
 char oResetBytes[11];
 
-bool done = false;
+//chat hook
+uintptr_t ptrPrintChat = funcPrintChat_x;
+void GrabChat(const char* buffer);
+char chatBuf[512];
+std::mutex chatBufMutex;
+//Chat Hooks
+//Incoming chat hook
+void GrabChat(const char* buffer) {
+    ::OutputDebugStringA(std::format("Text: {}", buffer).c_str());
+    std::lock_guard<std::mutex> lg(chatBufMutex);
+    strcpy_s(chatBuf, buffer);
+}
 
-HHOOK mouseHook = NULL;
+__declspec(naked) void __stdcall PrintChat() {
+    const char* ptrBuff;
+    uintptr_t oPrintChat;
+    //save the registers/flags;
+    _asm pushad;
+    _asm pushfd;
+    //prologue;
+    _asm push ebp;
+    _asm mov ebp, esp;
+    _asm sub esp, __LOCAL_SIZE;
+
+    _asm mov ptrBuff, ebx;
+
+    ptrBuff += 1;
+    GrabChat(ptrBuff);
+
+    //epilogue
+    _asm mov esp, ebp;
+    _asm pop ebp;
+    //restore registers/flags
+    _asm popfd;
+    _asm popad;
+
+    //instruction we overwrote
+    _asm jmp ptrPrintChat
+}
+
+
+bool done = false;
 
 DWORD WINAPI Init(HMODULE hModule);
 
@@ -33,6 +75,7 @@ PartyMemberInfo* pMemInfo = NULL;
 PlayerInfo* plyrInfo = NULL;
 EntityInfo* entInfo = NULL;
 TargetInfo* targInfo = NULL;
+ChatManager* chatMan = NULL;
 
 extern "C" __declspec(dllexport) void __cdecl MainThread() {
 #ifdef _DEBUG
@@ -51,15 +94,11 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
 
     //wait for user input
     while (true) {
-        //posInfo->GetPlayerPosition();
-        //posInfo->SetHeading();
-        //posInfo->SetAutorun();
-        //pMemInfo->GetPartyMembers();
-        //plyrInfo->GetPlayerInfo();
         //break when user presses end
         if (GetAsyncKeyState(VK_RCONTROL) & 1) {
             break;
         }
+        Sleep(100);
     }
 #ifdef _DEBUG
     if (f != 0) {
@@ -68,64 +107,44 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     FreeConsole();
 #endif
 
-    WriteMem((char*)ptrPresent, oPresBytes, 5);
-    WriteMem((char*)ptrReset, oResetBytes, 5);
+    //WriteMem((char*)ptrPresent, oPresBytes, 5);
+    //WriteMem((char*)ptrReset, oResetBytes, 5);
+
+    if (ptrPresent != NULL && ptrReset != NULL) {
+        DetourTransactionBegin();
+        DetourUpdateThread(GetCurrentThread());
+        DetourDetach(&(PVOID&)ptrPresent, hkPresent);
+        long result = DetourTransactionCommit();
+        if (result != NO_ERROR)
+        {
+
+        }
+
+        DetourTransactionBegin();
+        DetourUpdateThread(GetCurrentThread());
+        DetourDetach(&(PVOID&)ptrReset, hkReset);
+        result = DetourTransactionCommit();
+        if (result != NO_ERROR)
+        {
+
+        }
+
+        DetourTransactionBegin();
+        DetourUpdateThread(GetCurrentThread());
+        DetourDetach(&(PVOID&)ptrPrintChat, PrintChat);
+        result = DetourTransactionCommit();
+        if (result != NO_ERROR)
+        {
+
+        }
+
+        bInit = false;
+    }
 
     //Sleep to give reset a time to run?
     Sleep(100);
 
     FreeLibraryAndExitThread(ghModule, 0);
-}
-
-
-
-void cleanupImgui() {
-    ///* Delete imgui to avoid errors */
-    //ImGui_ImplDX9_Shutdown();
-    //ImGui_ImplWin32_Shutdown();
-    //ImGui::DestroyContext();
-}
-
-void InitImGui(IDirect3DDevice9* pDevice) {
-    //D3DDEVICE_CREATION_PARAMETERS CP;
-    //pDevice->GetCreationParameters(&CP);
-    //window = CP.hFocusWindow;
-    //ImGui::CreateContext();
-    //ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //io.IniFilename = NULL;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    //io.Fonts->AddFontDefault();
-    //
-    //ImGui_ImplWin32_Init(window);
-    //ImGui_ImplDX9_Init(pDevice);
-    //bInit = true;
-    return;
-}
-//extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-
-    //if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) {
-    //    return 1;
-    //}
-
-
-    //ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //// Check if ImGui wants to handle the keyboard..
-    //if (msg >= WM_KEYFIRST && msg <= WM_KEYLAST)
-    //{
-    //    if (io.WantTextInput || io.WantCaptureKeyboard || ImGui::IsAnyItemActive())
-    //        return 1;
-    //}
-    //
-    //// Check if ImGui wants to handle the mouse..
-    //if (msg >= WM_MOUSEFIRST && msg <= WM_MOUSELAST)
-    //{
-    //    if (io.WantCaptureMouse)
-    //        return 1;
-    //}
-
-    return ::CallWindowProcA(oWndProc, hWnd, msg, wParam, lParam);
 }
 
 HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
@@ -137,6 +156,7 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         plyrInfo = new PlayerInfo();
         entInfo = new EntityInfo();
         targInfo = new TargetInfo();
+        chatMan = new ChatManager();
         bInit = true;
     }
 
@@ -160,6 +180,10 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         targInfo->GetTargetInfo();
         targInfo->SetTarget();
     }
+    if (chatMan != NULL) {
+        std::lock_guard<std::mutex> lg(chatBufMutex);
+        chatMan->CopyChat(chatBuf);
+    }
         
     //draw stuff here like so:
     //if (!bInit) InitImGui(pDevice);
@@ -182,8 +206,6 @@ HRESULT APIENTRY hkReset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPres
 
     return oReset(pDevice, pPresentationParameters);
 }
-
-
 
 DWORD WINAPI Init(HMODULE hModule)
 {
@@ -218,42 +240,41 @@ DWORD WINAPI Init(HMODULE hModule)
             ptrReset = *(void**)ptrResetTemp;
         }
 
-        //std::cout << "present: 0x" << std::hex << d3d9Device[17] << " reset: 0x" << d3d9Device[16] << std::endl;
         if (ptrPresent != NULL && ptrReset != NULL) {
-            //write original bytes to buffer for cleanup later
-            memcpy(oPresBytes, (char*)ptrPresent, 5);
-            memcpy(oResetBytes, (char*)ptrReset, 5);
-            //do the hooks
-            oPresent = (tPresent)TrampHook((char*)ptrPresent, (char*)hkPresent, 5);
-            oReset = (tReset)TrampHook((char*)ptrReset, (char*)hkReset, 5);
+
+            //DetourRestoreAfterWith();
+            DetourTransactionBegin();
+            DetourUpdateThread(GetCurrentThread());
+            DetourAttach(&(PVOID&)ptrPresent, hkPresent);
+            long result = DetourTransactionCommit();
+            if (result != NO_ERROR)
+            {
+
+            }
+
+            DetourTransactionBegin();
+            DetourUpdateThread(GetCurrentThread());
+            DetourAttach(&(PVOID&)ptrReset, hkReset);
+            result = DetourTransactionCommit();
+            if (result != NO_ERROR)
+            {
+
+            }
+
+            oPresent = (tPresent)ptrPresent;
+            oReset = (tReset)ptrReset;
+
+            //Chat detour
+            DetourTransactionBegin();
+            DetourUpdateThread(GetCurrentThread());
+            DetourAttach(&(PVOID&)ptrPrintChat, PrintChat);
+            result = DetourTransactionCommit();
+            if (result != NO_ERROR)
+            {
+
+            }
         }
-
     }
-
-    //code for imgui
-    //origWndProc = (WNDPROC)GetWindowLongPtr(window, GWL_WNDPROC);
-    //oWndProc = (WNDPROC)SetWindowLongPtr(window, GWL_WNDPROC, (LONG_PTR)WndProc);
-
-    //Daoc Addresses
-    //LoadHooks();
-
-    //while (true) {
-    //    if (GetAsyncKeyState(VK_RCONTROL) & 1) {
-    //        break;
-    //    }
-    //}
-
-    //Restore WndProc
-    //(WNDPROC)SetWindowLongPtr(window, GWL_WNDPROC, (LONG_PTR)origWndProc);
-    //
-    //if (ptrPresent != NULL && ptrReset != NULL) {
-    //    WriteMem((char*)ptrPresent, oPresBytes, 5);
-    //    WriteMem((char*)ptrReset, oResetBytes, 5);
-    //    cleanupImgui();
-    //    bInit = false;
-    //}
-    //
-    //FreeLibraryAndExitThread(hModule, 0);
-
     return 0;
 }
+

@@ -11,7 +11,7 @@ namespace daoc {
     //typedef bool(__fastcall* _EntityPtrSanityCheck)(int entityListOffset);
     //_EntityPtrSanityCheck EntityPtrSanityCheck = (_EntityPtrSanityCheck)funcEntityPtrSanityCheck_x;
 
-    
+   
     //credit atom0s for this function
     //use __stdcall to make stack setup/cleanup simpler
     //void GetEntityName(int table_idx, int entity_idx, char* Destination, size_t Count);

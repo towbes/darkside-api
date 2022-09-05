@@ -23,4 +23,9 @@
 #include <mutex>
 #include <TlHelp32.h>
 #include <queue>
+#include <format>
+
+//detours
+#include "detours.h"
+
 #endif //PCH_H

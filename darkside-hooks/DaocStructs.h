@@ -99,3 +99,7 @@ struct zoneoffset_t {
     float zoneYoffset;
     float zoneXoffset;
 };
+
+struct chatManager_t {
+    char buffer[512];
+};

@@ -72,13 +72,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
-    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(ProjectDir)detours\include\detours;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(ProjectDir)detours\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)DarksideModernGUI\bin\$(Configuration)\net6.0-windows\</OutDir>
-    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(ProjectDir)detours\include\detours;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(ProjectDir)detours\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,6 +151,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\daoc-logger\daoc-logger\detours\include\detours\detours.h" />
+    <ClInclude Include="..\..\..\daoc-logger\daoc-logger\detours\include\detours\detver.h" />
+    <ClInclude Include="ChatManager.h" />
     <ClInclude Include="daocgame.h" />
     <ClInclude Include="daochooks.h" />
     <ClInclude Include="DaocStructs.h" />
@@ -167,6 +170,7 @@
     <ClInclude Include="TargetInfo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChatManager.cpp" />
     <ClCompile Include="daochooks.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EntityInfo.cpp" />
@@ -183,6 +187,9 @@
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="PlayerPosition.cpp" />
     <ClCompile Include="TargetInfo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\daoc-logger\daoc-logger\detours\lib\detours.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

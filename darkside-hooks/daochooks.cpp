@@ -93,4 +93,35 @@ namespace daoc {
         return SetTargetUI();
     }
 
+    //Incoming chat hook
+    //void grabChat(const char* buffer) {
+    //    std::string strBuff = std::string(buffer);
+    //}
+    //
+    //__declspec(naked) void __stdcall printChat() {
+    //    const char* ptrBuff;
+    //    //save the registers/flags;
+    //    _asm pushad;
+    //    _asm pushfd;
+    //    //prologue;
+    //    _asm push ebp;
+    //    _asm mov ebp, esp;
+    //    _asm sub esp, __LOCAL_SIZE;
+    //
+    //    _asm mov ptrBuff, ebx;
+    //
+    //    ptrBuff += 1;
+    //    grabChat(ptrBuff);
+    //
+    //    //epilogue
+    //    _asm mov esp, ebp;
+    //    _asm pop ebp;
+    //    //restore registers/flags
+    //    _asm popfd;
+    //    _asm popad;
+    //
+    //    //instruction we overwrote
+    //    _asm jmp oPrintChat
+    //}
+
 }

@@ -11,6 +11,7 @@
 #define funcUseSpell_x		0x42b4b8
 #define funcSetTarget_x		0x43a8f3
 #define funcSetTargetUI_x		0x48f194
+#define funcPrintChat_x		0x4190e3
 
 // Entities
 #define funcGetEntityPointer_x		0x43589f
