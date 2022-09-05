@@ -81,8 +81,8 @@
             Width="136"
             Margin="5,300,0,0"
             VerticalAlignment="Top"
-            Click="Button_Click_3">
-            Toggle Autorun
+            Click="Button_Click_Numpad5">
+            Numpad5
         </ui:Button>
 
         <ui:Button

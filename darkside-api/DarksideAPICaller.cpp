@@ -20,6 +20,13 @@ bool InjectPid(DarksideAPI* apiObject, int pid) {
 	return false;
 }
 
+int GetPid(DarksideAPI* apiObject) {
+	if (apiObject != NULL) {
+		return (apiObject->GetPid());
+	}
+	return 0;
+}
+
 bool GetPlayerPosition(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	if (apiObject != NULL) {
 		if (apiObject->GetPlayerPosition(lpBuffer)) {

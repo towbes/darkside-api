@@ -88,4 +88,6 @@ bool DarksideAPI::InjectPid(int pid) {
     }
 }
 
-
+int DarksideAPI::GetPid() {
+    return pidHandle;
+}

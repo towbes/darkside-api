@@ -10,6 +10,11 @@ using System.Xml.Linq;
 using System.Linq;
 using System.Collections;
 using System.Windows.Documents;
+using System.Diagnostics;
+
+//Commenting these out but leaving as a reminder for simulating keypresses if we want
+//using WindowsInput.Native;
+//using WindowsInput;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -137,6 +142,8 @@ namespace DarkSideModernGUI.Views.Pages
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool InjectPid(IntPtr pApiObject, int pid);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetPid(IntPtr pApiObject);
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
@@ -403,10 +410,24 @@ namespace DarkSideModernGUI.Views.Pages
             CommandManager.InvalidateRequerySuggested();
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        const UInt32 WM_KEYDOWN = 0x0100;
+        const UInt32 WM_KEYUP = 0x0101;
+        const int VK_NUMPAD5 = 0x31;
+
+        [DllImport("user32.dll")]
+        static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
+        [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
+
+        private void Button_Click_Numpad5(object sender, RoutedEventArgs e)
         {
-            autorun = !autorun;
-            SetAutorun(DashboardPage.apiObject, autorun);
+            //https://github.com/michaelnoonan/inputsimulator
+            //Some test code with input simulator, but requires that the window come to foreground and is somewhat unreliable
+            //InputSimulator sim = new InputSimulator();
+            Process gameproc = Process.GetProcessById(GetPid(DashboardPage.apiObject));
+            SetForegroundWindow(gameproc.MainWindowHandle);
+            //InputSimulator.SimulateKeyPress(VirtualKeyCode.VK_KEY_1)
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)

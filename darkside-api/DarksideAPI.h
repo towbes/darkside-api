@@ -33,6 +33,7 @@ public:
 
     //Injector
     bool InjectPid(int pid);
+    int GetPid();
 
     //Entity
     bool GetEntityInfo(int entIndex, LPVOID lpBuffer);
