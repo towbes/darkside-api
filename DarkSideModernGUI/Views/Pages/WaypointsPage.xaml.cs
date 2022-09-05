@@ -31,22 +31,6 @@ namespace DarkSideModernGUI.Views.Pages
         private string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
 
-        //Player position struct
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        public struct PlayerPosition
-        {
-            public float pos_x { get; private set; }
-            public short heading { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 68)] public char[] unknown1;
-            public float pos_y { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public char[] unknown2;
-            public float pos_z { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] public char[] unknown3;
-        }
-
-        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-
-        public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
 
         //Timer to be used for reading the Position Stream every 1 ms
         public static System.Timers.Timer tAutoWaypoints = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
@@ -92,18 +76,18 @@ namespace DarkSideModernGUI.Views.Pages
 
             //dummyproof ==> If injected == 1 then.. otherwise do nothing.
 
-            int size = Marshal.SizeOf<PlayerPosition>();
-            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            int size = Marshal.SizeOf<TestPage.PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<TestPage.PlayerPosition>());
 
-            GetPlayerPosition(DashboardPage.apiObject, buf);
+            TestPage.GetPlayerPosition(DashboardPage.apiObject, buf);
 
-            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+            TestPage.PlayerPosition playerPos = (TestPage.PlayerPosition)Marshal.PtrToStructure(buf, typeof(TestPage.PlayerPosition));
 
             Dispatcher.Invoke(() => {
-            lblWaypointX.Content = (playerPos.pos_x).ToString();
-            lblWaypointY.Content = (playerPos.pos_y).ToString();
-            lblWaypointZ.Content = (playerPos.pos_z).ToString();
-            lblWaypointDir.Content = (playerPos.heading).ToString();
+            lblWaypointX.Content = (playerPos.pos_x).ToString("0.0000");
+            lblWaypointY.Content = (playerPos.pos_y).ToString("0.0000");
+            lblWaypointZ.Content = (playerPos.pos_z).ToString("0.0000");
+            lblWaypointDir.Content = (playerPos.heading).ToString("0");
 
             });
 
@@ -115,22 +99,24 @@ namespace DarkSideModernGUI.Views.Pages
 
         {
 
-            int size = Marshal.SizeOf<PlayerPosition>();
-            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
-            GetPlayerPosition(TestPage.apiObject, buf);
-            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+            int size = Marshal.SizeOf<TestPage.PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<TestPage.PlayerPosition>());
+            TestPage.GetPlayerPosition(TestPage.apiObject, buf);
+            TestPage.PlayerPosition playerPos = (TestPage.PlayerPosition)Marshal.PtrToStructure(buf, typeof(TestPage.PlayerPosition));
 
             Dispatcher.Invoke(() =>
             {
                     waypoint.Add(new Waypoint()
                 {
                     waypointID = (grdWaypoints.Items.Count).ToString(),
-                    playerPosX = (playerPos.pos_x).ToString(),
-                    playerPosY = (playerPos.pos_y).ToString(),
-                    playerPosZ = (playerPos.pos_z).ToString(),
-                    playerHeading = (playerPos.heading).ToString()
+                    playerPosX = (playerPos.pos_x).ToString("0.0000"),
+                    playerPosY = (playerPos.pos_y).ToString("0.0000"),
+                    playerPosZ = (playerPos.pos_z).ToString("0.0000"),
+                    playerHeading = (playerPos.heading).ToString("0")
                 });
             });
+
+            Marshal.FreeHGlobal(buf);
         }
 
  
@@ -139,22 +125,22 @@ namespace DarkSideModernGUI.Views.Pages
         private void btnAddWaypoint_Click(object sender, RoutedEventArgs e)
         {
 
-            int size = Marshal.SizeOf<PlayerPosition>();
-            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
-            GetPlayerPosition(TestPage.apiObject, buf);
-            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+            int size = Marshal.SizeOf<TestPage.PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<TestPage.PlayerPosition>());
+            TestPage.GetPlayerPosition(TestPage.apiObject, buf);
+            TestPage.PlayerPosition playerPos = (TestPage.PlayerPosition)Marshal.PtrToStructure(buf, typeof(TestPage.PlayerPosition));
 
 
            waypoint.Add(new Waypoint()
             {
-                waypointID = (grdWaypoints.Items.Count).ToString(),
-                playerPosX = (playerPos.pos_x).ToString(),
-                playerPosY = (playerPos.pos_y).ToString(),
-                playerPosZ = (playerPos.pos_z).ToString(),
-                playerHeading = (playerPos.heading).ToString()
+               waypointID = (grdWaypoints.Items.Count).ToString(),
+               playerPosX = (playerPos.pos_x).ToString("0.0000"),
+               playerPosY = (playerPos.pos_y).ToString("0.0000"),
+               playerPosZ = (playerPos.pos_z).ToString("0.0000"),
+               playerHeading = (playerPos.heading).ToString("0")
            });
 
-        
+            Marshal.FreeHGlobal(buf);
         }
 
         private void btnAddAutoWaypoint_Click(object sender, RoutedEventArgs e)

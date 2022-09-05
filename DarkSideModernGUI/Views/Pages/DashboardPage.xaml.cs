@@ -24,23 +24,6 @@ namespace DarkSideModernGUI.Views.Pages
     {
 
 
-        //Player position struct
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        public struct PlayerPosition
-        {
-            public float pos_x { get; private set; }
-            public short heading { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 68)] public char[] unknown1;
-            public float pos_y { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public char[] unknown2;
-            public float pos_z { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] public char[] unknown3;
-        }
-
-        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-
-        public static extern void GetPlayerPosition(IntPtr pApiObject, IntPtr lpBuffer);
-
         //Timer to be used for reading the Existing Processes  every 5 seconds
         public static System.Timers.Timer tReadGameDll = new System.Timers.Timer(1000); // 1 sec = 1000, 60 sec = 60000
 
@@ -131,23 +114,13 @@ namespace DarkSideModernGUI.Views.Pages
           
         }
 
-
-        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr CreateDarksideAPI();
-
-        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr DisposeDarksideAPI(IntPtr pApiObject);
-
-        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void InjectPid(IntPtr pApiObject, int pid);
-
       
         private void btnInjectGameDLL_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            apiObject = CreateDarksideAPI();
+            apiObject = TestPage.CreateDarksideAPI();
             if (cbxgameproccess.SelectedIndex != -1)
             {
-                InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString()));
+                TestPage.InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString()));
             }
         }
 
@@ -196,12 +169,12 @@ namespace DarkSideModernGUI.Views.Pages
 
                 foreach (var importedWaypoint in importedWaypoints)
                 {
-                    int size = Marshal.SizeOf<PlayerPosition>();
-                    IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+                    int size = Marshal.SizeOf<TestPage.PlayerPosition>();
+                    IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<TestPage.PlayerPosition>());
 
-                    GetPlayerPosition(DashboardPage.apiObject, buf);
+                    TestPage.GetPlayerPosition(DashboardPage.apiObject, buf);
 
-                    PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+                    TestPage.PlayerPosition playerPos = (TestPage.PlayerPosition)Marshal.PtrToStructure(buf, typeof(TestPage.PlayerPosition));
 
                     Double DistanceBetweenPlayerAndWaypoint = Math.Sqrt((playerPos.pos_x - float.Parse(importedWaypoint.playerPosX)) * (playerPos.pos_x - float.Parse(importedWaypoint.playerPosX)) + (playerPos.pos_y - float.Parse(importedWaypoint.playerPosY)) * (playerPos.pos_y - float.Parse(importedWaypoint.playerPosY)));
 

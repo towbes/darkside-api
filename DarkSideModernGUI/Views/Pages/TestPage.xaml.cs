@@ -295,12 +295,13 @@ namespace DarkSideModernGUI.Views.Pages
             TargetInfo targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
             if (!String.IsNullOrEmpty(targetInfo.hasTarget))
             {
-                tInfoMsg = String.Format("Ent: {0} - HP:{1} - Col:{2} - {3} - Lvl:{4}",
+                tInfoMsg = String.Format("Ent: {0} - HP:{1} - Col:{2} - {3} - Lvl:{4} DistToTarget:{5:0.0}",
                     targetInfo.entOffset,
                     targetInfo.health,
                     targetInfo.color,
                     targetInfo.name,
-                    EntityList[targetInfo.entOffset].level);
+                    EntityList[targetInfo.entOffset].level,
+                    DistanceToPoint(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y, EntityList[targetInfo.entOffset].pos_z));
             }
             else
             {
@@ -529,6 +530,13 @@ namespace DarkSideModernGUI.Views.Pages
             // Updating the Label which displays the current second
             Marshal.FreeHGlobal(pInfobuf);
             PlayerInfoText.Text = pInfoMsg;
+        }
+
+
+        private double DistanceToPoint(PlayerPosition playerPos, float targX, float targY, float targZ)
+        {
+            double dist = Math.Sqrt((playerPos.pos_x - targX) * (playerPos.pos_x - targX) + (playerPos.pos_y - targY) * (playerPos.pos_y - targY));
+            return dist;
         }
     
     }
