@@ -75,6 +75,7 @@ void DarksideAPI::InjectPid(int pid) {
                 _tprintf(TEXT("Could not create remote thread (%d).\n"),
                     GetLastError());
             }
+            Sleep(100);
            //Start the chat listener
             if (chatThread == nullptr) {
                 chatThread = new std::thread(&DarksideAPI::ChatListener, this);

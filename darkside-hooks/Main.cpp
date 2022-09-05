@@ -8,6 +8,7 @@
 #include "EntityInfo.h"
 #include "TargetInfo.h"
 #include "ChatManager.h"
+#include "daochooks.h"
 
 bool bInit = false;
 

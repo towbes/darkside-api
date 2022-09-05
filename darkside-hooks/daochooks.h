@@ -2,6 +2,8 @@
 #include "daocgame.h"
 
 namespace daoc {
+
+
     uintptr_t GetEntityPointer(int entityOffset);
     //typedef uintptr_t(__fastcall* _GetEntityPointer)(int entityOffset);
     //_GetEntityPointer GetEntityPointer = (_GetEntityPointer)funcGetEntityPointer_x;

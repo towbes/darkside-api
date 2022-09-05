@@ -119,6 +119,13 @@ namespace DarkSideModernGUI.Views.Pages
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 4)] public String hasTarget;
         }
 
+        //Chatbuffer
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct Chatbuffer
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)] public String chatLine;
+        }
+
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateDarksideAPI();
@@ -149,6 +156,9 @@ namespace DarkSideModernGUI.Views.Pages
         public static extern bool UseSkill(IntPtr pApiObject, int skillOffset);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UseSpell(IntPtr pApiObject, int spellOffset);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GetChatline(IntPtr pApiObject, IntPtr lpBuffer);
+
 
         public static IntPtr apiObject;
         bool autorun = false;
@@ -161,6 +171,8 @@ namespace DarkSideModernGUI.Views.Pages
         List<String> strPartyList = new List<String>();
         List<String> strPlayerInfo = new List<String>();
         List<String> strPlayerPos = new List<String>();
+
+        List<String> chatLog = new List<String>();
 
         DispatcherTimer dispatcherTimer;
 
@@ -232,19 +244,34 @@ namespace DarkSideModernGUI.Views.Pages
                 if (EntityList[j].objectId > 0)
                 {
                     EntityInfo entity = EntityList[j];
-
+            
                     if (entity.objectId > 0)
                     {
                         String cname = new string(entity.name);
-
+            
                         entmsg = String.Format("{0}: Name is {1} - HP: {2}% - Type: {3} - Level: {4}",
                             j, cname, entity.health, entity.type, entity.level);
-
+            
                         strEntityList.Add(entmsg);
                     }
                 }
             }
-            EntityInfoTextBlock.Text = String.Join(Environment.NewLine, strEntityList);
+            //EntityInfoTextBlock.Text = String.Join(Environment.NewLine, strEntityList);
+
+            IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
+            Chatbuffer tmpChat;
+            GetChatline(DashboardPage.apiObject, chatbuf);
+            tmpChat = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
+            if (!String.IsNullOrEmpty(tmpChat.chatLine))
+            {
+                chatLog.Add(tmpChat.chatLine);
+            }
+
+
+            EntityInfoTextBlock.Text = String.Join(Environment.NewLine, chatLog);
+            Marshal.FreeHGlobal(chatbuf);
+
+
 
             strPlayerPos.Clear();
             IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());

@@ -42,9 +42,12 @@ void DarksideAPI::ChatListener() {
 
 bool DarksideAPI::GetChatline(LPVOID lpBuffer) {
     if (chatLog.size() > 0) {
-        memcpy(lpBuffer, chatLog.front().c_str(), sizeof(chatLog.front().c_str()));
+        memcpy(lpBuffer, chatLog.front().c_str(), 512);
         chatLog.pop();
         return true;
+    }
+    else {
+        memset(lpBuffer, 0, 512);
     }
     return false;
 }
