@@ -13,6 +13,7 @@ using System.Windows.Documents;
 using System.Diagnostics;
 
 //Commenting these out but leaving as a reminder for simulating keypresses if we want
+//Had to use the InputSimulatorPlus version from  nuget to work with daoc
 //using WindowsInput.Native;
 //using WindowsInput;
 
