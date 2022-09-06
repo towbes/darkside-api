@@ -43,4 +43,17 @@ namespace daoc {
     //typedef void(__cdecl* _SetTargetUI)();
     //_SetTargetUI SetTargetUI; //= (_SetTargetUI)0x48f194;
 
+    //pet window packet function
+    //aggroState // 1-Aggressive, 2-Deffensive, 3-Passive
+    //walkState // 1-Follow, 2-Stay, 3-GoTarg, 4-Here
+    //command // 1-Attack, 2-Release
+    void UsePetCommand(char aggroState, char walkState, char command);
+    //typedef void(__cdecl* _PetWindow)(char aggroState, char walkState, char command);
+    //_PetWindow PetWindow;
+    //Address of signature = game.dll + 0x0002AD78
+    //const char* funcPetWindowPattern = "\x55\x8B\xEC\x51\x83\x3D\x00\x82\x99\x00\x00\x75\x00\x8A\x45\x00\x88\x45\x00\x8A\x45\x00\x88\x45\x00\x8A\x45";
+    //const char* funcPetWindowMask = "xxxxxxxxxx?x?xx?xx?xx?xx?xx";
+    //"55 8B EC 51 83 3D 00 82 99 00 ? 75 ? 8A 45 ? 88 45 ? 8A 45 ? 88 45 ? 8A 45"
+
+
 }

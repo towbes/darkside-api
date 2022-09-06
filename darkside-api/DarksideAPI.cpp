@@ -76,6 +76,7 @@ bool DarksideAPI::InjectPid(int pid) {
             else {
                 _tprintf(TEXT("Could not create remote thread (%d).\n"),
                     GetLastError());
+                return false;
             }
             Sleep(100);
            //Start the chat listener

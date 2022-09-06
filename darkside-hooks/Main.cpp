@@ -175,6 +175,7 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         plyrInfo->GetPlayerInfo();
         plyrInfo->QueueSkill();
         plyrInfo->QueueSpell();
+        plyrInfo->QueuePetCmd();
     }
     if (entInfo != NULL) {
         entInfo->GetEntityInfo();

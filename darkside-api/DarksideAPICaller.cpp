@@ -117,6 +117,15 @@ bool UseSpell(DarksideAPI* apiObject, int spellOffset) {
 	return false;
 }
 
+bool UsePetCmd(DarksideAPI* apiObject, int aggState, int walkState, int petCmd) {
+	if (apiObject != NULL) {
+		if (apiObject->UsePetCmd(aggState, walkState, petCmd)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool GetChatline(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	if (apiObject != NULL) {
 		if (apiObject->GetChatline(lpBuffer)) {

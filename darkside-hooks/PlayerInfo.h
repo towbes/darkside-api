@@ -24,16 +24,27 @@ private:
     //Function will check this every frame
     //Cast if values present, then reset to 0
 
+    //Use skill MMF
     int* pShmUseSkill;
     void* skillMapFile;
     std::wstring skillmmf_name;
+    //Use spell MMF
     int* pShmUseSpell;
     void* spellMapFile;
     std::wstring spellmmf_name;
+    //Pet cmd MMF
+    petCmd_t* pShmPetCmd;
+    void* petCmdMapFile;
+    std::wstring petCmdmmf_name;
+    //Skill Queue
     std::queue<int> skillQueue;
     int currSkill;
+    //Spell Queue
     std::queue<int> spellQueue;
     int currSpell;
+    //Pet Cmd Qeueue
+    std::queue<petCmd_t> petCmdQueue;
+    petCmd_t currPetCmd;
 
 public:
     PlayerInfo();
@@ -44,6 +55,7 @@ public:
 
     void QueueSkill();
     void QueueSpell();
+    void QueuePetCmd();
 
 
 };

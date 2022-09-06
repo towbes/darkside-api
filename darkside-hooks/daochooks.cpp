@@ -93,36 +93,15 @@ namespace daoc {
         return SetTargetUI();
     }
 
-    //Incoming chat hook
-    //void grabChat(const char* buffer) {
-    //    std::string strBuff = std::string(buffer);
-    //}
-    //
-    //__declspec(naked) void __stdcall printChat() {
-    //    const char* ptrBuff;
-    //    //save the registers/flags;
-    //    _asm pushad;
-    //    _asm pushfd;
-    //    //prologue;
-    //    _asm push ebp;
-    //    _asm mov ebp, esp;
-    //    _asm sub esp, __LOCAL_SIZE;
-    //
-    //    _asm mov ptrBuff, ebx;
-    //
-    //    ptrBuff += 1;
-    //    grabChat(ptrBuff);
-    //
-    //    //epilogue
-    //    _asm mov esp, ebp;
-    //    _asm pop ebp;
-    //    //restore registers/flags
-    //    _asm popfd;
-    //    _asm popad;
-    //
-    //    //instruction we overwrote
-    //    _asm jmp oPrintChat
-    //}
+    void UsePetCommand(char aggroState, char walkState, char command) {
+        typedef void(__cdecl* _PetWindow)(char aggroState, char walkState, char command);
+        _PetWindow PetWindow = (_PetWindow)funcPetWindow_x;
 
+        return PetWindow(aggroState, walkState, command);
+        //Address of signature = game.dll + 0x0002AD78
+        //const char* funcPetWindowPattern = "\x55\x8B\xEC\x51\x83\x3D\x00\x82\x99\x00\x00\x75\x00\x8A\x45\x00\x88\x45\x00\x8A\x45\x00\x88\x45\x00\x8A\x45";
+        //const char* funcPetWindowMask = "xxxxxxxxxx?x?xx?xx?xx?xx?xx";
+        //"55 8B EC 51 83 3D 00 82 99 00 ? 75 ? 8A 45 ? 88 45 ? 8A 45 ? 88 45 ? 8A 45"
+    }
 
 }

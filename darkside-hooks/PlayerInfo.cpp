@@ -80,15 +80,20 @@ PlayerInfo::PlayerInfo() {
         _tprintf(TEXT("Skill Map Could not create file mapping object (%d).\n"),
             GetLastError());
     }
-
-    if (skillMapFile != 0) {
+    else {
         pShmUseSkill = (int*)MapViewOfFile(skillMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-    }//Todo add exception
+    }
+    
+    if (pShmUseSkill == NULL) {
+        _tprintf(TEXT("Skill Map Could not create file mapping object (%d).\n"),
+            GetLastError());
+    }
+    else {
+        //Set to -1 while waiting for skill
+        *pShmUseSkill = -1;
+    }
 
-    //Set to -1 while waiting for skill
-    *pShmUseSkill = -1;
-
-        //set up skill and spell casting function shaerd memory
+    //set up skill and spell casting function shaerd memory
     spellmmf_name = std::to_wstring(pid) + L"_plyrUseSpell";
     std::size_t useSpellfileSize = sizeof(int);
 
@@ -105,13 +110,56 @@ PlayerInfo::PlayerInfo() {
         _tprintf(TEXT("Spell map Could not create file mapping object (%d).\n"),
             GetLastError());
     }
-
-    if (spellMapFile != 0) {
+    else {
         pShmUseSpell = (int*)MapViewOfFile(spellMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-    }//Todo add exception
+    }
 
-    //Set to -1 while waiting for spell
-    *pShmUseSpell = -1;
+    
+
+    if (pShmUseSpell == NULL) {
+        _tprintf(TEXT("Spell map Could not create file mapping object (%d).\n"),
+            GetLastError());
+    }
+    else {
+        //Set to -1 while waiting for spell
+        *pShmUseSpell = -1;
+    }
+
+    
+    
+    
+
+    //set up skill and spell casting function shaerd memory
+    petCmdmmf_name = std::to_wstring(pid) + L"_plyrPetCmd";
+    std::size_t petCmdfileSize = sizeof(petCmd_t);
+
+    auto petCmdMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        petCmdfileSize,                // maximum object size (low-order DWORD)
+        petCmdmmf_name.c_str());                 // name of mapping object
+
+    if (petCmdMapFile == NULL)
+    {
+        _tprintf(TEXT("Spell map Could not create file mapping object (%d).\n"),
+            GetLastError());
+    }
+    else {
+        pShmPetCmd = (petCmd_t*)MapViewOfFile(petCmdMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    }
+
+    if (pShmPetCmd == NULL) {
+        _tprintf(TEXT("Spell map Could not create file mapping object (%d).\n"),
+            GetLastError());
+    }
+    else {
+        //Set to -1 while waiting for cmd
+        petCmd_t tmpPet = { -1,-1,-1 };
+        memcpy(pShmPetCmd, &tmpPet, sizeof(petCmd_t));
+    }
+
 }
 
 PlayerInfo::~PlayerInfo() {
@@ -121,6 +169,8 @@ PlayerInfo::~PlayerInfo() {
     CloseHandle(skillMapFile);
     UnmapViewOfFile((LPCVOID)pShmUseSpell);
     CloseHandle(spellMapFile);
+    UnmapViewOfFile((LPCVOID)pShmPetCmd);
+    CloseHandle(petCmdMapFile);
 }
 
 void PlayerInfo::GetPlayerInfo() {
@@ -157,5 +207,17 @@ void PlayerInfo::QueueSpell() {
         currSpell = spellQueue.front();
         spellQueue.pop();
         daoc::UseSpell(currSpell, 1);
+    }
+}
+
+void PlayerInfo::QueuePetCmd() {
+    if (pShmPetCmd->aggroState >= 0) {
+        petCmdQueue.push(*pShmPetCmd);
+        pShmPetCmd->aggroState = -1;
+    }
+    if (!petCmdQueue.empty()) {
+        currPetCmd = petCmdQueue.front();
+        petCmdQueue.pop();
+        daoc::UsePetCommand(currPetCmd.aggroState, currPetCmd.walkState, currPetCmd.petCmd);
     }
 }

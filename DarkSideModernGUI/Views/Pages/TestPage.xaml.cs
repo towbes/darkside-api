@@ -167,6 +167,8 @@ namespace DarkSideModernGUI.Views.Pages
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UseSpell(IntPtr pApiObject, int spellOffset);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool UsePetCmd(IntPtr pApiObject, int aggroState, int walkState, int petCmd);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetChatline(IntPtr pApiObject, IntPtr lpBuffer);
 
 
@@ -411,23 +413,32 @@ namespace DarkSideModernGUI.Views.Pages
             CommandManager.InvalidateRequerySuggested();
         }
 
-        const UInt32 WM_KEYDOWN = 0x0100;
-        const UInt32 WM_KEYUP = 0x0101;
-        const int VK_NUMPAD5 = 0x31;
+        //const UInt32 WM_KEYDOWN = 0x0100;
+        //const UInt32 WM_KEYUP = 0x0101;
+        //const int VK_NUMPAD5 = 0x31;
+        //
+        //[DllImport("user32.dll")]
+        //static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
+        //[DllImport("user32.dll")]
+        //static extern bool SetForegroundWindow(IntPtr hWnd);
+        //
+        //
+        //private void Button_Click_Numpad5(object sender, RoutedEventArgs e)
+        //{
+        //    //https://github.com/michaelnoonan/inputsimulator
+        //    //Some test code with input simulator, but requires that the window come to foreground and is somewhat unreliable
+        //    //InputSimulator sim = new InputSimulator();
+        //    Process gameproc = Process.GetProcessById(GetPid(DashboardPage.apiObject));
+        //    SetForegroundWindow(gameproc.MainWindowHandle);
+        //    //InputSimulator.SimulateKeyPress(VirtualKeyCode.VK_KEY_1)
+        //}
 
-        [DllImport("user32.dll")]
-        static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
-        [DllImport("user32.dll")]
-        static extern bool SetForegroundWindow(IntPtr hWnd);
-
-
-        private void Button_Click_Numpad5(object sender, RoutedEventArgs e)
+        private void Button_Click_PetAttk(object sender, RoutedEventArgs e)
         {
             //https://github.com/michaelnoonan/inputsimulator
             //Some test code with input simulator, but requires that the window come to foreground and is somewhat unreliable
             //InputSimulator sim = new InputSimulator();
-            Process gameproc = Process.GetProcessById(GetPid(DashboardPage.apiObject));
-            SetForegroundWindow(gameproc.MainWindowHandle);
+            UsePetCmd(DashboardPage.apiObject, 0, 0, 1);
             //InputSimulator.SimulateKeyPress(VirtualKeyCode.VK_KEY_1)
         }
 

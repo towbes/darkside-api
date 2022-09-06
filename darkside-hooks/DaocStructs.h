@@ -36,6 +36,11 @@ struct useSpell_t {
     char unknown[60];
 };
 
+struct petCmd_t {
+    int aggroState;
+    int walkState;
+    int petCmd;
+};
 
 //item structure starts at 0xf9b8d0
 struct item_t {

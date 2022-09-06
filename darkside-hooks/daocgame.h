@@ -12,6 +12,7 @@
 #define funcSetTarget_x		0x43a8f3
 #define funcSetTargetUI_x		0x48f194
 #define funcPrintChat_x		0x4190e3
+#define funcPetWindow_x		0x42ad78
 
 // Entities
 #define funcGetEntityPointer_x		0x43589f

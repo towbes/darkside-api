@@ -47,6 +47,7 @@ public:
     bool GetPlayerInfo(LPVOID lpBuffer);
     bool UseSkill(int skillOffset);
     bool UseSpell(int spellOffset);
+    bool UsePetCmd(int aggState, int walkState, int petCmd);
 
     //Party Members
     bool GetPartyMember(int memberIndex, LPVOID lpBuffer);

@@ -108,3 +108,39 @@ bool DarksideAPI::UseSpell(int spellOffset) {
     CloseHandle(spellMapFile);
     return false;
 }
+
+bool DarksideAPI::UsePetCmd(int aggState, int walkState, int petCmd) {
+    //set up skill and spell casting function shaerd memory
+    std::wstring petCmdmmf_name = std::to_wstring(pidHandle) + L"_plyrPetCmd";
+    std::size_t petCmdfileSize = sizeof(petCmd_t);
+
+    auto petCmdMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        petCmdfileSize,                // maximum object size (low-order DWORD)
+        petCmdmmf_name.c_str());                 // name of mapping object
+
+    if (petCmdMapFile == NULL)
+    {
+        _tprintf(TEXT("Pet Cmd map Could not create file mapping object (%d).\n"),
+            GetLastError());
+        return false;
+    }
+
+
+    petCmd_t* ptrPetCmd = (petCmd_t*)MapViewOfFile(petCmdMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+
+    if (ptrPetCmd->aggroState == -1) {
+        ptrPetCmd->aggroState = aggState;
+        ptrPetCmd->walkState = walkState;
+        ptrPetCmd->petCmd = petCmd;
+        UnmapViewOfFile(ptrPetCmd);
+        CloseHandle(petCmdMapFile);
+        return true;
+    }
+    UnmapViewOfFile(ptrPetCmd);
+    CloseHandle(petCmdMapFile);
+    return false;
+}
