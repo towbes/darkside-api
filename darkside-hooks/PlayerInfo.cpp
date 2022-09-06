@@ -156,6 +156,6 @@ void PlayerInfo::QueueSpell() {
     if (!spellQueue.empty()) {
         currSpell = spellQueue.front();
         spellQueue.pop();
-        daoc::UseSpell(1, currSpell);
+        daoc::UseSpell(currSpell, 1);
     }
 }

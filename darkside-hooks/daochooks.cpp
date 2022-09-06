@@ -62,7 +62,7 @@ namespace daoc {
     //Use spell and skill
     void UseSpell(int canCastSpell, int spellSlot) {
         //Use spell and use skill functions
-        typedef void(__cdecl* _UseSpell)(int canCastSpell, int spellSlot);
+        typedef void(__cdecl* _UseSpell)(int spellSlotint, int canCastSpell);
         _UseSpell UseSpell = (_UseSpell)funcUseSpell_x;
 
         return UseSpell(canCastSpell, spellSlot);
