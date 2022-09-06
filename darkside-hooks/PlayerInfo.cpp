@@ -162,6 +162,7 @@ PlayerInfo::PlayerInfo() {
 
 }
 
+//Deconstructor to release shared memory
 PlayerInfo::~PlayerInfo() {
     UnmapViewOfFile(pShmPlayerInfo);
     CloseHandle(hMapFile);
@@ -173,6 +174,7 @@ PlayerInfo::~PlayerInfo() {
     CloseHandle(petCmdMapFile);
 }
 
+//Update the plyrInfo_t struct in shared memory
 void PlayerInfo::GetPlayerInfo() {
     if (pShmPlayerInfo != NULL) {
         unsigned char* tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerHp);
@@ -186,6 +188,10 @@ void PlayerInfo::GetPlayerInfo() {
     }
 }
 
+//Function runs each frame
+//API will update shared memory with skill offset #
+//Function pushes that to queue and resets shared memory to -1
+//Todo: add a condition to only try to empty the queue when not casting or moving
 void PlayerInfo::QueueSkill() {
     if (*pShmUseSkill >= 0) {
         skillQueue.push(*pShmUseSkill);
@@ -198,6 +204,10 @@ void PlayerInfo::QueueSkill() {
     }
 }
 
+//Function runs each frame
+//API will update shared memory with spell offset #
+//Function pushes that to queue and resets shared memory to -1
+//Todo: add a condition to only try to empty the queue when not casting or moving
 void PlayerInfo::QueueSpell() {
     if (*pShmUseSpell >= 0) {
         skillQueue.push(*pShmUseSpell);
@@ -210,6 +220,10 @@ void PlayerInfo::QueueSpell() {
     }
 }
 
+//Function runs each frame
+//API will update shared memory with petCmd_t object info
+//Function pushes that to queue and resets aggroState to -1
+//The action applies to players current target
 void PlayerInfo::QueuePetCmd() {
     if (pShmPetCmd->aggroState >= 0) {
         petCmdQueue.push(*pShmPetCmd);
