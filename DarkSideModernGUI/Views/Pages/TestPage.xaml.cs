@@ -179,7 +179,7 @@ namespace DarkSideModernGUI.Views.Pages
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetChatline(IntPtr pApiObject, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SendCommand(IntPtr pApiObject, IntPtr lpBuffer);
+        public static extern bool SendCommand(IntPtr pApiObject, int cmdMode, int iMode, IntPtr lpBuffer);
 
 
         public static IntPtr apiObject;
@@ -512,18 +512,21 @@ namespace DarkSideModernGUI.Views.Pages
 
             //Reuse to test send command
             String tmp = SetTargetOffset.Text;
+            string[] args = tmp.Split(',');
             if (!String.IsNullOrEmpty(tmp))
             {
+                //alloc a buf and zero it out
                 IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<CmdBuffer>());
                 //zero out buffer
                 for (int i = 0; i < Marshal.SizeOf<CmdBuffer>(); i++)
                 {
                     Marshal.WriteByte(buf, i, 0);
                 }
+
                 //char[] strBuf = tmp.ToCharArray();
-                buf = Marshal.StringToHGlobalAnsi(tmp);
+                buf = Marshal.StringToHGlobalAnsi(args[2]);
                 //Marshal.Copy(strBuf, 0, buf, strBuf.Length);
-                SendCommand(DashboardPage.apiObject, buf);
+                SendCommand(DashboardPage.apiObject, Int32.Parse(args[0]), Int32.Parse(args[1]), buf);
                 Marshal.FreeHGlobal(buf);
             }
             
