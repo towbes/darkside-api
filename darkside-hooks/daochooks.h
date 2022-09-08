@@ -14,7 +14,7 @@ namespace daoc {
     //_EntityPtrSanityCheck EntityPtrSanityCheck = (_EntityPtrSanityCheck)funcEntityPtrSanityCheck_x;
 
    
-    //credit atom0s for this function
+    //// (c) 2022 atom0s [atom0s@live.com]
     //use __stdcall to make stack setup/cleanup simpler
     //void GetEntityName(int table_idx, int entity_idx, char* Destination, size_t Count);
     //table index should always be 3, count should be 48
@@ -56,6 +56,21 @@ namespace daoc {
     //"55 8B EC 51 83 3D 00 82 99 00 ? 75 ? 8A 45 ? 88 45 ? 8A 45 ? 88 45 ? 8A 45"
 
     //Send command function
+    //(c) 2022 atom0s [atom0s@live.com]
+    //     enum command_mode : int32_t
+    //{
+    //    typed = 0,
+    //        macro = 1,
+    //        system = 2,
+    //};
+    //enum input_mode : int32_t
+    //{
+    //    normal = 0,
+    //    slash = 1,
+    //    debug = 2,
+    //};
+    // 
+    // 
     //Commands prefixed with & (not /)
     void SendCommand(int cmdMode, int iMode, const char* cmdBuffer);
     //typedef void(__cdecl* _SendCommand)(const char* cmdBuffer);

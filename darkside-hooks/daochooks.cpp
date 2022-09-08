@@ -24,6 +24,7 @@ namespace daoc {
         return reinterpret_cast<bool(__fastcall*)(uint32_t)>(funcEntityPtrSanityCheck_x)(entOffset);
     }
 
+    // (c) 2022 atom0s [atom0s@live.com]
     void __declspec(naked) __stdcall GetEntityName(int table_idx, int entity_idx, char* Destination, size_t Count) {
 
         __asm {
