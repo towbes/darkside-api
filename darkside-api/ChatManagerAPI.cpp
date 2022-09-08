@@ -30,7 +30,7 @@ void DarksideAPI::ChatListener() {
     //Add a sleep to give injected DLL time to set up shared memory
     Sleep(200);
 
-    while (true) {
+    while (injected) {
         if (pShmChatmanager->rdySend == false) {
             std::lock_guard<std::mutex> lg(pShmChatmanager->cmMutex);
             std::string tmp = std::string(pShmChatmanager->buffer);

@@ -19,12 +19,15 @@ struct TSharedData
 static HANDLE hMapFile;
 static LPVOID lpMemFile;
 
-DarksideAPI::DarksideAPI() {}
+DarksideAPI::DarksideAPI() {
+    this->pidHandle = 0;
+}
 
 DarksideAPI::~DarksideAPI() {
-    if (chatThread != nullptr) {
-        chatThread->join();
-    }
+    //if (chatThread != nullptr) {
+    //    chatThread->join();
+    //    chatThread = nullptr;
+    //}
 }
 
 bool DarksideAPI::InjectPid(int pid) {
@@ -71,19 +74,24 @@ bool DarksideAPI::InjectPid(int pid) {
             DWORD dwThreadId = 0;
             auto hThread = CreateRemoteThread(hProc, nullptr, 0, LPTHREAD_START_ROUTINE(data.lpInit), nullptr, 0, &dwThreadId);
             if (hThread != 0) {
-                ResumeThread(hThread);
+                if (ResumeThread(hThread)) {
+                    injected = true;
+                    Sleep(100);
+                    //Start the chat listener
+                    if (chatThread == nullptr) {
+                        chatThread = new std::thread(&DarksideAPI::ChatListener, this);
+                    }
+                }
+                else {
+                    return false;
+                }
+
             }
             else {
                 _tprintf(TEXT("Could not create remote thread (%d).\n"),
                     GetLastError());
                 return false;
             }
-            Sleep(100);
-           //Start the chat listener
-            if (chatThread == nullptr) {
-                chatThread = new std::thread(&DarksideAPI::ChatListener, this);
-            }
-            
         }
         return true;
     }
@@ -91,4 +99,35 @@ bool DarksideAPI::InjectPid(int pid) {
 
 int DarksideAPI::GetPid() {
     return pidHandle;
+}
+
+bool DarksideAPI::Unload(int pid) {
+
+    //https://stackoverflow.com/questions/5235647/c-concat-lpctstr
+    //https://stackoverflow.com/questions/12602526/how-can-i-convert-an-int-to-a-cstring
+    std::string str = std::to_string(pidHandle) + "_unloadFlag";
+    std::size_t fsize = sizeof(int);
+
+    // Get a handle to our file map
+    auto hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, fsize, str.c_str());
+    if (hMapFile == nullptr) {
+        MessageBoxA(nullptr, "Failed to create file mapping!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return false;
+    }
+    // Get our shared memory pointer
+    int* lpMemFile = (int*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    if (lpMemFile == nullptr) {
+        MessageBoxA(nullptr, "Failed to map shared memory!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        UnmapViewOfFile(hMapFile);
+        return false;
+    }
+    injected = false;
+
+    *lpMemFile = 1;
+
+    pidHandle = 0;
+    UnmapViewOfFile(lpMemFile);
+    CloseHandle(hMapFile);
+
+    return true;
 }

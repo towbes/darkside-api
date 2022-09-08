@@ -11,7 +11,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
-
+using static DarkSideModernGUI.Helpers.DarksideGameAPI;
 
 
 namespace DarkSideModernGUI.Views.Pages
@@ -76,12 +76,12 @@ namespace DarkSideModernGUI.Views.Pages
 
             //dummyproof ==> If injected == 1 then.. otherwise do nothing.
 
-            int size = Marshal.SizeOf<TestPage.PlayerPosition>();
-            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<TestPage.PlayerPosition>());
+            int size = Marshal.SizeOf<PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
 
-            TestPage.GetPlayerPosition(DashboardPage.apiObject, buf);
+            GetPlayerPosition(DashboardPage.apiObject, buf);
 
-            TestPage.PlayerPosition playerPos = (TestPage.PlayerPosition)Marshal.PtrToStructure(buf, typeof(TestPage.PlayerPosition));
+            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
             Dispatcher.Invoke(() => {
             lblWaypointX.Content = (playerPos.pos_x).ToString("0.0000");
@@ -99,10 +99,10 @@ namespace DarkSideModernGUI.Views.Pages
 
         {
 
-            int size = Marshal.SizeOf<TestPage.PlayerPosition>();
-            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<TestPage.PlayerPosition>());
-            TestPage.GetPlayerPosition(TestPage.apiObject, buf);
-            TestPage.PlayerPosition playerPos = (TestPage.PlayerPosition)Marshal.PtrToStructure(buf, typeof(TestPage.PlayerPosition));
+            int size = Marshal.SizeOf<PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            GetPlayerPosition(DashboardPage.apiObject, buf);
+            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
             Dispatcher.Invoke(() =>
             {
@@ -125,10 +125,10 @@ namespace DarkSideModernGUI.Views.Pages
         private void btnAddWaypoint_Click(object sender, RoutedEventArgs e)
         {
 
-            int size = Marshal.SizeOf<TestPage.PlayerPosition>();
-            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<TestPage.PlayerPosition>());
-            TestPage.GetPlayerPosition(TestPage.apiObject, buf);
-            TestPage.PlayerPosition playerPos = (TestPage.PlayerPosition)Marshal.PtrToStructure(buf, typeof(TestPage.PlayerPosition));
+            int size = Marshal.SizeOf<PlayerPosition>();
+            IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            GetPlayerPosition(DashboardPage.apiObject, buf);
+            PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
 
            waypoint.Add(new Waypoint()

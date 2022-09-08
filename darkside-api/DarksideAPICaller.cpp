@@ -27,6 +27,16 @@ int GetPid(DarksideAPI* apiObject) {
 	return 0;
 }
 
+bool Unload(DarksideAPI* apiObject, int pid) {
+	if (apiObject != NULL) {
+		if (apiObject->Unload(pid)) {
+			DisposeDarksideAPI(apiObject);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool GetPlayerPosition(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	if (apiObject != NULL) {
 		if (apiObject->GetPlayerPosition(lpBuffer)) {

@@ -20,7 +20,7 @@ struct entityInfoAPI_t {
 class __declspec(dllexport) DarksideAPI {
 private:
     int pidHandle;
-    void setPid(int pid);
+    bool injected;
 
     //Queue to hold the chatLog, does not need to be accessed from C#
     std::queue<std::string> chatLog;
@@ -33,8 +33,9 @@ public:
 
     //Injector
     bool InjectPid(int pid);
+    bool Unload(int pid);
     int GetPid();
-
+    
     //Entity
     bool GetEntityInfo(int entIndex, LPVOID lpBuffer);
 

@@ -89,10 +89,32 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     //Start d3d9 hook
     Init(ghModule);
 
-    //wait for user input
+
+    //Get Process ID
+    int currpid = GetCurrentProcessId();
+    //https://stackoverflow.com/questions/5235647/c-concat-lpctstr
+    //https://stackoverflow.com/questions/12602526/how-can-i-convert-an-int-to-a-cstring
+    std::string str = std::to_string(currpid) + "_unloadFlag";
+    std::size_t fsize = sizeof(int);
+
+    // Get a handle to our file map
+    auto hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, fsize, str.c_str());
+    if (hMapFile == nullptr) {
+        MessageBoxA(nullptr, "Failed to create file mapping!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+    }
+    // Get our shared memory pointer
+    int* lpMemFile = (int*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    if (lpMemFile == nullptr) {
+        MessageBoxA(nullptr, "Failed to map shared memory!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        CloseHandle(hMapFile);
+    }
+
+    *lpMemFile = 0;
+
+    //wait for unload command from shared memory
     while (true) {
         //break when user presses end
-        if (GetAsyncKeyState(VK_RCONTROL) & 1) {
+        if (*lpMemFile == 1 || GetAsyncKeyState(VK_RCONTROL) & 1) {
             break;
         }
         Sleep(100);

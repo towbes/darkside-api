@@ -15,6 +15,8 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 
+using static DarkSideModernGUI.Helpers.DarksideGameAPI;
+
 namespace DarkSideModernGUI.Views.Pages
 {
     /// <summary>
@@ -31,7 +33,9 @@ namespace DarkSideModernGUI.Views.Pages
         private String currentDirectory;
         private string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
-        public ObservableCollection<GameDLL> gameproccess { get; set; }
+        public ObservableCollection<GameDLL> gameprocs { get; set; }
+
+        
 
         public ViewModels.DashboardViewModel ViewModel
         {
@@ -52,9 +56,9 @@ namespace DarkSideModernGUI.Views.Pages
 
             
 
-            //gameproccess list
-            gameproccess = new ObservableCollection<GameDLL>() { };
-            cbxgameproccess.ItemsSource = gameproccess;
+            //gameprocs list
+            gameprocs = new ObservableCollection<GameDLL>() { };
+            cbxgameproccess.ItemsSource = gameprocs;
 
 
         }
@@ -68,19 +72,20 @@ namespace DarkSideModernGUI.Views.Pages
             //get all GameDLL processes
             Process[] localByName = Process.GetProcessesByName("game.dll");
             Dispatcher.Invoke(() => {
-                    //gameproccess.Clear();
+                    //gameprocs.Clear();
             });
 
             foreach (var localGameProcess in localByName)
             {
                 Dispatcher.Invoke(() => {
                     //Check if the ID already exists in the colleciton
-                    if (!gameproccess.Any(u => u.GameDLLID == localGameProcess.Id))
+                    if (!gameprocs.Any(u => u.procId == localGameProcess.Id))
                     {
-                        gameproccess.Add(new GameDLL()
+                        gameprocs.Add(new GameDLL()
                         {
-                            GameDLLID = localGameProcess.Id,
-                            Name = localGameProcess.MainWindowTitle
+                            procId = localGameProcess.Id,
+                            Name = localGameProcess.MainWindowTitle,
+                            apiObject = CreateDarksideAPI()
                         });
                     }
 
@@ -107,27 +112,49 @@ namespace DarkSideModernGUI.Views.Pages
 
         public struct GameDLL
         {
-            public int GameDLLID { get; set; }
+            public int procId { get; set; }
             public string Name { get; set; }
-            public bool isInjected { get; set; }
 
-          
+            public IntPtr apiObject { get; set; }          
         }
 
-      
+        //Single game inject
+        public static IntPtr apiObject;
+
         private void btnInjectGameDLL_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            apiObject = TestPage.CreateDarksideAPI();
+            apiObject = CreateDarksideAPI();
             if (cbxgameproccess.SelectedIndex != -1)
             {
-                if (TestPage.InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString())))
+                if (InjectPid(apiObject, Int32.Parse(cbxgameproccess.SelectedValue.ToString())))
                 {
 
                 }
             }
         }
 
-        public static IntPtr apiObject;
+        private void btnInjectAll_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            foreach (GameDLL proc in gameprocs)
+            {
+                if (InjectPid(proc.apiObject, proc.procId))
+                {
+
+                }
+            }
+        }
+
+        private void btnUnloadAll_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            foreach (GameDLL proc in gameprocs)
+            {
+                if (Unload(proc.apiObject, proc.procId))
+                {
+                    //API calls dispose so this object is now deleted
+                }
+            }
+            gameprocs.Clear();
+        }
 
 
         public class distancetowaypoints {
@@ -172,12 +199,12 @@ namespace DarkSideModernGUI.Views.Pages
 
                 foreach (var importedWaypoint in importedWaypoints)
                 {
-                    int size = Marshal.SizeOf<TestPage.PlayerPosition>();
-                    IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<TestPage.PlayerPosition>());
+                    int size = Marshal.SizeOf<PlayerPosition>();
+                    IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
 
-                    TestPage.GetPlayerPosition(DashboardPage.apiObject, buf);
+                    GetPlayerPosition(DashboardPage.apiObject, buf);
 
-                    TestPage.PlayerPosition playerPos = (TestPage.PlayerPosition)Marshal.PtrToStructure(buf, typeof(TestPage.PlayerPosition));
+                    PlayerPosition playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
 
                     Double DistanceBetweenPlayerAndWaypoint = Math.Sqrt((playerPos.pos_x - float.Parse(importedWaypoint.playerPosX)) * (playerPos.pos_x - float.Parse(importedWaypoint.playerPosX)) + (playerPos.pos_y - float.Parse(importedWaypoint.playerPosY)) * (playerPos.pos_y - float.Parse(importedWaypoint.playerPosY)));
 
