@@ -73,10 +73,8 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         return false;
     }
 
-    if (entListFile != 0) {
-        //Map a view of the memory mapped file from above
-        ptrEntList = (entity_t*)MapViewOfFile(entListFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-    }//Todo add exception
+
+    ptrEntList = (entity_t*)MapViewOfFile(entListFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
     if (ptrEntList == NULL) {
         _tprintf(TEXT("Could not create entList map view object (%d).\n"),
@@ -140,10 +138,8 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
         return false;
     }
 
-    if (entNameFile != 0) {
-        //Map a view of the memory mapped file from above
-        ptrEntName = (entName_t*)MapViewOfFile(entNameFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-    }//Todo add exception
+
+    ptrEntName = (entName_t*)MapViewOfFile(entNameFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
 
     if (ptrEntName == NULL) {

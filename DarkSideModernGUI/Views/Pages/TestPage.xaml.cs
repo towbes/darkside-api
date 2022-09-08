@@ -135,6 +135,14 @@ namespace DarkSideModernGUI.Views.Pages
         }
 
 
+        //CmdBuffer
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct CmdBuffer
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)] public String sendCmd;
+        }
+
+
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateDarksideAPI();
 
@@ -170,6 +178,8 @@ namespace DarkSideModernGUI.Views.Pages
         public static extern bool UsePetCmd(IntPtr pApiObject, int aggroState, int walkState, int petCmd);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetChatline(IntPtr pApiObject, IntPtr lpBuffer);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SendCommand(IntPtr pApiObject, IntPtr lpBuffer);
 
 
         public static IntPtr apiObject;
@@ -397,7 +407,7 @@ namespace DarkSideModernGUI.Views.Pages
                 //Check if someone needs heal
                 if (partyMemberList[j].hp_pct < 100)
                 {
-                    int targ = findEntityByName("Suzyqueue");
+                    int targ = findEntityByName(cname);
                     SetTarget(DashboardPage.apiObject, targ);
                     UseSkill(DashboardPage.apiObject, 17);
                 }
@@ -488,16 +498,35 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_SetTarget(object sender, RoutedEventArgs e)
         {
+
+            //String tmp = SetTargetOffset.Text;
+            //int offset = -1;
+            ////If there are letters, get the offset by name
+            //if (!tmp.All(char.IsDigit)) {
+            //    offset = findEntityByName(tmp);
+            //} else
+            //{
+            //    offset = Int32.Parse(SetTargetOffset.Text);
+            //}
+            //SetTarget(DashboardPage.apiObject, offset);
+
+            //Reuse to test send command
             String tmp = SetTargetOffset.Text;
-            int offset = -1;
-            //If there are letters, get the offset by name
-            if (!tmp.All(char.IsDigit)) {
-                offset = findEntityByName(tmp);
-            } else
+            if (!String.IsNullOrEmpty(tmp))
             {
-                offset = Int32.Parse(SetTargetOffset.Text);
+                IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<CmdBuffer>());
+                //zero out buffer
+                for (int i = 0; i < Marshal.SizeOf<CmdBuffer>(); i++)
+                {
+                    Marshal.WriteByte(buf, i, 0);
+                }
+                //char[] strBuf = tmp.ToCharArray();
+                buf = Marshal.StringToHGlobalAnsi(tmp);
+                //Marshal.Copy(strBuf, 0, buf, strBuf.Length);
+                SendCommand(DashboardPage.apiObject, buf);
+                Marshal.FreeHGlobal(buf);
             }
-            SetTarget(DashboardPage.apiObject, offset);
+            
         }
 
         private void Button_Click_UseSkill(object sender, RoutedEventArgs e)

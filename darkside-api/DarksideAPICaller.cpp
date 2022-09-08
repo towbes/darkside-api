@@ -134,3 +134,12 @@ bool GetChatline(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	}
 	return false;
 }
+
+bool SendCommand(DarksideAPI* apiObject, LPVOID lpBuffer) {
+	if (apiObject != NULL) {
+		if (apiObject->SendCommand(lpBuffer)) {
+			return true;
+		}
+	}
+	return false;
+}

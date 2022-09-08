@@ -37,6 +37,8 @@ extern "C" {
 	extern __declspec(dllexport) bool UsePetCmd(DarksideAPI* apiObject, int aggState, int walkState, int petCmd);
 
 	extern __declspec(dllexport) bool GetChatline(DarksideAPI* apiObject, LPVOID lpBuffer);
+
+	extern __declspec(dllexport) bool SendCommand(DarksideAPI* apiObject, LPVOID lpBuffer);
 #ifdef __cplusplus
 }
 #endif

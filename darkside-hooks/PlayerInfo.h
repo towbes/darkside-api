@@ -28,20 +28,22 @@ private:
     int* pShmUseSkill;
     void* skillMapFile;
     std::wstring skillmmf_name;
+    //Skill Queue
+    std::queue<int> skillQueue;
+    int currSkill;
+
     //Use spell MMF
     int* pShmUseSpell;
     void* spellMapFile;
     std::wstring spellmmf_name;
+    //Spell Queue
+    std::queue<int> spellQueue;
+    int currSpell;
+
     //Pet cmd MMF
     petCmd_t* pShmPetCmd;
     void* petCmdMapFile;
     std::wstring petCmdmmf_name;
-    //Skill Queue
-    std::queue<int> skillQueue;
-    int currSkill;
-    //Spell Queue
-    std::queue<int> spellQueue;
-    int currSpell;
     //Pet Cmd Qeueue
     std::queue<petCmd_t> petCmdQueue;
     petCmd_t currPetCmd;

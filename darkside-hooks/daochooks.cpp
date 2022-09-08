@@ -104,4 +104,14 @@ namespace daoc {
         //"55 8B EC 51 83 3D 00 82 99 00 ? 75 ? 8A 45 ? 88 45 ? 8A 45 ? 88 45 ? 8A 45"
     }
 
+    void SendCommand(const char* cmdBuffer) {
+        typedef void(__cdecl* _SendCommand)(const char* cmdBuffer);
+        _SendCommand SendCommand = (_SendCommand)funcSendCmd_x;
+        return SendCommand(cmdBuffer);
+        ////Address of signature = game.dll + 0x0002BC08 0x42bc08
+        //const char* sendCmdPattern = "\x83\x3D\x00\x82\x99\x00\x00\x0F\x85\x00\x00\x00\x00\x56";
+        //const char* sendCmdMask = "xxxxxx?xx????x";
+        //"83 3D 00 82 99 00 ? 0F 85 ? ? ? ? 56"
+    }
+
 }

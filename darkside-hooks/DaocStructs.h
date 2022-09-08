@@ -111,3 +111,9 @@ struct chatManager_t {
     bool rdySend;
     char buffer[512];
 };
+
+struct sendCmd_t {
+    std::mutex cmdMutex;
+    bool rdyRecv;
+    char buffer[512];
+};

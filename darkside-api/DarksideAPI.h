@@ -59,5 +59,6 @@ public:
     //Chat manager, listener will start in a new thread
     void ChatListener();
     bool GetChatline(LPVOID lpBuffer);
+    bool SendCommand(LPVOID lpBuffer);
 
 };

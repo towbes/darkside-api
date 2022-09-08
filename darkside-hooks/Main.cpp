@@ -69,8 +69,6 @@ __declspec(naked) void __stdcall PrintChat() {
 }
 
 
-bool done = false;
-
 DWORD WINAPI Init(HMODULE hModule);
 
 PlayerPosition* posInfo = NULL;
@@ -91,10 +89,6 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     //Start d3d9 hook
     Init(ghModule);
 
-    //PlayerPosition* posInfo = new PlayerPosition();
-    //PartyMemberInfo* pMemInfo = new PartyMemberInfo();
-    //PlayerInfo* plyrInfo = new PlayerInfo();
-
     //wait for user input
     while (true) {
         //break when user presses end
@@ -110,8 +104,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     FreeConsole();
 #endif
 
-    //WriteMem((char*)ptrPresent, oPresBytes, 5);
-    //WriteMem((char*)ptrReset, oResetBytes, 5);
+    //Remove all hooks
 
     if (ptrPresent != NULL && ptrReset != NULL) {
         DetourTransactionBegin();
@@ -141,6 +134,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
 
         }
 
+
         bInit = false;
     }
 
@@ -163,6 +157,8 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         bInit = true;
     }
 
+    //These functions will run every frame
+    //They are used to get/set memory
     if (posInfo != NULL) {
         posInfo->GetPlayerPosition();
         posInfo->SetHeading();
@@ -190,7 +186,8 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
             chatMan->CopyChat(chatBuf);
             newMsg = false;
         }
-        
+        chatMan->QueueCommand();
+
     }
         
     //draw stuff here like so:
@@ -250,7 +247,7 @@ DWORD WINAPI Init(HMODULE hModule)
 
         if (ptrPresent != NULL && ptrReset != NULL) {
 
-            //DetourRestoreAfterWith();
+            //D3D9 Present hook
             DetourTransactionBegin();
             DetourUpdateThread(GetCurrentThread());
             DetourAttach(&(PVOID&)ptrPresent, hkPresent);
@@ -259,7 +256,7 @@ DWORD WINAPI Init(HMODULE hModule)
             {
 
             }
-
+            //D3D9 Reset hook
             DetourTransactionBegin();
             DetourUpdateThread(GetCurrentThread());
             DetourAttach(&(PVOID&)ptrReset, hkReset);
@@ -272,7 +269,7 @@ DWORD WINAPI Init(HMODULE hModule)
             oPresent = (tPresent)ptrPresent;
             oReset = (tReset)ptrReset;
 
-            //Chat detour
+            //Print to Chat detour (messages that don't require server side validation are not part of this function, so some messages will be missed)
             DetourTransactionBegin();
             DetourUpdateThread(GetCurrentThread());
             DetourAttach(&(PVOID&)ptrPrintChat, PrintChat);
@@ -281,6 +278,8 @@ DWORD WINAPI Init(HMODULE hModule)
             {
 
             }
+
+
         }
     }
     return 0;
