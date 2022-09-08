@@ -93,13 +93,14 @@ void ChatManager::QueueCommand() {
 
     std::lock_guard<std::mutex> lg(pShmSendCmd->cmdMutex);
     if (pShmSendCmd->rdyRecv == false) {
-        std::string tmpString = std::string(pShmSendCmd->buffer);
-        sendCmdQueue.push(tmpString);
+        //std::string tmpString = std::string(pShmSendCmd->buffer);
+        //sendCmdQueue.push(tmpString);
+        daoc::SendCommand(pShmSendCmd->cmdMode, pShmSendCmd->iMode, pShmSendCmd->buffer);
         pShmSendCmd->rdyRecv = true;
     }
-    if (!sendCmdQueue.empty()) {
-        strcpy_s(cmdBuf, sendCmdQueue.front().c_str());
-        sendCmdQueue.pop();
-        daoc::SendCommand(cmdBuf);
-    }
+    //if (!sendCmdQueue.empty()) {
+    //    strcpy_s(cmdBuf, sendCmdQueue.front().c_str());
+    //    sendCmdQueue.pop();
+    //    daoc::SendCommand(cmdBuf);
+    //}
 }

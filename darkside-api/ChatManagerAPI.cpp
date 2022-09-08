@@ -54,7 +54,7 @@ bool DarksideAPI::GetChatline(LPVOID lpBuffer) {
     return false;
 }
 
-bool DarksideAPI::SendCommand(LPVOID lpBuffer) {
+bool DarksideAPI::SendCommand(int cmdMode, int iMode, LPVOID lpBuffer) {
     //Setup the Chat Manager mmf
     std::wstring sendCmdmmf_name = std::to_wstring(pidHandle) + L"_SendCmd";
     std::size_t cmdFileSize = sizeof(sendCmd_t);
@@ -86,6 +86,8 @@ bool DarksideAPI::SendCommand(LPVOID lpBuffer) {
     
     std::lock_guard<std::mutex> lg(pShmSendCmd->cmdMutex);
     if (pShmSendCmd->rdyRecv == true) {
+        pShmSendCmd->cmdMode = cmdMode;
+        pShmSendCmd->iMode = iMode;
         memcpy(pShmSendCmd->buffer, lpBuffer, sizeof(char) * 512);
         pShmSendCmd->rdyRecv = false;
         return true;

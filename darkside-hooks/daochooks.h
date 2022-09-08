@@ -57,7 +57,7 @@ namespace daoc {
 
     //Send command function
     //Commands prefixed with & (not /)
-    void SendCommand(const char* cmdBuffer);
+    void SendCommand(int cmdMode, int iMode, const char* cmdBuffer);
     //typedef void(__cdecl* _SendCommand)(const char* cmdBuffer);
     //_SendCommand SendCommand;// = (_GetEntityPointer)0x43589f;
     ////Address of signature = game.dll + 0x0002BC08 0x42bc08

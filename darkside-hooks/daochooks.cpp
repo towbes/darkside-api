@@ -2,6 +2,8 @@
 #include "daochooks.h"
 
 uintptr_t wGetEntityName = funcGetEntityName_x;
+uintptr_t ptrChatiMode = ptrChatiMode_x;
+uintptr_t oCmdHandler = funcCmdHandler_x;
 
 namespace daoc {
     uintptr_t GetEntityPointer(int entityOffset)
@@ -104,14 +106,35 @@ namespace daoc {
         //"55 8B EC 51 83 3D 00 82 99 00 ? 75 ? 8A 45 ? 88 45 ? 8A 45 ? 88 45 ? 8A 45"
     }
 
-    void SendCommand(const char* cmdBuffer) {
-        typedef void(__cdecl* _SendCommand)(const char* cmdBuffer);
-        _SendCommand SendCommand = (_SendCommand)funcSendCmd_x;
-        return SendCommand(cmdBuffer);
+    void __declspec(naked) SendCommand(int cmdMode, int iMode, const char* cmdBuffer) {
+        //typedef void(__cdecl* _SendCommand)(const char* cmdBuffer);
+        //_SendCommand SendCommand = (_SendCommand)funcSendCmd_x;
+        //return SendCommand(cmdBuffer);
         ////Address of signature = game.dll + 0x0002BC08 0x42bc08
         //const char* sendCmdPattern = "\x83\x3D\x00\x82\x99\x00\x00\x0F\x85\x00\x00\x00\x00\x56";
         //const char* sendCmdMask = "xxxxxx?xx????x";
         //"83 3D 00 82 99 00 ? 0F 85 ? ? ? ? 56"
+            //void SendCommand(int cmdMode, int iMode, const char* cmdBuffer) {
+                //prepare stackframe
+        _asm push ebp;
+        _asm mov ebp, esp;
+        _asm sub esp, __LOCAL_SIZE;
+
+        *(int*)ptrChatiMode = iMode;
+        _asm push cmdMode;
+        _asm mov edx, cmdBuffer
+
+        _asm call oCmdHandler;
+        //wrapCmdHandler();
+
+        //epilogue
+        _asm mov esp, ebp;
+        _asm pop ebp;
+        //
+        _asm ret;
+
+
+
     }
 
 }

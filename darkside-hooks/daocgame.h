@@ -13,7 +13,7 @@
 #define funcSetTargetUI_x		0x48f194
 #define funcPrintChat_x		0x4190e3
 #define funcPetWindow_x		0x42ad78
-#define funcSendCmd_x		0x42bc08
+#define funcCmdHandler_x		0x416444
 
 // Entities
 #define funcGetEntityPointer_x		0x43589f
@@ -33,6 +33,9 @@
 #define ptrPlyrBuffs_x		0xfdd300
 #define ptrPlyrUseSkill_x		0x9a9730
 #define ptrInventory_x		0xf9b8d0
+
+//Chat related
+#define ptrChatiMode_x		0x10498D8
 
 // Target related
 #define ptrCurrentTargetEntOffset_x		0x10498b0
