@@ -10,17 +10,27 @@ namespace DarkSideModernGUI.Helpers
 {
     public class DarksideGameAPI
     {
-        //Player position struct
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct PlayerPosition
         {
             public float pos_x { get; private set; }
             public short heading { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 68)] public char[] unknown1;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)] public char[] unknown1;
+            public int plyrSpeedFwd { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)] public char[] unknown2;
+            public int momentumMaxFwdBack { get; private set; }
+            public float momentumFwdBack { get; private set; }
+            public float momentumLeftRight { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)] public char[] unknown3;
+            public float momentumFwdBackWritable { get; private set; }
+            public int unknown4 { get; private set; }
             public float pos_y { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public char[] unknown2;
+            public float writeablePos_Zadd { get; private set; }
+            public int unknown5 { get; private set; }            
             public float pos_z { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] public char[] unknown3;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public char[] unknown6;
+            public int rotatePlayer { get; private set; }
+
         }
 
         //PartyMemberInfo

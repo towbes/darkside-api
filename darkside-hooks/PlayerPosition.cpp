@@ -159,8 +159,16 @@ bool PlayerPosition::SetAutorun() {
         return false;
     }
     else if (preValAutorunToggle != *shmAutorunToggle) {
+        //If we're changing to 0, also set our forward momentum to 0
         *ptrAutorunToggle = *shmAutorunToggle;
         preValAutorunToggle = *(BYTE*)shmAutorunToggle;
+        if (*shmAutorunToggle == 0) {
+            std::lock_guard<std::mutex> lg(posUpdateMutex);
+            playerPositionInfo->momentumFwdBackWrite = 0;
+            int prevSpeed = playerPositionInfo->playerSpeedFwd;
+            playerPositionInfo->playerSpeedFwd = 0;
+            playerPositionInfo->playerSpeedFwd = prevSpeed;
+        }
         return true;
     }
     return false;

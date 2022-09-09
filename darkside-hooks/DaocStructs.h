@@ -3,11 +3,21 @@
 struct playerpos_t {
     float pos_x;
     short heading;
-    unsigned char unknown[68];
+    unsigned char unknown[20];
+    int playerSpeedFwd;
+    unsigned char unknown2[12];
+    int momentumMaxFwdBack;
+    float momentumFwdBack;
+    float momentumLeftRight;
+    unsigned char unknown3[12];
+    float momentumFwdBackWrite;
+    int unknown4;
     float pos_y;
-    unsigned char unknown2[8];
+    float writeablePos_zAdd;
+    int unknown5;
     float pos_z;
-    char unknown4;
+    unsigned char unknown6[16];
+    int rotatePlayer;
 };
 
 struct partymemberinfo_t {

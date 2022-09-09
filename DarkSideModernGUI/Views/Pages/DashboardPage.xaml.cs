@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 
 
 using static DarkSideModernGUI.Helpers.DarksideGameAPI;
+using System.Threading;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -140,6 +141,7 @@ namespace DarkSideModernGUI.Views.Pages
                 {
 
                 }
+                Thread.Sleep(50);
             }
         }
 
@@ -154,6 +156,7 @@ namespace DarkSideModernGUI.Views.Pages
                         //API calls dispose so this object is now deleted
                     }
                 }
+                Thread.Sleep(100);
 
             }
             gameprocs.Clear();
