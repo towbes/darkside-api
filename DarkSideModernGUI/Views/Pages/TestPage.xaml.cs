@@ -192,7 +192,6 @@ namespace DarkSideModernGUI.Views.Pages
 
             //PlayerInfo
             strPlayerInfo.Clear();
-            //Size should be 0xdcd4
             IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
             GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
             PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
@@ -254,7 +253,7 @@ namespace DarkSideModernGUI.Views.Pages
                 //Check if someone needs heal
                 if (partyMemberList[j].hp_pct < 100)
                 {
-                    int targ = findEntityByName(cname);
+                    int targ = findEntityByName(EntityList, cname);
                     SetTarget(DashboardPage.apiObject, targ);
                     UseSkill(DashboardPage.apiObject, 17);
                 }
@@ -327,21 +326,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
         }
-        int findEntityByName(String entName)
-        {
-            for (int i = 0; i < 2000; i++)
-            {
-                if (!String.IsNullOrEmpty(EntityList[i].name))
-                {
-                    if (String.Equals(entName, EntityList[i].name))
-                    {
-                        return i;
-                    }
-                }
 
-            }
-            return -1;
-        }
 
         private void Button_Click_SetTarget(object sender, RoutedEventArgs e)
         {
@@ -479,7 +464,7 @@ namespace DarkSideModernGUI.Views.Pages
         {
             if (currentTarget == 0) {
                 float stoppingDist = 40.0f;
-                int trackerTarget = findEntityByName("Tracker");
+                int trackerTarget = findEntityByName(EntityList, "Tracker");
                 SetTarget(DashboardPage.apiObject, trackerTarget);
 
                 float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
@@ -500,7 +485,7 @@ namespace DarkSideModernGUI.Views.Pages
             } else if (currentTarget == 1)
             {
                 float stoppingDist = 40.0f;
-                int trackerTarget = findEntityByName("Nera");
+                int trackerTarget = findEntityByName(EntityList, "Nera");
                 SetTarget(DashboardPage.apiObject, trackerTarget);
 
                 float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);

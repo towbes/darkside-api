@@ -19,6 +19,7 @@ private:
     void* ptrUseSpells;
     void* ptrBuffs;
     void* ptrInventory;
+    void* ptrPlayerName;
 
     //Use Skill and usespell Shared memory
     //Function will check this every frame

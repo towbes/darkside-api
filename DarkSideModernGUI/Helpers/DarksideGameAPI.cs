@@ -96,6 +96,8 @@ namespace DarkSideModernGUI.Helpers
             public int health { get; private set; }
             public int power { get; private set; }
             public int endu { get; private set; }
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 168)] public String name;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 168)] public String className;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 150)] public Skill_t[] Skills;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 150)] public Spell_t[] Spells;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 75)] public Buff_t[] Buffs;
@@ -168,5 +170,20 @@ namespace DarkSideModernGUI.Helpers
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SendCommand(IntPtr pApiObject, int cmdMode, int iMode, IntPtr lpBuffer);
 
+        public static int findEntityByName(List<EntityInfo> EntityList, String entName)
+        {
+            for (int i = 0; i < 2000; i++)
+            {
+                if (!String.IsNullOrEmpty(EntityList[i].name))
+                {
+                    if (String.Equals(entName, EntityList[i].name))
+                    {
+                        return i;
+                    }
+                }
+
+            }
+            return -1;
+        }
     }
 }

@@ -33,6 +33,7 @@
 #define ptrPlyrBuffs_x		0xfdd300
 #define ptrPlyrUseSkill_x		0x9a9730
 #define ptrInventory_x		0xf9b8d0
+#define ptrPlayerName_x		0xfd7090
 
 //Chat related
 #define ptrChatiMode_x		0x10498D8

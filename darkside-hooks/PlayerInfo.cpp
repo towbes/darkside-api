@@ -9,6 +9,7 @@ PlayerInfo::PlayerInfo() {
     ptrUseSpells = (void*)ptrPlyrSpells_x;
     ptrBuffs = (void*)ptrPlyrBuffs_x;
     ptrInventory = (void*)ptrInventory_x;
+    ptrPlayerName = (void*)ptrPlayerName_x;
 
 #ifdef _DEBUG
     std::cout << "ptrPlayerHp: " << std::hex << (int)ptrPlayerHp << std::endl;
@@ -43,10 +44,16 @@ PlayerInfo::PlayerInfo() {
 
 
     if (pShmPlayerInfo != NULL) {
+        //Pointer to grab hp/pow/endu offsets
         unsigned char* tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerHp);
         pShmPlayerInfo->hp = *(int*)tempPtr;
         pShmPlayerInfo->pow = *(int*)(tempPtr + 0x4);
         pShmPlayerInfo->endu = *(int*)(tempPtr + 0x8);
+        //Ptr to player name, class is at +0xa8
+        tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerName);
+        memcpy(pShmPlayerInfo->name, tempPtr, sizeof(pShmPlayerInfo->name));
+        memcpy(pShmPlayerInfo->className, (tempPtr + 0xa8), sizeof(pShmPlayerInfo->name));
+        //Copy the structs for skill/spells/buffs/inventory
         memcpy(pShmPlayerInfo->skills, ptrUseSkills, sizeof(pShmPlayerInfo->skills));
         memcpy(pShmPlayerInfo->spells, ptrUseSpells, sizeof(pShmPlayerInfo->spells));
         memcpy(pShmPlayerInfo->buffs, ptrBuffs, sizeof(pShmPlayerInfo->buffs));
@@ -177,10 +184,16 @@ PlayerInfo::~PlayerInfo() {
 //Update the plyrInfo_t struct in shared memory
 void PlayerInfo::GetPlayerInfo() {
     if (pShmPlayerInfo != NULL) {
+        //Pointer to grab hp/pow/endu offsets
         unsigned char* tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerHp);
         pShmPlayerInfo->hp = *(int*)tempPtr;
         pShmPlayerInfo->pow = *(int*)(tempPtr + 0x4);
         pShmPlayerInfo->endu = *(int*)(tempPtr + 0x8);
+        //Ptr to player name, class is at +0x168
+        tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerName);
+        memcpy(pShmPlayerInfo->name, tempPtr, sizeof(pShmPlayerInfo->name));
+        memcpy(pShmPlayerInfo->className, (tempPtr + 0xa8), sizeof(pShmPlayerInfo->name));
+        //Copy the structs for skill/spells/buffs/inventory
         memcpy(pShmPlayerInfo->skills, ptrUseSkills, sizeof(pShmPlayerInfo->skills));
         memcpy(pShmPlayerInfo->spells, ptrUseSpells, sizeof(pShmPlayerInfo->spells));
         memcpy(pShmPlayerInfo->buffs, ptrBuffs, sizeof(pShmPlayerInfo->buffs));

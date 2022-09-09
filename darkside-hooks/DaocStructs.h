@@ -75,6 +75,8 @@ struct plyrinfo_t {
     int hp;
     int pow;
     int endu;
+    unsigned char name[168];
+    unsigned char className[168];
     useSkill_t skills[150];
     useSpell_t spells[150];
     buff_t buffs[75];

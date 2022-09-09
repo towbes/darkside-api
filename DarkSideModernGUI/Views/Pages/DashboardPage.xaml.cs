@@ -33,7 +33,7 @@ namespace DarkSideModernGUI.Views.Pages
         private String currentDirectory;
         private string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
-        public ObservableCollection<GameDLL> gameprocs { get; set; }
+        static public ObservableCollection<GameDLL> gameprocs { get; set; }
 
         
 
@@ -114,7 +114,6 @@ namespace DarkSideModernGUI.Views.Pages
         {
             public int procId { get; set; }
             public string Name { get; set; }
-
             public IntPtr apiObject { get; set; }          
         }
 
