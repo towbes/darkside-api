@@ -95,15 +95,22 @@ namespace DarkSideModernGUI.Views.Pages
 
             int currentTarget = 0;
 
-            while (!destinationReached)
+            //alloc buffers
+            IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<DarksideGameAPI.EntityInfo>());
+            IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
+            IntPtr playerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+
+            //Update entity table
+            EntityList.Clear();
+            for (int i = 0; i < 2000; i++)
             {
-                //Update entity table
-                EntityList.Clear();
-                for (int i = 0; i < 2000; i++)
+
+                EntityInfo tmpentity;
+                if (GetEntityInfo(apiObject, i, entbuf))
                 {
-                    IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<DarksideGameAPI.EntityInfo>());
-                    EntityInfo tmpentity;
-                    GetEntityInfo(apiObject, i, entbuf);
                     tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
                     if (tmpentity.objectId > 0)
                     {
@@ -113,11 +120,18 @@ namespace DarkSideModernGUI.Views.Pages
                     {
                         EntityList.Add(new EntityInfo());
                     }
-                    Marshal.FreeHGlobal(entbuf);
+                }
+                else
+                {
+                    EntityList.Add(new EntityInfo());
                 }
 
+            }
 
-                IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
+            while (!destinationReached)
+            {
+
+
                 Chatbuffer tmpChat;
                 GetChatline(apiObject, chatbuf);
                 tmpChat = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
@@ -125,43 +139,34 @@ namespace DarkSideModernGUI.Views.Pages
                 {
                     chatLog.Add(tmpChat.chatLine);
                 }
-
-                Marshal.FreeHGlobal(chatbuf);
-
-
-                IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
-                GetPlayerPosition(apiObject, buf);
-                playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
+ 
+                GetPlayerPosition(apiObject, playerPosbuf);
+                playerPos = (PlayerPosition)Marshal.PtrToStructure(playerPosbuf, typeof(PlayerPosition));
                 // Updating the Label which displays the current second
-                Marshal.FreeHGlobal(buf);
-
+                
                 //Target info
                 //Size should be 0xdcd4
-                IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+                
                 GetTargetInfo(apiObject, tInfobuf);
                 targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
                 // Updating the Label which displays the current second
-                Marshal.FreeHGlobal(tInfobuf);
-
 
                 //PlayerInfo
-                IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+                
                 GetPlayerInfo(apiObject, pInfobuf);
                 playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
-                Marshal.FreeHGlobal(pInfobuf);
+                
 
                 partyMemberList.Clear();
                 //party list
                 for (int i = 0; i < 8; i++)
-                {
-                    IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+                {  
                     GetPartyMember(apiObject, i, pbuf);
                     PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(pbuf, typeof(PartyMemberInfo));
                     if (partyMember.hp_pct > 0)
                     {
                         partyMemberList.Add(partyMember);
                     }
-                    Marshal.FreeHGlobal(pbuf);
 
                 }
                 //for (int j = 0; j < partyMemberList.Count; j++)
@@ -233,8 +238,14 @@ namespace DarkSideModernGUI.Views.Pages
                 }
                 Thread.Sleep(100);
             }
-            
 
+
+            Marshal.FreeHGlobal(entbuf);
+            Marshal.FreeHGlobal(chatbuf);
+            Marshal.FreeHGlobal(playerPosbuf);
+            Marshal.FreeHGlobal(tInfobuf);
+            Marshal.FreeHGlobal(pInfobuf);
+            Marshal.FreeHGlobal(pbuf);
         }
     }
 }
