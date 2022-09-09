@@ -51,6 +51,13 @@ namespace DarkSideModernGUI.Helpers
             public float pos_z { get; private set; }
             public short heading { get; private set; }
         }
+        //Playerinfo struct
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct EntityList
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2000)] public EntityInfo[] EntList;
+
+        }
 
         //useSkill_t
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -153,6 +160,8 @@ namespace DarkSideModernGUI.Helpers
         public static extern bool GetPartyMember(IntPtr pApiObject, int memberIndex, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetEntityInfo(IntPtr pApiObject, int entityIndex, IntPtr lpBuffer);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GetEntityList(IntPtr pApiObject, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetPlayerInfo(IntPtr pApiObject, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]

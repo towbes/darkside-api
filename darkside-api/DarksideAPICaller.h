@@ -26,6 +26,8 @@ extern "C" {
 
 	extern __declspec(dllexport) bool GetEntityInfo(DarksideAPI* apiObject, int entIndex, LPVOID lpBuffer);
 
+	extern __declspec(dllexport) bool GetEntityList(DarksideAPI* apiObject, LPVOID lpBuffer);
+
 	extern __declspec(dllexport) bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer);
 
 	extern __declspec(dllexport) bool GetTargetInfo(DarksideAPI* apiObject, LPVOID lpBuffer);

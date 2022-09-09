@@ -17,6 +17,10 @@ struct entityInfoAPI_t {
     short heading;
 };
 
+struct entityListAPI_t {
+    entityInfoAPI_t entList[2000];
+};
+
 class __declspec(dllexport) DarksideAPI {
 private:
     int pidHandle;
@@ -38,6 +42,7 @@ public:
     
     //Entity
     bool GetEntityInfo(int entIndex, LPVOID lpBuffer);
+    bool GetEntityList(LPVOID lpBuffer);
 
     //Player Position
     bool GetPlayerPosition(LPVOID lpBuffer);

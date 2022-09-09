@@ -82,6 +82,15 @@ bool GetEntityInfo(DarksideAPI* apiObject, int entIndex, LPVOID lpBuffer) {
 	return false;
 }
 
+bool GetEntityList(DarksideAPI* apiObject, LPVOID lpBuffer) {
+	if (apiObject != NULL) {
+		if (apiObject->GetEntityList(lpBuffer)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool GetPlayerInfo(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	if (apiObject != NULL) {
 		if (apiObject->GetPlayerInfo(lpBuffer)) {

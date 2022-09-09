@@ -87,6 +87,7 @@ namespace DarkSideModernGUI.Views.Pages
         {
             bool destinationReached = false;
             List<EntityInfo> EntityList = new List<EntityInfo>();
+            EntityList entList = new EntityList();
             List<String> chatLog = new List<String>();
             List<PartyMemberInfo> partyMemberList = new List<PartyMemberInfo>();
             PlayerPosition playerPos;
@@ -96,41 +97,30 @@ namespace DarkSideModernGUI.Views.Pages
             int currentTarget = 0;
 
             //alloc buffers
-            IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<DarksideGameAPI.EntityInfo>());
+            IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
             IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
             IntPtr playerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
             IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
             IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
             IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
 
-            //Update entity table
-            EntityList.Clear();
-            for (int i = 0; i < 2000; i++)
-            {
-
-                EntityInfo tmpentity;
-                if (GetEntityInfo(apiObject, i, entbuf))
-                {
-                    tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
-                    if (tmpentity.objectId > 0)
-                    {
-                        EntityList.Add(tmpentity);
-                    }
-                    else
-                    {
-                        EntityList.Add(new EntityInfo());
-                    }
-                }
-                else
-                {
-                    EntityList.Add(new EntityInfo());
-                }
-
-            }
-
             while (!destinationReached)
             {
+                if (GetEntityList(apiObject, entbuf))
+                {
+                    entList = (EntityList)Marshal.PtrToStructure(entbuf, typeof(EntityList));
+                }
 
+                //Update entity table
+                EntityList.Clear();
+                for (int i = 0; i < 2000; i++)
+                {
+                    EntityInfo tmpentity;
+                    //tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                    tmpentity = entList.EntList[i];
+                    EntityList.Add(tmpentity);
+
+                }
 
                 Chatbuffer tmpChat;
                 GetChatline(apiObject, chatbuf);

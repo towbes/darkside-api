@@ -147,10 +147,14 @@ namespace DarkSideModernGUI.Views.Pages
         {
             foreach (GameDLL proc in gameprocs)
             {
-                if (Unload(proc.apiObject, proc.procId))
+                if (GetPid(proc.apiObject) > 0)
                 {
-                    //API calls dispose so this object is now deleted
+                    if (Unload(proc.apiObject, proc.procId))
+                    {
+                        //API calls dispose so this object is now deleted
+                    }
                 }
+
             }
             gameprocs.Clear();
         }
