@@ -14,6 +14,8 @@
 #define funcPrintChat_x		0x4190e3
 #define funcPetWindow_x		0x42ad78
 #define funcCmdHandler_x		0x416444
+#define funcMoveItem_x			0x42a976
+#define funcInteract_x		0x42ae06
 
 // Entities
 #define funcGetEntityPointer_x		0x43589f

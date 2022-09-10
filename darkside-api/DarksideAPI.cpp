@@ -21,6 +21,8 @@ static LPVOID lpMemFile;
 
 DarksideAPI::DarksideAPI() {
     this->pidHandle = 0;
+    injected = false;
+    chatThread = nullptr;
 }
 
 DarksideAPI::~DarksideAPI() {
@@ -73,8 +75,8 @@ bool DarksideAPI::InjectPid(int pid) {
             // Call the remote function
             DWORD dwThreadId = 0;
             auto hThread = CreateRemoteThread(hProc, nullptr, 0, LPTHREAD_START_ROUTINE(data.lpInit), nullptr, 0, &dwThreadId);
-            if (hThread != 0) {
-                if (ResumeThread(hThread)) {
+            if (hThread != NULL) {
+                if (ResumeThread(hThread) != -1) {
                     injected = true;
                     Sleep(100);
                     //Start the chat listener
@@ -83,6 +85,7 @@ bool DarksideAPI::InjectPid(int pid) {
                     }
                 }
                 else {
+                    ::OutputDebugStringA(std::format("Resumethreaderror: {}", GetLastError()).c_str());
                     return false;
                 }
 
@@ -122,6 +125,8 @@ bool DarksideAPI::Unload(int pid) {
         return false;
     }
     injected = false;
+    //Give the chat thread time to finish
+    Sleep(200);
 
     *lpMemFile = 1;
 

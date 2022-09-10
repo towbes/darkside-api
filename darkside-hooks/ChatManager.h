@@ -20,8 +20,13 @@ private:
     void* sendCmdFile;
     std::wstring sendCmdmmf_name;
     std::queue<std::string> sendCmdQueue;
-    char recvCmdBuf[512];
-    char cmdBuf[512];
+
+    //SendPacket Shared memory
+        //Send command shared memory
+    sendPacket_t* pShmSendPkt;
+    void* sendPktFile;
+    std::wstring sendPktmmf_name;
+    std::queue<std::string> sendPktQueue;
 
 public:
     ChatManager();
@@ -29,4 +34,5 @@ public:
 
     void CopyChat(const char* buffer);
     void QueueCommand();
+    void QueueSendPacket();
 };

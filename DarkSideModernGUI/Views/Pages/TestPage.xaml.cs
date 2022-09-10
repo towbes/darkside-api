@@ -57,11 +57,43 @@ namespace DarkSideModernGUI.Views.Pages
             get;
         }
 
+        Dictionary<string, int> charNames = new Dictionary<string, int>();
+
         public TestPage(ViewModels.TestViewModel viewModel)
         {
             ViewModel = viewModel;
 
             InitializeComponent();
+
+            //PlayerInfo
+            int i = 0;
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+            {
+
+                GetPlayerInfo(proc.apiObject, pInfobuf);
+                PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+                string plyrName = new string(playerInfo.name);
+                charNames.Add(plyrName, proc.procId);
+
+            }
+
+            DashboardPage.GameDLL stickProc;
+
+            if (charNames.ContainsKey("Asmoe"))
+            {
+                int stickPid = charNames["Asmoe"];
+
+                stickProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == stickPid);
+            } else
+            {
+                stickProc = DashboardPage.gameprocs.FirstOrDefault();
+            }
+
+
+            DashboardPage.apiObject = stickProc.apiObject;
+
+            Marshal.FreeHGlobal(pInfobuf);
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -260,7 +292,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             }
 
-            MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
+            //MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
 
 
 
@@ -298,36 +330,126 @@ namespace DarkSideModernGUI.Views.Pages
             //InputSimulator.SimulateKeyPress(VirtualKeyCode.VK_KEY_1)
         }
 
-        private void Button_Click_4(object sender, RoutedEventArgs e)
+        //Get party member list example
+        //private void Button_Click_4(object sender, RoutedEventArgs e)
+        //{
+        //    partyMemberList.Clear();
+        //    strPartyList.Clear();
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+        //        GetPartyMember(DashboardPage.apiObject, i, buf);
+        //        PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(buf, typeof(PartyMemberInfo));
+        //        if (partyMember.hp_pct > 0)
+        //        {
+        //            partyMemberList.Add(partyMember);
+        //        }
+        //        Marshal.FreeHGlobal(buf);
+        //
+        //    }
+        //    for (int j = 0; j < partyMemberList.Count; j++)
+        //    {
+        //        String cname = new string(partyMemberList[j].name);
+        //
+        //        String msg = String.Format("{0} - HP: {1}% - Endu: {2}% - Pow: {3}%",
+        //            cname, partyMemberList[j].hp_pct, partyMemberList[j].endu_pct, partyMemberList[j].pow_pct);
+        //
+        //        strPartyList.Add(msg);
+        //    }
+        //
+        //    MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
+        //}
+
+        private void Button_Click_SendPacket(object sender, RoutedEventArgs e)
         {
-            partyMemberList.Clear();
-            strPartyList.Clear();
-            for (int i = 0; i < 8; i++)
+
+            //Send packet example
+            ////String tmp = SendPacketText.Text;
+            //
+            ////String tmp = "78 00 05 55 03 00 07 78 87 00 02 00 00 01 00 00 00 00";
+            //
+            //
+            //if (!String.IsNullOrEmpty(tmp))
+            //{
+            //    //alloc a buf and zero it out
+            //    IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PktBuffer>());
+            //    //zero out buffer
+            //    for (int i = 0; i < Marshal.SizeOf<PktBuffer>(); i++)
+            //    {
+            //        Marshal.WriteByte(buf, i, 0);
+            //    }
+            //
+            //    //char[] strBuf = tmp.ToCharArray();
+            //    buf = Marshal.StringToHGlobalAnsi(tmp);
+            //    //Marshal.Copy(strBuf, 0, buf, strBuf.Length);
+            //    //Examples:  0,0,/face  or 0,0,/say hi
+            //    SendPacket(DashboardPage.apiObject, buf);
+            //    Marshal.FreeHGlobal(buf);
+            //}
+
+            //Get player and entitylist
+            for (int i = 0; i < 2000; i++)
             {
-                IntPtr buf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
-                GetPartyMember(DashboardPage.apiObject, i, buf);
-                PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(buf, typeof(PartyMemberInfo));
-                if (partyMember.hp_pct > 0)
+                IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<DarksideGameAPI.EntityInfo>());
+                EntityInfo tmpentity;
+                GetEntityInfo(DashboardPage.apiObject, i, entbuf);
+                tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                if (tmpentity.objectId > 0)
                 {
-                    partyMemberList.Add(partyMember);
+                    EntityList.Add(tmpentity);
                 }
-                Marshal.FreeHGlobal(buf);
-
+                else
+                {
+                    EntityList.Add(new EntityInfo());
+                }
+                Marshal.FreeHGlobal(entbuf);
             }
-            for (int j = 0; j < partyMemberList.Count; j++)
+            //PlayerInfo
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
+            PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+            Marshal.FreeHGlobal(pInfobuf);
+
+           
+
+            //MoveItem Example
+            //Target name,item name
+            string tmp = SendPacketText.Text;
+
+
+            if (!String.IsNullOrEmpty(tmp))
             {
-                String cname = new string(partyMemberList[j].name);
-
-                String msg = String.Format("{0} - HP: {1}% - Endu: {2}% - Pow: {3}%",
-                    cname, partyMemberList[j].hp_pct, partyMemberList[j].endu_pct, partyMemberList[j].pow_pct);
-
-                strPartyList.Add(msg);
+                string[] args = tmp.Split(',');
+                int entOffset = -1;
+                entOffset = findEntityByName(EntityList, args[0]);
+                if (entOffset >= 0)
+                {
+                    SetTarget(DashboardPage.apiObject, entOffset);
+                    InteractRequest(DashboardPage.apiObject, EntityList[entOffset].objectId);
+                    //After interacting, send the buy item packet
+                    //alloc a buf and zero it out
+                    IntPtr pktbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PktBuffer>());
+                    //zero out buffer
+                    for (int i = 0; i < Marshal.SizeOf<CmdBuffer>(); i++)
+                    {
+                        Marshal.WriteByte(pktbuf, i, 0);
+                    }
+                    string buyItem = "78 00 08 EC 9C 00 07 6C 4F 00 01 00 00 01 01 00 00 00";
+                    pktbuf = Marshal.StringToHGlobalAnsi(buyItem);
+                    SendPacket(DashboardPage.apiObject, pktbuf);
+                    //Find the item and trae it to the npc
+                    int fromSlot = 0;
+                    fromSlot = ItemSlotByName(playerInfo.Inventory, args[1]);
+                    if (fromSlot > 0)
+                    {
+                        //Add 1000 to objectId for moving item to NPCs
+                        MoveItem(DashboardPage.apiObject, fromSlot, EntityList[entOffset].objectId + 1000, 0);
+                    }
+                    Marshal.FreeHGlobal(pktbuf);
+                }
             }
 
-            MemberInfo.Text = String.Join(Environment.NewLine, strPartyList);
         }
-
-
         private void Button_Click_SetTarget(object sender, RoutedEventArgs e)
         {
 
@@ -358,6 +480,7 @@ namespace DarkSideModernGUI.Views.Pages
                 //char[] strBuf = tmp.ToCharArray();
                 buf = Marshal.StringToHGlobalAnsi(args[2]);
                 //Marshal.Copy(strBuf, 0, buf, strBuf.Length);
+                //Examples:  0,0,/face  or 0,0,/say hi
                 SendCommand(DashboardPage.apiObject, Int32.Parse(args[0]), Int32.Parse(args[1]), buf);
                 Marshal.FreeHGlobal(buf);
             }

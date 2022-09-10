@@ -79,4 +79,24 @@ namespace daoc {
     //const char* sendCmdPattern = "\x83\x3D\x00\x82\x99\x00\x00\x0F\x85\x00\x00\x00\x00\x56";
     //const char* sendCmdMask = "xxxxxx?xx????x";
     //"83 3D 00 82 99 00 ? 0F 85 ? ? ? ? 56"
+
+    //Move item Function
+    //Slot reference: https://github.com/Dawn-of-Light/DOLSharp/blob/9af87af011497c3fda852559b01a269c889b162e/GameServer/gameutils/IGameInventory.cs
+    //Ground = 1
+    //Backpack = 40-79
+    //count = 0 for non stacks
+    void MoveItem(int toSlot, int fromSlot, int count);
+    //typedef void(__cdecl* _MoveItem)(int toSlot, int fromSlot, int count);
+    //_MoveItem MoveItem; //  = (_MoveItem)0x42a976;
+
+    int SendPacket(const char* packetBuffer, DWORD packetHeader, DWORD packetLen, DWORD unknown);
+    //_SendPacket Send;// = (_SendPacket)0x4281df;
+    //typedef int(__cdecl* _SendPacket)(const char* packetBuffer, DWORD packetHeader, DWORD packetLen, DWORD unknown);
+    //_SendPacket SendPacket;
+
+    void InteractRequest(uint16_t objId);
+    //Object interact request
+    //typedef void(__cdecl* _InteractRequest)(int objId);
+    //_InteractRequest InteractRequest;
+    //Address of signature = game.dll + 0x0002AE06 0x42ae06
 }

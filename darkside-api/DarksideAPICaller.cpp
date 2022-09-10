@@ -118,6 +118,15 @@ bool SetTarget(DarksideAPI* apiObject, int entIndex) {
 	return false;
 }
 
+bool InteractRequest(DarksideAPI* apiObject, uint16_t objId) {
+	if (apiObject != NULL) {
+		if (apiObject->InteractRequest(objId)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool UseSkill(DarksideAPI* apiObject, int skillOffset) {
 	if (apiObject != NULL) {
 		if (apiObject->UseSkill(skillOffset)) {
@@ -145,6 +154,16 @@ bool UsePetCmd(DarksideAPI* apiObject, int aggState, int walkState, int petCmd) 
 	return false;
 }
 
+bool MoveItem(DarksideAPI* apiObject, int fromSlot, int toSlot, int count) {
+	if (apiObject != NULL) {
+		if (apiObject->MoveItem(fromSlot, toSlot, count)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
 bool GetChatline(DarksideAPI* apiObject, LPVOID lpBuffer) {
 	if (apiObject != NULL) {
 		if (apiObject->GetChatline(lpBuffer)) {
@@ -162,3 +181,13 @@ bool SendCommand(DarksideAPI* apiObject, int cmdMode, int iMode, LPVOID lpBuffer
 	}
 	return false;
 }
+
+bool SendPacket(DarksideAPI* apiObject, LPVOID lpBuffer) {
+	if (apiObject != NULL) {
+		if (apiObject->SendPacket(lpBuffer)) {
+			return true;
+		}
+	}
+	return false;
+}
+

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static DarkSideModernGUI.Helpers.DarksideGameAPI;
 
 
 namespace DarkSideModernGUI.Helpers
@@ -146,6 +147,13 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)] public String sendCmd;
         }
 
+        //SendPktBuffer
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct PktBuffer
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 2048)] public String sendPkt;
+        }
+
 
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateDarksideAPI();
@@ -179,15 +187,23 @@ namespace DarkSideModernGUI.Helpers
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SetTarget(IntPtr pApiObject, int entOffset);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool InteractRequest(IntPtr pApiObject, short objId);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UseSkill(IntPtr pApiObject, int skillOffset);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UseSpell(IntPtr pApiObject, int spellOffset);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UsePetCmd(IntPtr pApiObject, int aggroState, int walkState, int petCmd);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool MoveItem(IntPtr pApiObject, int fromSlot, int toSlot, int count);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetChatline(IntPtr pApiObject, IntPtr lpBuffer);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SendCommand(IntPtr pApiObject, int cmdMode, int iMode, IntPtr lpBuffer);
+        //SendPacket expects an ascii hex buffer with packet header as first byte ie:
+        //78 00 05 55 03 00 07 78 87 00 02 00 00 01 00 00 00 00
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SendPacket(IntPtr pApiObject, IntPtr lpBuffer);
 
         public static int findEntityByName(List<EntityInfo> EntityList, String entName)
         {
@@ -195,7 +211,7 @@ namespace DarkSideModernGUI.Helpers
             {
                 if (!String.IsNullOrEmpty(EntityList[i].name))
                 {
-                    if (String.Equals(entName, EntityList[i].name))
+                    if (EntityList[i].name.StartsWith(entName))
                     {
                         return i;
                     }
@@ -203,6 +219,22 @@ namespace DarkSideModernGUI.Helpers
 
             }
             return -1;
+        }
+
+        public static int ItemSlotByName(Item_t[] inventory, String itemName)
+        {
+            //add +40 at the end to get proper slot number
+            for (int slotNum = 0; slotNum < 41; slotNum++)
+            {
+                if (!String.IsNullOrEmpty(inventory[slotNum].name))
+                {
+                    if (inventory[slotNum].name.StartsWith(itemName))
+                    {
+                        return slotNum + 40;
+                    }
+                }
+            }
+            return 0;
         }
     }
 }

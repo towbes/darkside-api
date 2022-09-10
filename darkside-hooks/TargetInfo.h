@@ -18,6 +18,12 @@ private:
     int* pShmSetTarget;
     std::wstring setTargmmf_name;
 
+    // interactrequest
+    // will wait until value is greater than -1 and interact with that objid
+    void* hInteractFile;
+    uint16_t* pShmInteract;
+    std::wstring interactmmf_name;
+
     //Target info - target object id is at +0x4 of entity offset
     uintptr_t ptrCurrTargetOffset;
     //color is at +0x4 of hp
@@ -33,5 +39,6 @@ public:
     bool GetTargetInfo();
 
     void SetTarget();
+    void InteractRequest();
 };
 

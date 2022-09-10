@@ -14,7 +14,7 @@ bool DarksideAPI::GetPlayerInfo(LPVOID lpBuffer) {
         0,                       // maximum object size (high-order DWORD)
         fileSize,                // maximum object size (low-order DWORD)
         plyrInfommf_name.c_str());                 // name of mapping object
-
+    
     if (hMapFile == NULL)
     {
         _tprintf(TEXT("PlayerInfo Could not create file mapping object (%d).\n"),
@@ -143,4 +143,42 @@ bool DarksideAPI::UsePetCmd(int aggState, int walkState, int petCmd) {
     UnmapViewOfFile(ptrPetCmd);
     CloseHandle(petCmdMapFile);
     return false;
+}
+
+bool DarksideAPI::MoveItem(int fromSlot, int toSlot, int count) {
+    //set up MoveItem shaerd memory
+    std::wstring moveItemmmf_name = std::to_wstring(pidHandle) + L"_moveItem";
+    std::size_t moveItemfileSize = sizeof(moveItem_t);
+
+    auto moveItemMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        moveItemfileSize,                // maximum object size (low-order DWORD)
+        moveItemmmf_name.c_str());                 // name of mapping object
+
+    if (moveItemMapFile == NULL)
+    {
+        _tprintf(TEXT("MoveItem Could not create file object (%d).\n"),
+            GetLastError());
+        return false;
+    }
+
+    moveItem_t* pShmMoveItem = (moveItem_t*)MapViewOfFile(moveItemMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+
+
+    if (pShmMoveItem == NULL) {
+        _tprintf(TEXT("MoveItem Could not create file mapping object (%d).\n"),
+            GetLastError());
+        CloseHandle(moveItemMapFile);
+        return false;
+    }
+    
+    if (pShmMoveItem->rdyMove == true) {
+        pShmMoveItem->fromSlot = fromSlot;
+        pShmMoveItem->toSlot = toSlot;
+        pShmMoveItem->count = count;
+        pShmMoveItem->rdyMove = false;
+    }
 }

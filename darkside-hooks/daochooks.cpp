@@ -133,9 +133,37 @@ namespace daoc {
         _asm pop ebp;
         //
         _asm ret;
-
-
-
     }
+
+    //Move item Function
+    //Slot reference: https://github.com/Dawn-of-Light/DOLSharp/blob/9af87af011497c3fda852559b01a269c889b162e/GameServer/gameutils/IGameInventory.cs
+    //Ground = 1
+    //Backpack = 40-79
+    //count = 0 for non stacks
+    void MoveItem(int toSlot, int fromSlot, int count) {
+        typedef void(__cdecl* _MoveItem)(int toSlot, int fromSlot, int count);
+        _MoveItem MoveItem = (_MoveItem)funcMoveItem_x;
+
+        return MoveItem(toSlot, fromSlot, count);
+    }
+
+    void InteractRequest(uint16_t objId) {
+        //Object interact request
+        typedef void(__cdecl* _InteractRequest)(uint16_t objId);
+        _InteractRequest InteractRequest = (_InteractRequest)funcInteract_x;
+        //Address of signature = game.dll + 0x0002AE06 0x42ae06
+
+        return InteractRequest(objId);
+    }
+
+
+
+    int SendPacket(const char* packetBuffer, DWORD packetHeader, DWORD packetLen, DWORD unknown) {
+        typedef int(__cdecl* _SendPacket)(const char* packetBuffer, DWORD packetHeader, DWORD packetLen, DWORD unknown);
+        _SendPacket SendPacket = (_SendPacket)funcSendPacket_x;
+
+        return SendPacket(packetBuffer, packetHeader, packetLen, unknown);
+    }
+
 
 }

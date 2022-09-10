@@ -131,3 +131,19 @@ struct sendCmd_t {
     int iMode;
     char buffer[512];
 };
+
+struct sendPacket_t {
+    std::mutex pktMutex;
+    bool rdySendPkt;
+    unsigned char packetBuffer[2048];
+    DWORD packetHeader;
+    DWORD packetLen;
+    DWORD unknown;
+};
+
+struct moveItem_t {
+    bool rdyMove;
+    int fromSlot;
+    int toSlot;
+    int count;
+};

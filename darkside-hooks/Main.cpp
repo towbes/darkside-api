@@ -37,7 +37,7 @@ bool newMsg = false;
 //Incoming chat hook
 void GrabChat(const char* buffer) {
     //::OutputDebugStringA(std::format("Text: {}", buffer).c_str());
-    std::lock_guard<std::mutex> lg(chatBufMutex);
+    std::scoped_lock<std::mutex> lg(chatBufMutex);
     newMsg = true;
     strcpy_s(chatBuf, buffer);
 }
@@ -161,7 +161,7 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     }
 
     //Sleep to give reset a time to run?
-    Sleep(100);
+    Sleep(200);
 
     FreeLibraryAndExitThread(ghModule, 0);
 }
@@ -194,6 +194,7 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
         plyrInfo->QueueSkill();
         plyrInfo->QueueSpell();
         plyrInfo->QueuePetCmd();
+        plyrInfo->QueueMoveItem();
     }
     if (entInfo != NULL) {
         entInfo->GetEntityInfo();
@@ -201,14 +202,16 @@ HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, c
     if (targInfo != NULL) {
         targInfo->GetTargetInfo();
         targInfo->SetTarget();
+        targInfo->InteractRequest();
     }
     if (chatMan != NULL) {
         if (newMsg) {
-            std::lock_guard<std::mutex> lg(chatBufMutex);
+            std::scoped_lock<std::mutex> lg(chatBufMutex);
             chatMan->CopyChat(chatBuf);
             newMsg = false;
         }
         chatMan->QueueCommand();
+        chatMan->QueueSendPacket();
 
     }
         

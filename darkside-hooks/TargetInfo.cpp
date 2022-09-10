@@ -65,7 +65,7 @@ TargetInfo::TargetInfo() {
 #endif
     }//Todo add exception
 
-    //set up skill and spell casting function shaerd memory
+    //set up set target function shaerd memory
     setTargmmf_name = std::to_wstring(pid) + L"_SetTarg";
     std::size_t setTargFileSize = sizeof(int);
 
@@ -89,6 +89,37 @@ TargetInfo::TargetInfo() {
 
     //Set to -1 while waiting for target
     *pShmSetTarget = -1;
+
+    //set up skill and spell casting function shaerd memory
+    interactmmf_name = std::to_wstring(pid) + L"_Interact";
+    std::size_t interactFileSize = sizeof(uint16_t);
+
+    auto hInteractFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        interactFileSize,                // maximum object size (low-order DWORD)
+        interactmmf_name.c_str());                 // name of mapping object
+
+    if (hInteractFile == NULL)
+    {
+        _tprintf(TEXT("Set Target Could not create file mapping object (%d).\n"),
+            GetLastError());
+    }
+
+    if (hInteractFile != 0) {
+        pShmInteract = (uint16_t*)MapViewOfFile(hInteractFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+        
+    }//Todo add exception
+
+    if (pShmInteract != NULL) {
+        *pShmInteract = 0;
+    }
+    
+
+    //Set to -1 while waiting for interact
+    
 
 }
 
@@ -124,5 +155,12 @@ void TargetInfo::SetTarget() {
         daoc::SetTarget(*pShmSetTarget, 0);
         daoc::SetTargetUI();
         *pShmSetTarget = -1;
+    }
+}
+
+void TargetInfo::InteractRequest() {
+    if (*pShmInteract > 0) {
+        daoc::InteractRequest(*pShmInteract);
+        *pShmInteract = 0;
     }
 }

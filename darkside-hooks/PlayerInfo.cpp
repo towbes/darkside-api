@@ -132,11 +132,7 @@ PlayerInfo::PlayerInfo() {
         *pShmUseSpell = -1;
     }
 
-    
-    
-    
-
-    //set up skill and spell casting function shaerd memory
+    //set up petCommand shaerd memory
     petCmdmmf_name = std::to_wstring(pid) + L"_plyrPetCmd";
     std::size_t petCmdfileSize = sizeof(petCmd_t);
 
@@ -165,6 +161,38 @@ PlayerInfo::PlayerInfo() {
         //Set to -1 while waiting for cmd
         petCmd_t tmpPet = { -1,-1,-1 };
         memcpy(pShmPetCmd, &tmpPet, sizeof(petCmd_t));
+    }
+
+    //set up MoveItem shaerd memory
+    moveItemmmf_name = std::to_wstring(pid) + L"_moveItem";
+    std::size_t moveItemfileSize = sizeof(moveItem_t);
+
+    auto moveItemMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        moveItemfileSize,                // maximum object size (low-order DWORD)
+        moveItemmmf_name.c_str());                 // name of mapping object
+
+    if (moveItemMapFile == NULL)
+    {
+        _tprintf(TEXT("MoveItem Could not create file object (%d).\n"),
+            GetLastError());
+    }
+    else {
+        pShmMoveItem = (moveItem_t*)MapViewOfFile(moveItemMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    }
+
+    if (pShmMoveItem == NULL) {
+        _tprintf(TEXT("MoveItem Could not create file mapping object (%d).\n"),
+            GetLastError());
+        CloseHandle(moveItemMapFile);
+    }
+    else {
+        //Set to -1 while waiting for cmd
+        moveItem_t tmpMove = { true, -1,-1,-1 };
+        memcpy(pShmMoveItem, &tmpMove, sizeof(moveItem_t));
     }
 
 }
@@ -246,5 +274,14 @@ void PlayerInfo::QueuePetCmd() {
         currPetCmd = petCmdQueue.front();
         petCmdQueue.pop();
         daoc::UsePetCommand(currPetCmd.aggroState, currPetCmd.walkState, currPetCmd.petCmd);
+    }
+}
+
+//Function runs each frame
+//MoveItem
+void PlayerInfo::QueueMoveItem() {
+    if (pShmMoveItem->rdyMove == false) {
+        daoc::MoveItem(pShmMoveItem->toSlot, pShmMoveItem->fromSlot, pShmMoveItem->count);
+        pShmMoveItem->rdyMove = true;
     }
 }

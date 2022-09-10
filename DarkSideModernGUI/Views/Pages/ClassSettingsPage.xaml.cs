@@ -48,6 +48,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             //PlayerInfo
             loadedList.Clear();
+            charNames.Clear();
             loadedList.Add("Injected Chars:");
             int i = 0;
             IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
@@ -81,29 +82,34 @@ namespace DarkSideModernGUI.Views.Pages
         {
 
             //PlayerInfo
-            //loadedList.Clear();
-            //loadedList.Add("Injected Chars:");
-            //int i = 0;
-            //foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
-            //{
-            //    IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
-            //    GetPlayerInfo(proc.apiObject, pInfobuf);
-            //    PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
-            //    string plyrName = new string(playerInfo.name);
-            //    string className = new string(playerInfo.className);
-            //    string pInfoMsg = String.Format("Name:{3} - Class:{4} - HP:{0:0} - Pow:{1:0} - Endu:{2:0}",
-            //        playerInfo.health,
-            //        playerInfo.power,
-            //        playerInfo.endu,
-            //        plyrName,
-            //        className);
-            //
-            //    loadedList.Add(pInfoMsg);
-            //    //
-            //    Marshal.FreeHGlobal(pInfobuf);
-            //}
-            //
-            //InjectedInfo.Text = String.Join(Environment.NewLine, loadedList);
+            loadedList.Clear();
+            charNames.Clear();
+            loadedList.Add("Injected Chars:");
+            int i = 0;
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+            {
+
+                GetPlayerInfo(proc.apiObject, pInfobuf);
+                PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+                string plyrName = new string(playerInfo.name);
+                string className = new string(playerInfo.className);
+                string pInfoMsg = String.Format("{5}: Name:{3} - Class:{4} - HP:{0:0} - Pow:{1:0} - Endu:{2:0}",
+                    playerInfo.health,
+                    playerInfo.power,
+                    playerInfo.endu,
+                    plyrName,
+                    className,
+                    i);
+                charNames.Add(plyrName, proc.procId);
+                loadedList.Add(pInfoMsg);
+                //
+
+            }
+            Marshal.FreeHGlobal(pInfobuf);
+
+
+            InjectedInfo.Text = String.Join(Environment.NewLine, loadedList);
 
             // Forcing the CommandManager to raise the RequerySuggested event
             CommandManager.InvalidateRequerySuggested();
@@ -114,8 +120,9 @@ namespace DarkSideModernGUI.Views.Pages
             foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
             {
                 //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
-                Thread newThread = new Thread(()=>runDemo(proc.apiObject));
-                newThread.Start();
+                //Thread newThread = new Thread(()=>runDemo(proc.apiObject));
+                //newThread.Start();
+                getBuffs(proc.apiObject);
             }
         }
 
@@ -355,7 +362,6 @@ namespace DarkSideModernGUI.Views.Pages
                 stickTargPos = (PlayerPosition)Marshal.PtrToStructure(stickTargplayerPosbuf, typeof(PlayerPosition));
 
                 //Target info
-                //Size should be 0xdcd4
 
                 GetTargetInfo(apiObject, tInfobuf);
                 targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
@@ -379,26 +385,16 @@ namespace DarkSideModernGUI.Views.Pages
                     }
 
                 }
-                //for (int j = 0; j < partyMemberList.Count; j++)
-                //{
-                //    String cname = new string(partyMemberList[j].name);
-                //
-                //    //Check if someone needs heal
-                //    if (partyMemberList[j].hp_pct < 100)
-                //    {
-                //        int targ = findEntityByName(EntityList, cname);
-                //        SetTarget(DashboardPage.apiObject, targ);
-                //        UseSkill(DashboardPage.apiObject, 17);
-                //    }
-                //
-                //}
 
                 string plyrName = new string(playerInfo.name);
-                
+                if(plyrName.Equals("Asmoe")) {
+                    break;
+                }
+
                 if (!plyrName.Equals("Asmoe")) {
                     float stoppingDist = 20.0f;
-                    currentTarget = findEntityByName(EntityList, "Asmoe");
-                    SetTarget(apiObject, currentTarget);
+                    //currentTarget = findEntityByName(EntityList, "Asmoe");
+                    //SetTarget(apiObject, currentTarget);
 
                     float dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
                     short newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
@@ -406,30 +402,22 @@ namespace DarkSideModernGUI.Views.Pages
                     {
                         SetAutorun(apiObject, true);
                         SetPlayerHeading(apiObject, true, newheading);
-                        dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                        newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                        //dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                        //newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
                     }
-
-                    //float dist = DistanceToPoint(playerPos, EntityList[currentTarget].pos_x, EntityList[currentTarget].pos_y, EntityList[currentTarget].pos_z);
-                    //short newheading = GetGameHeading(playerPos, EntityList[currentTarget].pos_x, EntityList[currentTarget].pos_y);
-                    //if (dist > stoppingDist)
-                    //{
-                    //    SetAutorun(apiObject, true);
-                    //    SetPlayerHeading(apiObject, true, newheading);
-                    //    dist = DistanceToPoint(playerPos, EntityList[currentTarget].pos_x, EntityList[currentTarget].pos_y, EntityList[currentTarget].pos_z);
-                    //    newheading = GetGameHeading(playerPos, EntityList[currentTarget].pos_x, EntityList[currentTarget].pos_y);
-                    //}
                     else
                     {
+                        
                         SetAutorun(apiObject, false);
-                        SetPlayerHeading(apiObject, false, 0);
+                        //SetPlayerHeading(apiObject, false, 0);
+                        SetPlayerHeading(apiObject, true, stickTargPos.heading);
                     }
                 }
 
 
                 Thread.Sleep(100);
             }
-
+            SetPlayerHeading(apiObject, false, 0);
 
             Marshal.FreeHGlobal(entbuf);
             Marshal.FreeHGlobal(chatbuf);
@@ -439,6 +427,73 @@ namespace DarkSideModernGUI.Views.Pages
             Marshal.FreeHGlobal(pInfobuf);
             Marshal.FreeHGlobal(pbuf);
         }
+
+        private void getBuffs(IntPtr apiObject)
+        {
+            List<EntityInfo> EntityList = new List<EntityInfo>();
+
+            for (int i = 0; i < 2000; i++)
+            {
+                IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<DarksideGameAPI.EntityInfo>());
+                EntityInfo tmpentity;
+                GetEntityInfo(apiObject, i, entbuf);
+                tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                if (tmpentity.objectId > 0)
+                {
+                    EntityList.Add(tmpentity);
+                }
+                else
+                {
+                    EntityList.Add(new EntityInfo());
+                }
+                Marshal.FreeHGlobal(entbuf);
+            }
+            //PlayerInfo
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            GetPlayerInfo(apiObject, pInfobuf);
+            PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+            Marshal.FreeHGlobal(pInfobuf);
+
+
+
+            //MoveItem Example
+            //Target name,item name
+            string tmp = "Camelot,Full Buffs";
+
+
+            if (!String.IsNullOrEmpty(tmp))
+            {
+                string[] args = tmp.Split(',');
+                int entOffset = -1;
+                entOffset = findEntityByName(EntityList, args[0]);
+                if (entOffset >= 0)
+                {
+                    SetTarget(apiObject, entOffset);
+                    InteractRequest(apiObject, EntityList[entOffset].objectId);
+                    //After interacting, send the buy item packet
+                    //alloc a buf and zero it out
+                    IntPtr pktbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PktBuffer>());
+                    //zero out buffer
+                    for (int i = 0; i < Marshal.SizeOf<CmdBuffer>(); i++)
+                    {
+                        Marshal.WriteByte(pktbuf, i, 0);
+                    }
+                    string buyItem = "78 00 08 EC 9C 00 07 6C 4F 00 01 00 00 01 01 00 00 00";
+                    pktbuf = Marshal.StringToHGlobalAnsi(buyItem);
+                    SendPacket(apiObject, pktbuf);
+                    //Find the item and trae it to the npc
+                    int fromSlot = 0;
+                    fromSlot = ItemSlotByName(playerInfo.Inventory, args[1]);
+                    if (fromSlot > 0)
+                    {
+                        //Add 1000 to objectId for moving item to NPCs
+                        MoveItem(apiObject, fromSlot, EntityList[entOffset].objectId + 1000, 0);
+                    }
+                    Marshal.FreeHGlobal(pktbuf);
+                }
+            }
+        }
+        
 
     }
 }

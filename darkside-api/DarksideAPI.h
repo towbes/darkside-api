@@ -54,6 +54,7 @@ public:
     bool UseSkill(int skillOffset);
     bool UseSpell(int spellOffset);
     bool UsePetCmd(int aggState, int walkState, int petCmd);
+    bool MoveItem(int fromSlot, int toSlot, int count);
 
     //Party Members
     bool GetPartyMember(int memberIndex, LPVOID lpBuffer);
@@ -61,10 +62,12 @@ public:
     //Target Info
     bool GetTargetInfo(LPVOID lpBuffer);
     bool SetTarget(int entIndex);
+    bool InteractRequest(uint16_t objId);
 
     //Chat manager, listener will start in a new thread
     void ChatListener();
     bool GetChatline(LPVOID lpBuffer);
     bool SendCommand(int cmdMode, int iMode, LPVOID lpBuffer);
+    bool SendPacket(LPVOID packetBuffer);
 
 };

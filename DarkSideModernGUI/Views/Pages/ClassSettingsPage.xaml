@@ -40,7 +40,7 @@
             Margin="67,161,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_RunTarget">
-            RunTarget
+            GetBuffs
         </ui:Button>
         <ui:Button
             Grid.Column="1"

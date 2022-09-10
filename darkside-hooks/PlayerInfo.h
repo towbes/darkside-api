@@ -49,6 +49,11 @@ private:
     std::queue<petCmd_t> petCmdQueue;
     petCmd_t currPetCmd;
 
+    //Move Item
+    moveItem_t* pShmMoveItem;
+    void* moveItemMapFile;
+    std::wstring moveItemmmf_name;
+
 public:
     PlayerInfo();
     ~PlayerInfo();
@@ -59,6 +64,7 @@ public:
     void QueueSkill();
     void QueueSpell();
     void QueuePetCmd();
+    void QueueMoveItem();
 
 
 };
