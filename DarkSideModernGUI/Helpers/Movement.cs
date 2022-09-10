@@ -41,10 +41,33 @@ namespace DarkSideModernGUI.Helpers
             return (short)heading;
         }
 
+        //convert a PlayerPosition heading to heading for turning
+        static public short ConvertCharHeading(short degreesHeading)
+        {
+            degreesHeading -= 90;
+            if (degreesHeading < 0)
+            {
+                degreesHeading += 360;
+            }
+            double newheading = degreesHeading * (4096 / 360);
+
+            return (short)newheading;
+        }
+        //Convert in game direction to heading for turning
+        static public short ConvertDirHeading(short dirHeading)
+        {
+            dirHeading += 180;
+            if (dirHeading > 360)
+            {
+                dirHeading -= 360;
+            }
+
+            double newheading = dirHeading * (4096 / 360);
+
+            return (short)newheading;
+        }
+
         static public void checkAndMoveToNearestWaypoint (Waypoint waypoint){
-
-
-
 
         }
 

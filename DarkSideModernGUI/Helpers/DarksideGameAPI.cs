@@ -237,5 +237,47 @@ namespace DarkSideModernGUI.Helpers
             }
             return 0;
         }
+
+        public static int UseSkillByName(Skill_t[] skills, string skillName)
+        {
+            for (int i = 0; i < 150; i++)
+            {
+                if (skills[i].name.StartsWith(skillName))
+                {
+                    return i;
+                }
+            }
+            //return 999 if failed
+            return 999;
+        }
+
+        public static int UseSpellByName(Spell_t[] spells, string spellName)
+        {
+            for (int i = 0; i < 150; i++)
+            {
+                if (spells[i].name.StartsWith(spellName))
+                {
+                    return i;
+                }
+            }
+            //return 999 if failed
+            return 999;
+        }
+        public static bool UsePetCmdByName(IntPtr apiObject, string petCommand)
+        {
+            //pet window packet function
+            //aggroState // 1-Aggressive, 2-Deffensive, 3-Passive
+            //walkState // 1-Follow, 2-Stay, 3-GoTarg, 4-Here
+            //command // 1-Attack, 2-Release
+            if (petCommand.ToLower().StartsWith("passive")) {
+                return UsePetCmd(apiObject, 3, 1, 0);
+
+            } else if (petCommand.ToLower().StartsWith("attack")) {
+                return UsePetCmd(apiObject, 2, 1, 1);
+            }
+            return false;
+        }
+
+
     }
 }

@@ -33,11 +33,12 @@
             TextWrapping="Wrap">
             InjectedInfo
         </TextBlock>
-
+        <StackPanel
+            Grid.Column="1">
         <ui:Button
             Grid.Column="1"
             Width="136"
-            Margin="67,161,0,0"
+            Margin="67,0,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_RunTarget">
             GetBuffs
@@ -46,10 +47,27 @@
             Name="StickButton"
             Grid.Column="1"
             Width="136"
-            Margin="67,100,0,0"
+            Margin="67,10,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_Stick">
             Stick is Off
         </ui:Button>
+        <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_BattleLoc">
+            DragBattleLoc
+        </ui:Button>
+            <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_ResetLoc">
+                DragResetLoc
+            </ui:Button>
+        </StackPanel>
     </Grid>
 </ui:UiPage>

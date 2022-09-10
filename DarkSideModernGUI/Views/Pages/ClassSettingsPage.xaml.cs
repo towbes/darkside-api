@@ -28,6 +28,7 @@ namespace DarkSideModernGUI.Views.Pages
         bool stickRunning = false;
 
         string leaderName = "Asmoe";
+        string readyName = "Suzuha";
 
         Dictionary<string, int> charNames = new Dictionary<string, int>();
 
@@ -185,7 +186,7 @@ namespace DarkSideModernGUI.Views.Pages
                 tmpChat = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
                 if (!String.IsNullOrEmpty(tmpChat.chatLine))
                 {
-                    chatLog.Add(tmpChat.chatLine);
+                    //chatLog.Add(tmpChat.chatLine);
                 }
  
                 GetPlayerPosition(apiObject, playerPosbuf);
@@ -300,6 +301,8 @@ namespace DarkSideModernGUI.Views.Pages
         {
             int stickPid = charNames[leaderName];
 
+            int readyPid = charNames[readyName];
+
             DashboardPage.GameDLL stickProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == stickPid);
 
             if (!stickRunning)
@@ -308,9 +311,13 @@ namespace DarkSideModernGUI.Views.Pages
                 stickRunning = true;
                 foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
                 {
-                    //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
-                    Thread newThread = new Thread(() => stickFunc(proc.apiObject, stickProc.apiObject));
-                    newThread.Start();
+                    if (proc.procId != readyPid)
+                    {
+                        //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                        Thread newThread = new Thread(() => stickFunc(proc.apiObject, stickProc.apiObject));
+                        newThread.Start();
+                    }
+
                 }
             }
             else
@@ -319,6 +326,517 @@ namespace DarkSideModernGUI.Views.Pages
                 stickRunning = false;
             }
 
+        }
+
+        private void Button_Click_BattleLoc(object sender, RoutedEventArgs e)
+        {
+            int readyPid = charNames[readyName];
+
+            foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+            {
+                if (proc.procId != readyPid)
+                {
+                    //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                    Thread newThread = new Thread(() => battleLocFunc(proc.apiObject));
+                    newThread.Start();
+                }
+
+            }
+
+        }
+
+        private void Button_Click_ResetLoc(object sender, RoutedEventArgs e)
+        {
+            int readyPid = charNames[readyName];
+
+
+            foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+            {
+                if (proc.procId != readyPid)
+                {
+                    //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                    Thread newThread = new Thread(() => resetLocFunc(proc.apiObject));
+                    newThread.Start();
+                }
+
+            }
+
+        }
+
+        private void battleLocFunc(IntPtr apiObject)
+        {
+            bool isMoving = true;
+
+            bool destinationReached = false;
+            List<EntityInfo> EntityList = new List<EntityInfo>();
+            EntityList entList = new EntityList();
+            List<String> chatLog = new List<String>();
+            List<PartyMemberInfo> partyMemberList = new List<PartyMemberInfo>();
+            PlayerPosition playerPos;
+            PlayerPosition stickTargPos;
+            TargetInfo targetInfo;
+            PlayerInfo playerInfo;
+
+            int currentTarget = 0;
+
+            //alloc buffers
+            IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
+            IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
+            IntPtr playerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+            IntPtr stickTargplayerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+
+            while (isMoving)
+            {
+                if (GetEntityList(apiObject, entbuf))
+                {
+                    entList = (EntityList)Marshal.PtrToStructure(entbuf, typeof(EntityList));
+                }
+
+                //Update entity table
+                EntityList.Clear();
+                for (int i = 0; i < 2000; i++)
+                {
+                    EntityInfo tmpentity;
+                    //tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                    tmpentity = entList.EntList[i];
+                    EntityList.Add(tmpentity);
+
+                }
+
+                Chatbuffer tmpChat;
+                GetChatline(apiObject, chatbuf);
+                tmpChat = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
+                if (!String.IsNullOrEmpty(tmpChat.chatLine))
+                {
+                    //chatLog.Add(tmpChat.chatLine);
+                }
+
+                //Current player position
+                GetPlayerPosition(apiObject, playerPosbuf);
+                playerPos = (PlayerPosition)Marshal.PtrToStructure(playerPosbuf, typeof(PlayerPosition));
+
+                //Target info
+
+                GetTargetInfo(apiObject, tInfobuf);
+                targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
+                // Updating the Label which displays the current second
+
+                //PlayerInfo
+
+                GetPlayerInfo(apiObject, pInfobuf);
+                playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+
+
+                partyMemberList.Clear();
+                //party list
+                for (int i = 0; i < 8; i++)
+                {
+                    GetPartyMember(apiObject, i, pbuf);
+                    PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(pbuf, typeof(PartyMemberInfo));
+                    if (partyMember.hp_pct > 0)
+                    {
+                        partyMemberList.Add(partyMember);
+                    }
+
+                }
+
+                string plyrName = new string(playerInfo.name);
+                float xloc = 0;
+                float yloc = 0;
+                float zloc = 0;
+                short finalheading = 0;
+                //Set up locs
+                if (playerInfo.className.Contains("Paladin"))
+                {
+                    xloc = 39094f;
+                    yloc = 58789f;
+                    zloc = 226f;
+                    finalheading = 183;
+                } else
+                {
+                    xloc = 38678f;
+                    yloc = 59418f;
+                    zloc = 227f;
+                    finalheading = 73;
+                }
+
+                float stoppingDist = 20.0f;
+                //currentTarget = findEntityByName(EntityList, "Asmoe");
+                //SetTarget(apiObject, currentTarget);
+
+
+                float dist = DistanceToPoint(playerPos, xloc, yloc, zloc);
+                short newheading = GetGameHeading(playerPos, xloc, yloc);
+                if (dist > stoppingDist)
+                {
+                    SetAutorun(apiObject, true);
+                    SetPlayerHeading(apiObject, true, newheading);
+                    //dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                    //newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                }
+                else
+                {
+                    SetPlayerHeading(apiObject, true, ConvertDirHeading(finalheading));
+                    //SetPlayerHeading(apiObject, false, 0);
+                    SetAutorun(apiObject, false);
+                    //This isn't turning them the direction of the leader for some reason
+                    //
+                    isMoving = false;
+                }
+
+                Thread.Sleep(100);
+            }
+            SetPlayerHeading(apiObject, false, 0);
+            SetAutorun(apiObject, false);
+
+            Marshal.FreeHGlobal(entbuf);
+            Marshal.FreeHGlobal(chatbuf);
+            Marshal.FreeHGlobal(playerPosbuf);
+            Marshal.FreeHGlobal(stickTargplayerPosbuf);
+            Marshal.FreeHGlobal(tInfobuf);
+            Marshal.FreeHGlobal(pInfobuf);
+            Marshal.FreeHGlobal(pbuf);
+        }
+
+        private void resetLocFunc(IntPtr apiObject)
+        {
+            bool isMoving = true;
+
+            bool destinationReached = false;
+            List<EntityInfo> EntityList = new List<EntityInfo>();
+            EntityList entList = new EntityList();
+            List<String> chatLog = new List<String>();
+            List<PartyMemberInfo> partyMemberList = new List<PartyMemberInfo>();
+            PlayerPosition playerPos;
+            PlayerPosition stickTargPos;
+            TargetInfo targetInfo;
+            PlayerInfo playerInfo;
+
+            int currentTarget = 0;
+
+            //alloc buffers
+            IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
+            IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
+            IntPtr playerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+            IntPtr stickTargplayerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+
+            while (isMoving)
+            {
+                if (GetEntityList(apiObject, entbuf))
+                {
+                    entList = (EntityList)Marshal.PtrToStructure(entbuf, typeof(EntityList));
+                }
+
+                //Update entity table
+                EntityList.Clear();
+                for (int i = 0; i < 2000; i++)
+                {
+                    EntityInfo tmpentity;
+                    //tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                    tmpentity = entList.EntList[i];
+                    EntityList.Add(tmpentity);
+
+                }
+
+                Chatbuffer tmpChat;
+                GetChatline(apiObject, chatbuf);
+                tmpChat = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
+                if (!String.IsNullOrEmpty(tmpChat.chatLine))
+                {
+                    //chatLog.Add(tmpChat.chatLine);
+                }
+
+                //Current player position
+                GetPlayerPosition(apiObject, playerPosbuf);
+                playerPos = (PlayerPosition)Marshal.PtrToStructure(playerPosbuf, typeof(PlayerPosition));
+
+                //Target info
+
+                GetTargetInfo(apiObject, tInfobuf);
+                targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
+                // Updating the Label which displays the current second
+
+                //PlayerInfo
+
+                GetPlayerInfo(apiObject, pInfobuf);
+                playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+
+
+                partyMemberList.Clear();
+                //party list
+                for (int i = 0; i < 8; i++)
+                {
+                    GetPartyMember(apiObject, i, pbuf);
+                    PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(pbuf, typeof(PartyMemberInfo));
+                    if (partyMember.hp_pct > 0)
+                    {
+                        partyMemberList.Add(partyMember);
+                    }
+
+                }
+
+                string plyrName = new string(playerInfo.name);
+                float xloc = 0;
+                float yloc = 0;
+                float zloc = 0;
+                short finalheading = 0;
+                //Set up locs
+                if (playerInfo.className.Contains("Paladin"))
+                {
+                    xloc = 37134f;
+                    yloc = 59840f;
+                    zloc = 200f;
+                    finalheading = 71;
+                }
+                else
+                {
+                    xloc = 37134f;
+                    yloc = 59840f;
+                    zloc = 200f;
+                    finalheading = 71;
+                }
+
+                float stoppingDist = 20.0f;
+                //currentTarget = findEntityByName(EntityList, "Asmoe");
+                //SetTarget(apiObject, currentTarget);
+
+
+                float dist = DistanceToPoint(playerPos, xloc, yloc, zloc);
+                short newheading = GetGameHeading(playerPos, xloc, yloc);
+                if (dist > stoppingDist)
+                {
+                    SetAutorun(apiObject, true);
+                    SetPlayerHeading(apiObject, true, newheading);
+                    //dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                    //newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                }
+                else
+                {
+                    SetPlayerHeading(apiObject, true, ConvertDirHeading(finalheading));
+                    //SetPlayerHeading(apiObject, false, 0);
+                    SetAutorun(apiObject, false);
+                    //This isn't turning them the direction of the leader for some reason
+                    //
+                    isMoving = false;
+                }
+
+                Thread.Sleep(100);
+            }
+            SetPlayerHeading(apiObject, false, 0);
+            SetAutorun(apiObject, false);
+
+            Marshal.FreeHGlobal(entbuf);
+            Marshal.FreeHGlobal(chatbuf);
+            Marshal.FreeHGlobal(playerPosbuf);
+            Marshal.FreeHGlobal(stickTargplayerPosbuf);
+            Marshal.FreeHGlobal(tInfobuf);
+            Marshal.FreeHGlobal(pInfobuf);
+            Marshal.FreeHGlobal(pbuf);
+        }
+
+        private void battleFunc(IntPtr apiObject)
+        {
+            bool goleAlive = true;
+            bool fightStarted = false;
+
+            List<EntityInfo> EntityList = new List<EntityInfo>();
+            EntityList entList = new EntityList();
+            List<String> chatLog = new List<String>();
+            List<PartyMemberInfo> partyMemberList = new List<PartyMemberInfo>();
+            PlayerPosition playerPos;
+            PlayerPosition stickTargPos;
+            TargetInfo targetInfo;
+            PlayerInfo playerInfo;
+
+            int currentTarget = 0;
+
+            //alloc buffers
+            IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
+            IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
+            IntPtr playerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+            IntPtr stickTargplayerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+
+            while (goleAlive)
+            {
+                if (GetEntityList(apiObject, entbuf))
+                {
+                    entList = (EntityList)Marshal.PtrToStructure(entbuf, typeof(EntityList));
+                }
+
+                //Update entity table
+                EntityList.Clear();
+                for (int i = 0; i < 2000; i++)
+                {
+                    EntityInfo tmpentity;
+                    //tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                    tmpentity = entList.EntList[i];
+                    EntityList.Add(tmpentity);
+
+                }
+
+                Chatbuffer tmpChat;
+                GetChatline(apiObject, chatbuf);
+                tmpChat = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
+                if (!String.IsNullOrEmpty(tmpChat.chatLine))
+                {
+                    //Check chat line for the word selan
+                    string chatLine = new string(tmpChat.chatLine);
+                    if (chatLine.Contains("Selan"))
+                    {
+                        Thread.Sleep(1000);
+                        fightStarted = true;
+                    }
+                    //chatLog.Add(tmpChat.chatLine);
+                }
+
+                //Current player position
+                GetPlayerPosition(apiObject, playerPosbuf);
+                playerPos = (PlayerPosition)Marshal.PtrToStructure(playerPosbuf, typeof(PlayerPosition));
+
+                //Target info
+
+                GetTargetInfo(apiObject, tInfobuf);
+                targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
+                // Updating the Label which displays the current second
+
+                //PlayerInfo
+
+                GetPlayerInfo(apiObject, pInfobuf);
+                playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+
+
+                partyMemberList.Clear();
+                //party list
+                for (int i = 0; i < 8; i++)
+                {
+                    GetPartyMember(apiObject, i, pbuf);
+                    PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(pbuf, typeof(PartyMemberInfo));
+                    if (partyMember.hp_pct > 0)
+                    {
+                        partyMemberList.Add(partyMember);
+                    }
+
+                }
+
+                if (fightStarted)
+                {
+                    int morellaOffset = findEntityByName(EntityList, "Morella");
+                    int goleOffset = findEntityByName(EntityList, "Golestandt");
+                    int graniteOffset = findEntityByName(EntityList, "granite giant");
+
+
+
+                    //always check morella offset first, then check for a granite giant spawn, then gole
+                    if (morellaOffset > 0)
+                    {
+                        EntityInfo morellaEnt = EntityList[morellaOffset];
+                        if (morellaEnt.health > 0)
+                        {
+                            //Paladin will target gole, everyone else morella
+                            if (playerInfo.className.Contains("Paladin"))
+                            {
+                                SetTarget(apiObject, goleOffset);
+                                UseSkillByName(playerInfo.Skills, "Rile");
+                                UseSkillByName(playerInfo.Skills, "Infuriate");
+                            }
+                            else if (playerInfo.className.Contains("Spiritmaster"))
+                            {
+                                SetTarget(apiObject, morellaOffset);
+                                //UseSkill
+                                
+                            }
+
+                        }
+                    }
+                    else if (graniteOffset > 0)
+                    {
+                        EntityInfo giant = EntityList[graniteOffset];
+                        float giantdist = DistanceToPoint(playerPos, giant.pos_x, giant.pos_y, giant.pos_z);
+                        if (giantdist < 500)
+                        {
+                            //kill the giant
+                        }
+                    }
+                    else if (goleOffset > 0)
+                    {
+                        EntityInfo goleEnt = EntityList[goleOffset];
+                        if (goleEnt.health > 0)
+                        {
+
+                        }
+                    }
+
+
+
+                    string plyrName = new string(playerInfo.name);
+                    float xloc = 0;
+                    float yloc = 0;
+                    float zloc = 0;
+                    short finalheading = 0;
+                    //Set up locs
+                    if (playerInfo.className.Contains("Paladin"))
+                    {
+                        xloc = 37134f;
+                        yloc = 59840f;
+                        zloc = 200f;
+                        finalheading = 71;
+                    }
+                    else
+                    {
+                        xloc = 37134f;
+                        yloc = 59840f;
+                        zloc = 200f;
+                        finalheading = 71;
+                    }
+
+                    float stoppingDist = 20.0f;
+                    //currentTarget = findEntityByName(EntityList, "Asmoe");
+                    //SetTarget(apiObject, currentTarget);
+
+
+                    float dist = DistanceToPoint(playerPos, xloc, yloc, zloc);
+                    short newheading = GetGameHeading(playerPos, xloc, yloc);
+                    if (dist > stoppingDist)
+                    {
+                        SetAutorun(apiObject, true);
+                        SetPlayerHeading(apiObject, true, newheading);
+                        //dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                        //newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                    }
+                    else
+                    {
+                        SetPlayerHeading(apiObject, true, ConvertDirHeading(finalheading));
+                        //SetPlayerHeading(apiObject, false, 0);
+                        SetAutorun(apiObject, false);
+                        //This isn't turning them the direction of the leader for some reason
+                        //
+                        goleAlive = false;
+                    }
+                }
+
+
+
+                Thread.Sleep(750);
+            }
+            SetPlayerHeading(apiObject, false, 0);
+            SetAutorun(apiObject, false);
+
+            Marshal.FreeHGlobal(entbuf);
+            Marshal.FreeHGlobal(chatbuf);
+            Marshal.FreeHGlobal(playerPosbuf);
+            Marshal.FreeHGlobal(stickTargplayerPosbuf);
+            Marshal.FreeHGlobal(tInfobuf);
+            Marshal.FreeHGlobal(pInfobuf);
+            Marshal.FreeHGlobal(pbuf);
         }
 
         private void stickFunc(IntPtr apiObject, IntPtr stickTargApiObject)
@@ -367,7 +885,7 @@ namespace DarkSideModernGUI.Views.Pages
                 tmpChat = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
                 if (!String.IsNullOrEmpty(tmpChat.chatLine))
                 {
-                    chatLog.Add(tmpChat.chatLine);
+                    //chatLog.Add(tmpChat.chatLine);
                 }
 
                 //Current player position
@@ -426,17 +944,18 @@ namespace DarkSideModernGUI.Views.Pages
                     }
                     else
                     {
-                        SetPlayerHeading(apiObject, false, 0);
+                        //have to convert the heading
+                        SetPlayerHeading(apiObject, true, ConvertCharHeading(stickTargPos.heading));
+                        //SetPlayerHeading(apiObject, false, 0);
                         SetAutorun(apiObject, false);
-                        //This isn't turning them the direction of the leader for some reason
-                        //SetPlayerHeading(apiObject, true, stickTargPos.heading);
                     }
                 }
 
 
                 Thread.Sleep(100);
             }
-            
+            SetPlayerHeading(apiObject, false, 0);
+            SetAutorun(apiObject, false);
 
             Marshal.FreeHGlobal(entbuf);
             Marshal.FreeHGlobal(chatbuf);

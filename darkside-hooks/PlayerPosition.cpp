@@ -165,9 +165,9 @@ bool PlayerPosition::SetAutorun() {
         if (*shmAutorunToggle == 0) {
             //std::scoped_lock<std::mutex> lg(posUpdateMutex);
             playerPositionInfo->momentumFwdBackWrite = 0;
-            int prevSpeed = playerPositionInfo->playerSpeedFwd;
-            playerPositionInfo->playerSpeedFwd = 0;
-            playerPositionInfo->playerSpeedFwd = prevSpeed;
+            //int prevSpeed = playerPositionInfo->playerSpeedFwd;
+            //playerPositionInfo->playerSpeedFwd = 0;
+            //playerPositionInfo->playerSpeedFwd = prevSpeed;
         }
         return true;
     }

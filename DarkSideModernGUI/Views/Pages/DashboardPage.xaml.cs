@@ -17,6 +17,8 @@ using Newtonsoft.Json;
 
 using static DarkSideModernGUI.Helpers.DarksideGameAPI;
 using System.Threading;
+using System.Windows.Media;
+using System.Drawing;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -135,18 +137,21 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void btnInjectAll_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            btnInjectAll.Content = "All Injected";
             foreach (GameDLL proc in gameprocs)
             {
                 if (InjectPid(proc.apiObject, proc.procId))
                 {
 
                 }
-                Thread.Sleep(50);
+                Thread.Sleep(10);
             }
+            btnInjectAll.Background = new SolidColorBrush(Colors.Green);
         }
 
         private void btnUnloadAll_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            btnInjectAll.Content = "Inject All";
             foreach (GameDLL proc in gameprocs)
             {
                 if (GetPid(proc.apiObject) > 0)
@@ -156,10 +161,11 @@ namespace DarkSideModernGUI.Views.Pages
                         //API calls dispose so this object is now deleted
                     }
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(10);
 
             }
             gameprocs.Clear();
+            btnInjectAll.Background = new SolidColorBrush(Colors.Orange);
         }
 
 
