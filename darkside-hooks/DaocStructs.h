@@ -121,7 +121,7 @@ struct chatManager_t {
     std::mutex cmMutex;
     //Flag if API is ready for a new message
     bool rdySend;
-    char buffer[512];
+    char buffer[2048];
 };
 
 struct sendCmd_t {

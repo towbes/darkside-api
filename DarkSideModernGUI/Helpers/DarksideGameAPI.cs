@@ -136,7 +136,7 @@ namespace DarkSideModernGUI.Helpers
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Chatbuffer
         {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)] public String chatLine;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 2048)] public String chatLine;
         }
 
 

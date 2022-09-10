@@ -13,7 +13,7 @@ private:
     void* hMapFile;
     std::wstring chatManagermmf_name;
 
-    char tmpBuff[512];
+    char tmpBuff[2048];
 
     //Send command shared memory
     sendCmd_t* pShmSendCmd;

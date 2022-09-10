@@ -29,7 +29,7 @@ char oResetBytes[11];
 //chat hook
 uintptr_t ptrPrintChat = funcPrintChat_x;
 void GrabChat(const char* buffer);
-char chatBuf[512];
+char chatBuf[2048];
 std::mutex chatBufMutex;
 bool newMsg = false;
 
