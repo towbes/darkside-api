@@ -29,6 +29,7 @@ namespace DarkSideModernGUI.Views.Pages
 
         Dictionary<string, int> charNames = new Dictionary<string, int>();
 
+
         public ViewModels.ClassSettingsViewModel ViewModel
         {
             get;
@@ -66,7 +67,11 @@ namespace DarkSideModernGUI.Views.Pages
                     plyrName,
                     className,
                     i);
-                charNames.Add(plyrName, proc.procId);
+                if (!charNames.ContainsKey(plyrName))
+                {
+                    charNames.Add(plyrName, proc.procId);
+                }
+                
                 loadedList.Add(pInfoMsg);
                 //
                 
@@ -101,7 +106,10 @@ namespace DarkSideModernGUI.Views.Pages
                     plyrName,
                     className,
                     i);
-                charNames.Add(plyrName, proc.procId);
+                if (!charNames.ContainsKey(plyrName))
+                {
+                    charNames.Add(plyrName, proc.procId);
+                }
                 loadedList.Add(pInfoMsg);
                 //
 
