@@ -43,12 +43,13 @@
             GetBuffs
         </ui:Button>
         <ui:Button
+            Name="StickButton"
             Grid.Column="1"
             Width="136"
             Margin="67,100,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_Stick">
-            Stick
+            Stick is Off
         </ui:Button>
     </Grid>
 </ui:UiPage>

@@ -27,6 +27,8 @@ namespace DarkSideModernGUI.Views.Pages
         DispatcherTimer stickTimer;
         bool stickRunning = false;
 
+        string leaderName = "Asmoe";
+
         Dictionary<string, int> charNames = new Dictionary<string, int>();
 
 
@@ -125,12 +127,17 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_RunTarget(object sender, RoutedEventArgs e)
         {
+            int leaderPid = charNames[leaderName];
+
+            DashboardPage.GameDLL leaderProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == leaderPid);
+
+
             foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
             {
                 //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
                 //Thread newThread = new Thread(()=>runDemo(proc.apiObject));
                 //newThread.Start();
-                getBuffs(proc.apiObject);
+                getBuffs(proc.apiObject, leaderProc.apiObject);
             }
         }
 
@@ -291,12 +298,13 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_Stick(object sender, RoutedEventArgs e)
         {
-            int stickPid = charNames["Asmoe"];
+            int stickPid = charNames[leaderName];
 
             DashboardPage.GameDLL stickProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == stickPid);
 
             if (!stickRunning)
             {
+                StickButton.Content = "Stick is On";
                 stickRunning = true;
                 foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
                 {
@@ -307,6 +315,7 @@ namespace DarkSideModernGUI.Views.Pages
             }
             else
             {
+                StickButton.Content = "Stick is Off";
                 stickRunning = false;
             }
 
@@ -369,6 +378,8 @@ namespace DarkSideModernGUI.Views.Pages
                 GetPlayerPosition(stickTargApiObject, stickTargplayerPosbuf);
                 stickTargPos = (PlayerPosition)Marshal.PtrToStructure(stickTargplayerPosbuf, typeof(PlayerPosition));
 
+
+
                 //Target info
 
                 GetTargetInfo(apiObject, tInfobuf);
@@ -395,11 +406,11 @@ namespace DarkSideModernGUI.Views.Pages
                 }
 
                 string plyrName = new string(playerInfo.name);
-                if(plyrName.Equals("Asmoe")) {
+                if(plyrName.Equals(leaderName)) {
                     break;
                 }
 
-                if (!plyrName.Equals("Asmoe")) {
+                if (!plyrName.Equals(leaderName)) {
                     float stoppingDist = 20.0f;
                     //currentTarget = findEntityByName(EntityList, "Asmoe");
                     //SetTarget(apiObject, currentTarget);
@@ -415,17 +426,17 @@ namespace DarkSideModernGUI.Views.Pages
                     }
                     else
                     {
-                        
+                        SetPlayerHeading(apiObject, false, 0);
                         SetAutorun(apiObject, false);
-                        //SetPlayerHeading(apiObject, false, 0);
-                        SetPlayerHeading(apiObject, true, stickTargPos.heading);
+                        //This isn't turning them the direction of the leader for some reason
+                        //SetPlayerHeading(apiObject, true, stickTargPos.heading);
                     }
                 }
 
 
                 Thread.Sleep(100);
             }
-            SetPlayerHeading(apiObject, false, 0);
+            
 
             Marshal.FreeHGlobal(entbuf);
             Marshal.FreeHGlobal(chatbuf);
@@ -436,7 +447,7 @@ namespace DarkSideModernGUI.Views.Pages
             Marshal.FreeHGlobal(pbuf);
         }
 
-        private void getBuffs(IntPtr apiObject)
+        private void getBuffs(IntPtr apiObject, IntPtr leaderApiObject)
         {
             List<EntityInfo> EntityList = new List<EntityInfo>();
 
@@ -462,22 +473,27 @@ namespace DarkSideModernGUI.Views.Pages
             PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
             Marshal.FreeHGlobal(pInfobuf);
 
-
+            //Leader target information
+            IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+            GetTargetInfo(leaderApiObject, tInfobuf);
+            TargetInfo leaderTargetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
+            Marshal.FreeHGlobal(tInfobuf);
 
             //MoveItem Example
             //Target name,item name
-            string tmp = "Camelot,Full Buffs";
+            string targName = leaderTargetInfo.name;
+            string buffItem = "Full Buffs";
 
 
-            if (!String.IsNullOrEmpty(tmp))
+            if (!String.IsNullOrEmpty(targName))
             {
-                string[] args = tmp.Split(',');
-                int entOffset = -1;
-                entOffset = findEntityByName(EntityList, args[0]);
-                if (entOffset >= 0)
+                //string[] args = tmp.Split(',');
+                //int entOffset = -1;
+                //entOffset = findEntityByName(EntityList, args[0]);
+                if (leaderTargetInfo.entOffset >= 0)
                 {
-                    SetTarget(apiObject, entOffset);
-                    InteractRequest(apiObject, EntityList[entOffset].objectId);
+                    SetTarget(apiObject, leaderTargetInfo.entOffset);
+                    InteractRequest(apiObject, EntityList[leaderTargetInfo.entOffset].objectId);
                     //After interacting, send the buy item packet
                     //alloc a buf and zero it out
                     IntPtr pktbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PktBuffer>());
@@ -486,16 +502,17 @@ namespace DarkSideModernGUI.Views.Pages
                     {
                         Marshal.WriteByte(pktbuf, i, 0);
                     }
+                    //This seems to work to buy buff token from any buff merchant
                     string buyItem = "78 00 08 EC 9C 00 07 6C 4F 00 01 00 00 01 01 00 00 00";
                     pktbuf = Marshal.StringToHGlobalAnsi(buyItem);
                     SendPacket(apiObject, pktbuf);
                     //Find the item and trae it to the npc
                     int fromSlot = 0;
-                    fromSlot = ItemSlotByName(playerInfo.Inventory, args[1]);
+                    fromSlot = ItemSlotByName(playerInfo.Inventory, buffItem);
                     if (fromSlot > 0)
                     {
                         //Add 1000 to objectId for moving item to NPCs
-                        MoveItem(apiObject, fromSlot, EntityList[entOffset].objectId + 1000, 0);
+                        MoveItem(apiObject, fromSlot, EntityList[leaderTargetInfo.entOffset].objectId + 1000, 0);
                     }
                     Marshal.FreeHGlobal(pktbuf);
                 }

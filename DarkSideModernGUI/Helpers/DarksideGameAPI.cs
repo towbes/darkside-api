@@ -207,7 +207,8 @@ namespace DarkSideModernGUI.Helpers
 
         public static int findEntityByName(List<EntityInfo> EntityList, String entName)
         {
-            for (int i = 0; i < 2000; i++)
+            //Skip index 0 for now
+            for (int i = 1; i < 2000; i++)
             {
                 if (!String.IsNullOrEmpty(EntityList[i].name))
                 {
@@ -218,7 +219,7 @@ namespace DarkSideModernGUI.Helpers
                 }
 
             }
-            return -1;
+            return 0;
         }
 
         public static int ItemSlotByName(Item_t[] inventory, String itemName)

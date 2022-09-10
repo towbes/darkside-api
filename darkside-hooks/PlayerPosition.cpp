@@ -135,7 +135,7 @@ bool PlayerPosition::GetPlayerPosition() {
 void PlayerPosition::SetHeading() {
     if ((bool)headingUpdate->changeHeading) {
         //lock the pointer when we write it
-        std::scoped_lock<std::mutex> lg(posUpdateMutex);
+        //std::scoped_lock<std::mutex> lg(posUpdateMutex);
         //convert radian to heading
         //https://github.com/Dawn-of-Light/DOLSharp/blob/9af87af011497c3fda852559b01a269c889b162e/GameServer/world/Point2D.cs
         //short oHeading = headingUpdate->heading * (4096.0 / 360.0);
@@ -163,7 +163,7 @@ bool PlayerPosition::SetAutorun() {
         *ptrAutorunToggle = *shmAutorunToggle;
         preValAutorunToggle = *(BYTE*)shmAutorunToggle;
         if (*shmAutorunToggle == 0) {
-            std::scoped_lock<std::mutex> lg(posUpdateMutex);
+            //std::scoped_lock<std::mutex> lg(posUpdateMutex);
             playerPositionInfo->momentumFwdBackWrite = 0;
             int prevSpeed = playerPositionInfo->playerSpeedFwd;
             playerPositionInfo->playerSpeedFwd = 0;
