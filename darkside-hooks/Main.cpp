@@ -32,14 +32,18 @@ void GrabChat(const char* buffer);
 char chatBuf[2048];
 std::mutex chatBufMutex;
 bool newMsg = false;
+bool injected = false;
 
 //Chat Hooks
 //Incoming chat hook
 void GrabChat(const char* buffer) {
-    //::OutputDebugStringA(std::format("Text: {}", buffer).c_str());
-    std::scoped_lock<std::mutex> lg(chatBufMutex);
-    newMsg = true;
-    strcpy_s(chatBuf, buffer);
+    if (injected) {
+        //::OutputDebugStringA(std::format("Text: {}", buffer).c_str());
+        std::scoped_lock<std::mutex> lg(chatBufMutex);
+        newMsg = true;
+        strcpy_s(chatBuf, buffer);
+    }
+
 }
 
 __declspec(naked) void __stdcall PrintChat() {
@@ -86,8 +90,10 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
     freopen_s(&f, "CONOUT$", "w", stdout);
     std::cout << "DLL got injected!!" << std::endl;
 #endif 
+    injected = true;
     //Start d3d9 hook
     Init(ghModule);
+    
 
 
     //Get Process ID
@@ -127,6 +133,9 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
 #endif
 
     //Remove all hooks
+    injected = false;
+    //quick sleep to give present a chance to run
+    Sleep(100);
 
     if (ptrPresent != NULL && ptrReset != NULL) {
         DetourTransactionBegin();
@@ -168,52 +177,54 @@ extern "C" __declspec(dllexport) void __cdecl MainThread() {
 
 HRESULT APIENTRY hkPresent(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
 {
-
-    if (!bInit) {
-        posInfo = new PlayerPosition();
-        pMemInfo = new PartyMemberInfo();
-        plyrInfo = new PlayerInfo();
-        entInfo = new EntityInfo();
-        targInfo = new TargetInfo();
-        chatMan = new ChatManager();
-        bInit = true;
-    }
-
-    //These functions will run every frame
-    //They are used to get/set memory
-    if (posInfo != NULL) {
-        posInfo->GetPlayerPosition();
-        posInfo->SetHeading();
-        posInfo->SetAutorun();
-    }
-    if (pMemInfo != NULL) {
-        pMemInfo->GetPartyMembers();
-    }
-    if (plyrInfo != NULL) {
-        plyrInfo->GetPlayerInfo();
-        plyrInfo->QueueSkill();
-        plyrInfo->QueueSpell();
-        plyrInfo->QueuePetCmd();
-        plyrInfo->QueueMoveItem();
-    }
-    if (entInfo != NULL) {
-        entInfo->GetEntityInfo();
-    }
-    if (targInfo != NULL) {
-        targInfo->GetTargetInfo();
-        targInfo->SetTarget();
-        targInfo->InteractRequest();
-    }
-    if (chatMan != NULL) {
-        if (newMsg) {
-            std::scoped_lock<std::mutex> lg(chatBufMutex);
-            chatMan->CopyChat(chatBuf);
-            newMsg = false;
+    if (injected) {
+        if (!bInit) {
+            posInfo = new PlayerPosition();
+            pMemInfo = new PartyMemberInfo();
+            plyrInfo = new PlayerInfo();
+            entInfo = new EntityInfo();
+            targInfo = new TargetInfo();
+            chatMan = new ChatManager();
+            bInit = true;
         }
-        chatMan->QueueCommand();
-        chatMan->QueueSendPacket();
 
+        //These functions will run every frame
+        //They are used to get/set memory
+        if (posInfo != NULL) {
+            posInfo->GetPlayerPosition();
+            posInfo->SetHeading();
+            posInfo->SetAutorun();
+        }
+        if (pMemInfo != NULL) {
+            pMemInfo->GetPartyMembers();
+        }
+        if (plyrInfo != NULL) {
+            plyrInfo->GetPlayerInfo();
+            plyrInfo->QueueSkill();
+            plyrInfo->QueueSpell();
+            plyrInfo->QueuePetCmd();
+            plyrInfo->QueueMoveItem();
+        }
+        if (entInfo != NULL) {
+            entInfo->GetEntityInfo();
+        }
+        if (targInfo != NULL) {
+            targInfo->GetTargetInfo();
+            targInfo->SetTarget();
+            targInfo->InteractRequest();
+        }
+        if (chatMan != NULL) {
+            if (newMsg) {
+                std::scoped_lock<std::mutex> lg(chatBufMutex);
+                chatMan->CopyChat(chatBuf);
+                newMsg = false;
+            }
+            chatMan->QueueCommand();
+            chatMan->QueueSendPacket();
+
+        }
     }
+
         
     //draw stuff here like so:
     //if (!bInit) InitImGui(pDevice);
