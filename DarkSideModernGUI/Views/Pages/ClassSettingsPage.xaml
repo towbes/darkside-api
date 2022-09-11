@@ -35,10 +35,19 @@
         </TextBlock>
         <StackPanel
             Grid.Column="1">
-        <ui:Button
+            <ui:Button
+            Name="btnGlobalLoop"
             Grid.Column="1"
             Width="136"
             Margin="67,0,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_GlobalLoop">
+            GlobalLoop
+            </ui:Button>
+            <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_RunTarget">
             GetBuffs

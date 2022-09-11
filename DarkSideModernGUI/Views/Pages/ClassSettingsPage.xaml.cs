@@ -29,10 +29,13 @@ namespace DarkSideModernGUI.Views.Pages
         DispatcherTimer stickTimer;
         bool stickRunning = false;
 
+        bool globalsRunning = false;
+
         string leaderName = "Asmoe";
         string readyName = "Suzuha";
 
-        Dictionary<string, int> charNames = new Dictionary<string, int>();
+        static public Dictionary<string, int> charNames = new Dictionary<string, int>();
+        static public Dictionary<int, CharGlobals> CharGlobalDict = new Dictionary<int, CharGlobals>();
 
         //Global bool to trigger dragon script on/off
         bool dragonRunning = false;
@@ -41,6 +44,33 @@ namespace DarkSideModernGUI.Views.Pages
         {
             get;
         }
+
+        public struct CharGlobals
+        {
+            //Api Object
+            public IntPtr apiObject;
+            //alloc buffers
+            public IntPtr entbuf {get;set;}//= Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
+            public IntPtr chatbuf {get;set;}//= Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
+            public IntPtr playerPosbuf {get;set;}//= Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            public IntPtr tInfobuf {get;set;}//= Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+            public IntPtr pInfobuf {get;set;}//= Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            public IntPtr pbuf{get;set;}//= Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+            public IntPtr stickTargplayerPosbuf { get; set; }// = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            //Global lists
+            public List<EntityInfo> EntityList; //= new List<EntityInfo>();
+            public EntityList entList; // = new EntityList();
+            public List<String> chatLog; //= new List<String>();
+            public List<PartyMemberInfo> partyMemberList; //= new List<PartyMemberInfo>();
+            //Global info
+            public PlayerPosition playerPos;
+            public TargetInfo targetInfo;
+            public PlayerInfo playerInfo;
+            public Chatbuffer chatLine;
+            
+        }
+
+
 
         public ClassSettingsPage(ViewModels.ClassSettingsViewModel viewModel)
         {
@@ -79,8 +109,31 @@ namespace DarkSideModernGUI.Views.Pages
                     charNames.Add(plyrName, proc.procId);
                 }
                 
+                if (!CharGlobalDict.ContainsKey(proc.procId))
+                {
+                    CharGlobalDict.Add(proc.procId, new CharGlobals()
+                    {
+                        //alloc buffers
+                        entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>()),
+                        chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>()),
+                        playerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>()),
+                        tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>()),
+                        pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>()),
+                        pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>()),
+                        //global lists
+                        EntityList = new List<EntityInfo>(),
+                        entList = new EntityList(),
+                        chatLog = new List<String>(),
+                        partyMemberList = new List<PartyMemberInfo>(),
+                        playerPos = new PlayerPosition(),
+                        targetInfo = new TargetInfo(),
+                        playerInfo = new PlayerInfo(),
+                        apiObject = proc.apiObject,
+                    });
+                }
+
                 loadedList.Add(pInfoMsg);
-                //
+                
                 
             }
             Marshal.FreeHGlobal(pInfobuf);
@@ -88,6 +141,17 @@ namespace DarkSideModernGUI.Views.Pages
 
             InjectedInfo.Text = String.Join(Environment.NewLine, loadedList);
 
+        }
+
+        static public void ReleasecharGlobals(CharGlobals charBuffer)
+        {
+            Marshal.FreeHGlobal(charBuffer.entbuf);
+            Marshal.FreeHGlobal(charBuffer.chatbuf);
+            Marshal.FreeHGlobal(charBuffer.playerPosbuf);
+            Marshal.FreeHGlobal(charBuffer.stickTargplayerPosbuf);
+            Marshal.FreeHGlobal(charBuffer.tInfobuf);
+            Marshal.FreeHGlobal(charBuffer.pInfobuf);
+            Marshal.FreeHGlobal(charBuffer.pbuf);
         }
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
@@ -117,17 +181,131 @@ namespace DarkSideModernGUI.Views.Pages
                 {
                     charNames.Add(plyrName, proc.procId);
                 }
+
+                if (!CharGlobalDict.ContainsKey(proc.procId))
+                {
+                    CharGlobalDict.Add(proc.procId, new CharGlobals()
+                    {
+                        //alloc buffers
+                        entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>()),
+                        chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>()),
+                        playerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>()),
+                        tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>()),
+                        pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>()),
+                        pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>()),
+                        //global lists
+                        EntityList = new List<EntityInfo>(),
+                        entList = new EntityList(),
+                        chatLog = new List<String>(),
+                        partyMemberList = new List<PartyMemberInfo>(),
+                        playerPos = new PlayerPosition(),
+                        targetInfo = new TargetInfo(),
+                        playerInfo = new PlayerInfo(),
+                    });
+                }
                 loadedList.Add(pInfoMsg);
                 //
 
             }
             Marshal.FreeHGlobal(pInfobuf);
-
-
             InjectedInfo.Text = String.Join(Environment.NewLine, loadedList);
 
             // Forcing the CommandManager to raise the RequerySuggested event
             CommandManager.InvalidateRequerySuggested();
+        }
+
+        private void Button_Click_GlobalLoop(object sender, RoutedEventArgs e)
+        {
+            if (!globalsRunning)
+            {
+                btnGlobalLoop.Content = "Globals Looping";
+                globalsRunning = true;
+                foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+                {
+                    //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                    Thread newThread = new Thread(() => UpdateGlobals(CharGlobalDict[proc.procId]));
+                    newThread.Start();
+
+                }
+                btnGlobalLoop.Background = new SolidColorBrush(Colors.Green);
+            }
+            else
+            {
+                btnGlobalLoop.Content = "Globals Stopped";
+                globalsRunning = false;
+            }
+        }
+
+        private void UpdateGlobals(CharGlobals charGlobals)
+        {
+            bool destinationReached = false;
+
+            IntPtr apiObject = charGlobals.apiObject;
+
+            IntPtr entbuf = charGlobals.entbuf;
+            IntPtr chatbuf = charGlobals.chatbuf;
+            IntPtr playerPosbuf = charGlobals.playerPosbuf;
+            IntPtr tInfobuf = charGlobals.tInfobuf;
+            IntPtr pInfobuf = charGlobals.pInfobuf;
+            IntPtr pbuf = charGlobals.pbuf;
+            IntPtr stickTargplayerPosbuf = charGlobals.stickTargplayerPosbuf;
+
+            while (stickRunning)
+            {
+                if (GetEntityList(apiObject, entbuf))
+                {
+                    charGlobals.entList = (EntityList)Marshal.PtrToStructure(entbuf, typeof(EntityList));
+                }
+
+                //Update entity table
+                charGlobals.EntityList.Clear();
+                for (int i = 0; i < 2000; i++)
+                {
+                    EntityInfo tmpentity;
+                    //tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                    tmpentity = charGlobals.entList.EntList[i];
+                    charGlobals.EntityList.Add(tmpentity);
+
+                }
+
+                
+                GetChatline(apiObject, chatbuf);
+                charGlobals.chatLine = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
+                if (!String.IsNullOrEmpty(charGlobals.chatLine.chatLine))
+                {
+                    //chatLog.Add(tmpChat.chatLine);
+                }
+
+                //Current player position
+                GetPlayerPosition(apiObject, playerPosbuf);
+                charGlobals.playerPos = (PlayerPosition)Marshal.PtrToStructure(playerPosbuf, typeof(PlayerPosition));
+
+                //Target info
+
+                GetTargetInfo(apiObject, tInfobuf);
+                charGlobals.targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
+                // Updating the Label which displays the current second
+
+                //PlayerInfo
+
+                GetPlayerInfo(apiObject, pInfobuf);
+                charGlobals.playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+
+
+                charGlobals.partyMemberList.Clear();
+                //party list
+                for (int i = 0; i < 8; i++)
+                {
+                    GetPartyMember(apiObject, i, pbuf);
+                    PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(pbuf, typeof(PartyMemberInfo));
+                    if (partyMember.hp_pct > 0)
+                    {
+                        charGlobals.partyMemberList.Add(partyMember);
+                    }
+
+                }
+                Thread.Sleep(100);
+            }
         }
 
         private void Button_Click_RunTarget(object sender, RoutedEventArgs e)
@@ -321,7 +499,7 @@ namespace DarkSideModernGUI.Views.Pages
                     if (proc.procId != readyPid)
                     {
                         //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
-                        Thread newThread = new Thread(() => stickFunc(proc.apiObject, stickProc.apiObject));
+                        Thread newThread = new Thread(() => stickFunc(CharGlobalDict[proc.procId]));
                         newThread.Start();
                     }
 
@@ -730,6 +908,7 @@ namespace DarkSideModernGUI.Views.Pages
             string tankClass = "Paladin";
             string tankMeleeTaunt = "Rile";
             string tankSpellTaunt = "Infuriate";
+            string tankArmorBuff = "Aura of Salvation";
             //Implement two tank waypoints for dodging clouds
             bool cloudNear = false;
             Pos_2d[] tankPoints = new Pos_2d[2];
@@ -741,10 +920,19 @@ namespace DarkSideModernGUI.Views.Pages
 
             //Damage caster
             string dmgClass = "Spiritmaster";
+            //pet and buffs
             string petSpell = "Spirit Warrior";
             string shieldSpell = "Superior Suppressive Barrier";
             string absorbSpell = "Suppressive Buffer";
             string grpAbsorb = "Shield of the Einherjar";
+            //nuke
+            string dmgNuke = "Spirit Annihilation";
+
+            //Debuffer
+            string dbfClass = "Eldritch";
+            string dbfShieldSpell = "Supreme Powerguard";
+            string dbfAbsorbSpell = "Barrier of Power";
+            string dbfSpell = "Annihilate Soul";
 
             //Bard
             string brdClass = "Bard";
@@ -756,13 +944,21 @@ namespace DarkSideModernGUI.Views.Pages
             //buff
             string ablBuff = "Battlesong of Apotheosis";
             //heals
-            string smallHeal = "Apotheosis";
-            string bigHeal = "Major Apotheosis";
-            string grpHeal = "Group Apotheosis";
+            int smallHealPct = 90;
+            int bigHealPct = 70;
+            string brdSmallHeal = "Apotheosis";
+            string brdBigHeal = "Major Apotheosis";
+            string brdGrpHeal = "Group Apotheosis";
             
 
             //Healer
-            string healClass = "Druid";
+            string hlrClass = "Druid";
+            //resist buff
+            string hlrResistBuff = "Warmth of the Bear";
+            //heals
+            string hlrSmallHeal = "Apotheosis";
+            string hlrBigHeal = "Major Renascence";
+            string hlrGrpHeal = "Group Apotheosis";
 
             while (dragonRunning)
             {
@@ -844,8 +1040,10 @@ namespace DarkSideModernGUI.Views.Pages
                 {
                     if (playerInfo.className.Contains(tankClass))
                     {
-
-                    }else if (playerInfo.className.Contains(dmgClass))
+                        if (!HasBuffByName(playerInfo.Buffs, tankArmorBuff))
+                            UseSkillByName(apiObject, playerInfo.Skills, tankArmorBuff);
+                    }
+                    else if (playerInfo.className.Contains(dmgClass))
                     {
                         //Pet spell
                         if(playerInfo.petEntIndex == 0)
@@ -860,6 +1058,13 @@ namespace DarkSideModernGUI.Views.Pages
                         else if (!HasBuffByName(playerInfo.Buffs, grpAbsorb))
                             UseSpellByName(apiObject, playerInfo.SpellLines, grpAbsorb);
                     }
+                    else if (playerInfo.className.Contains(dbfClass))
+                    {
+                        if (!HasBuffByName(playerInfo.Buffs, dbfShieldSpell))
+                            UseSpellByName(apiObject, playerInfo.SpellLines, dbfShieldSpell);
+                        else if (!HasBuffByName(playerInfo.Buffs, dbfAbsorbSpell))
+                            UseSpellByName(apiObject, playerInfo.SpellLines, dbfAbsorbSpell);
+                    }
                     else if (playerInfo.className.Contains(brdClass))
                     {
                         //Bard Songs/spells are all skills
@@ -873,6 +1078,12 @@ namespace DarkSideModernGUI.Views.Pages
                             UseSkillByName(apiObject, playerInfo.Skills, endSong);
                         else if (!HasBuffByName(playerInfo.Buffs, ablBuff))
                             UseSkillByName(apiObject, playerInfo.Skills, ablBuff);
+                    }
+                    else if (playerInfo.className.Contains(hlrClass))
+                    {
+                        //resist buff
+                        if (!HasBuffByName(playerInfo.Buffs, hlrResistBuff))
+                            UseSkillByName(apiObject, playerInfo.Skills, hlrResistBuff);
                     }
                     castTimeout = timeoutMax;
                 }
@@ -966,34 +1177,76 @@ namespace DarkSideModernGUI.Views.Pages
                                 SetTarget(apiObject, goleOffset);
 
                             }
-                        } else
+                        }
+                        else
                         {
                             //Gole's dead, set flags to false to stop loops
                             fightStarted = false;
                             dragonRunning = false;
+                            //set the pet to idle=
+                            UsePetCmdByName(apiObject, "passive");
                         }
                     }
 
-                    //combat
-                    //Paladin will target gole, everyone else morella
-                    if (playerInfo.className.Contains(tankClass))
+                    //combat, do another check that fight is started so we don't fight after gole dies
+                    if (fightStarted)
                     {
-                        SetTarget(apiObject, goleOffset);
-                        //Melee Taunt
-                        UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
-                        //Spell taunt
-                        UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
-                    } else if (playerInfo.className.Contains(dmgClass))
-                    {
-
+                            //Paladin will target gole, everyone else morella
+                            if (playerInfo.className.Contains(tankClass))
+                            {
+                                SetTarget(apiObject, goleOffset);
+                                //Melee Taunt
+                                UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
+                                //Spell taunt
+                                UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
+                            }
+                            else if (playerInfo.className.Contains(dmgClass))
+                            {
+                                //Check if pet is idle
+                                if (EntityList[playerInfo.petEntIndex].entityStatus == 8)
+                                {
+                                    UsePetCmdByName(apiObject, "attack");
+                                }
+                                UseSpellByName(apiObject, playerInfo.SpellLines, dmgNuke);
+                            }
+                            else if (playerInfo.className.Contains(dbfClass))
+                            {
+                                UseSpellByName(apiObject, playerInfo.SpellLines, dbfSpell);
+                            }
+                            else if (playerInfo.className.Contains(brdClass))
+                            {
+                                //check if a party member needs heal
+                                int ptEntOffset = PartyMemberNeedsHeal(partyMemberList, EntityList);
+                                if (ptEntOffset > 0)
+                                {
+                                    SetTarget(apiObject, ptEntOffset);
+                                    if (EntityList[ptEntOffset].health < smallHealPct)
+                                        UseSkillByName(apiObject, playerInfo.Skills, brdSmallHeal);
+                                    else if (EntityList[ptEntOffset].health < bigHealPct)
+                                        UseSkillByName(apiObject, playerInfo.Skills, brdBigHeal);
+                                }
+                            }
+                            else if (playerInfo.className.Contains(hlrClass))
+                            {
+                                //check if a party member needs heal
+                                int ptEntOffset = PartyMemberNeedsHeal(partyMemberList, EntityList);
+                                if (ptEntOffset > 0)
+                                {
+                                    SetTarget(apiObject, ptEntOffset);
+                                    if (EntityList[ptEntOffset].health < smallHealPct)
+                                        UseSkillByName(apiObject, playerInfo.Skills, hlrSmallHeal);
+                                    else if (EntityList[ptEntOffset].health < bigHealPct)
+                                        UseSkillByName(apiObject, playerInfo.Skills, hlrBigHeal);
+                                }
+                            }
                     }
-
 
                     castTimeout = timeoutMax;
                 }
                 
                 Thread.Sleep(threadSleep);
             }
+
             //Make sure we aren't moving
             SetPlayerHeading(apiObject, false, 0);
             SetAutorun(apiObject, false);
@@ -1008,91 +1261,14 @@ namespace DarkSideModernGUI.Views.Pages
             Marshal.FreeHGlobal(pbuf);
         }
 
-        private void stickFunc(IntPtr apiObject, IntPtr stickTargApiObject)
+        private void stickFunc(CharGlobals charGlobals)
         {
-            bool destinationReached = false;
-            List<EntityInfo> EntityList = new List<EntityInfo>();
-            EntityList entList = new EntityList();
-            List<String> chatLog = new List<String>();
-            List<PartyMemberInfo> partyMemberList = new List<PartyMemberInfo>();
-            PlayerPosition playerPos;
-            PlayerPosition stickTargPos;
-            TargetInfo targetInfo;
-            PlayerInfo playerInfo;
 
-            int currentTarget = 0;
-
-            //alloc buffers
-            IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
-            IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
-            IntPtr playerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
-            IntPtr tInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
-            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
-            IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
-            IntPtr stickTargplayerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            CharGlobals stickGlobals = CharGlobalDict[charNames[leaderName]];
 
             while (stickRunning)
             {
-                if (GetEntityList(apiObject, entbuf))
-                {
-                    entList = (EntityList)Marshal.PtrToStructure(entbuf, typeof(EntityList));
-                }
-
-                //Update entity table
-                EntityList.Clear();
-                for (int i = 0; i < 2000; i++)
-                {
-                    EntityInfo tmpentity;
-                    //tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
-                    tmpentity = entList.EntList[i];
-                    EntityList.Add(tmpentity);
-
-                }
-
-                Chatbuffer tmpChat;
-                GetChatline(apiObject, chatbuf);
-                tmpChat = (Chatbuffer)Marshal.PtrToStructure(chatbuf, typeof(Chatbuffer));
-                if (!String.IsNullOrEmpty(tmpChat.chatLine))
-                {
-                    //chatLog.Add(tmpChat.chatLine);
-                }
-
-                //Current player position
-                GetPlayerPosition(apiObject, playerPosbuf);
-                playerPos = (PlayerPosition)Marshal.PtrToStructure(playerPosbuf, typeof(PlayerPosition));
-
-                // Stick target player position
-                GetPlayerPosition(stickTargApiObject, stickTargplayerPosbuf);
-                stickTargPos = (PlayerPosition)Marshal.PtrToStructure(stickTargplayerPosbuf, typeof(PlayerPosition));
-
-
-
-                //Target info
-
-                GetTargetInfo(apiObject, tInfobuf);
-                targetInfo = (TargetInfo)Marshal.PtrToStructure(tInfobuf, typeof(TargetInfo));
-                // Updating the Label which displays the current second
-
-                //PlayerInfo
-
-                GetPlayerInfo(apiObject, pInfobuf);
-                playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
-
-
-                partyMemberList.Clear();
-                //party list
-                for (int i = 0; i < 8; i++)
-                {
-                    GetPartyMember(apiObject, i, pbuf);
-                    PartyMemberInfo partyMember = (PartyMemberInfo)Marshal.PtrToStructure(pbuf, typeof(PartyMemberInfo));
-                    if (partyMember.hp_pct > 0)
-                    {
-                        partyMemberList.Add(partyMember);
-                    }
-
-                }
-
-                string plyrName = new string(playerInfo.name);
+                string plyrName = new string(charGlobals.playerInfo.name);
                 if(plyrName.Equals(leaderName)) {
                     break;
                 }
@@ -1102,37 +1278,29 @@ namespace DarkSideModernGUI.Views.Pages
                     //currentTarget = findEntityByName(EntityList, "Asmoe");
                     //SetTarget(apiObject, currentTarget);
 
-                    float dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
-                    short newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                    float dist = DistanceToPoint(charGlobals.playerPos, stickGlobals.playerPos.pos_x, stickGlobals.playerPos.pos_y);
+                    short newheading = GetGameHeading(charGlobals.playerPos, stickGlobals.playerPos.pos_x, stickGlobals.playerPos.pos_y);
                     if (dist > stoppingDist)
                     {
-                        SetAutorun(apiObject, true);
-                        SetPlayerHeading(apiObject, true, newheading);
+                        SetAutorun(charGlobals.apiObject, true);
+                        SetPlayerHeading(charGlobals.apiObject, true, newheading);
                         //dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
                         //newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
                     }
                     else
                     {
                         //have to convert the heading
-                        SetPlayerHeading(apiObject, true, ConvertCharHeading(stickTargPos.heading));
+                        SetPlayerHeading(charGlobals.apiObject, true, ConvertCharHeading(stickGlobals.playerPos.heading));
                         //SetPlayerHeading(apiObject, false, 0);
-                        SetAutorun(apiObject, false);
+                        SetAutorun(charGlobals.apiObject, false);
                     }
                 }
 
 
                 Thread.Sleep(100);
             }
-            SetPlayerHeading(apiObject, false, 0);
-            SetAutorun(apiObject, false);
-
-            Marshal.FreeHGlobal(entbuf);
-            Marshal.FreeHGlobal(chatbuf);
-            Marshal.FreeHGlobal(playerPosbuf);
-            Marshal.FreeHGlobal(stickTargplayerPosbuf);
-            Marshal.FreeHGlobal(tInfobuf);
-            Marshal.FreeHGlobal(pInfobuf);
-            Marshal.FreeHGlobal(pbuf);
+            SetPlayerHeading(charGlobals.apiObject, false, 0);
+            SetAutorun(charGlobals.apiObject, false);
         }
 
         private void getBuffs(IntPtr apiObject, IntPtr leaderApiObject)

@@ -158,12 +158,16 @@ namespace DarkSideModernGUI.Views.Pages
                 {
                     if (Unload(proc.apiObject, proc.procId))
                     {
+                        //Call the clearbuffers function
+                        ClassSettingsPage.ReleasecharGlobals(ClassSettingsPage.CharGlobalDict[proc.procId]);
                         //API calls dispose so this object is now deleted
                     }
                 }
                 Thread.Sleep(10);
 
             }
+            ClassSettingsPage.CharGlobalDict.Clear();
+            ClassSettingsPage.charNames.Clear();
             gameprocs.Clear();
             btnInjectAll.Background = new SolidColorBrush(Colors.Orange);
         }

@@ -7,15 +7,17 @@
 
 struct entityInfoAPI_t {
     char name[48];
-    uint8_t type;
-    short objectId;
-    int level;
-    int health;
-    float pos_x;
-    float pos_y;
-    float pos_z;
-    short heading;
-    int castingCountdown; //in milliseconds
+    uint8_t type;  //       0x28e
+    short objectId; //      0x23c
+    int level; //           0x60
+    int health; //          0x228
+    float pos_x; //         0x48            
+    float pos_y; //         0x370
+    float pos_z; //         0xe7c
+    short heading; //       0x180
+    int castingCountdown; //in milliseconds     0x260
+    int entState; //        0x4c 8 = idle, lots of other states
+    short isDead; //        0xcf4
 };
 
 struct entityListAPI_t {

@@ -63,6 +63,8 @@ namespace DarkSideModernGUI.Helpers
             public float pos_z { get; private set; }
             public short heading { get; private set; }
             public int castCountdown { get; private set; }
+            public int entityStatus { get; private set; } // 8 = idle
+            public short isDead { get; private set; }
         }
         //Playerinfo struct
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
