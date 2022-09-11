@@ -1,26 +1,23 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.ViewModels
+namespace DarkSideModernGUI.ViewModels;
+
+public partial class ClassSettingsViewModel : ObservableObject, INavigationAware
 {
-    public partial class ClassSettingsViewModel : ObservableObject, INavigationAware
+    [ObservableProperty] private int _counter;
+
+    public void OnNavigatedTo()
     {
-        [ObservableProperty]
-        private int _counter = 0;
+    }
 
-        public void OnNavigatedTo()
-        {
-        }
+    public void OnNavigatedFrom()
+    {
+    }
 
-        public void OnNavigatedFrom()
-        {
-        }
-
-        //[ICommand]
-        private void OnCounterIncrement()
-        {
-            Counter++;
-        }
+    //[ICommand]
+    private void OnCounterIncrement()
+    {
+        Counter++;
     }
 }

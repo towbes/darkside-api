@@ -49,10 +49,6 @@
             Content="Inject Game.DLL" />
 
 
-
-
-
-
         <DockPanel Grid.Column="3">
             <Border
                 Width="200"
@@ -66,11 +62,9 @@
 
                 <StackPanel
                     x:Name="Route_Load"
-                    Grid.Column="3"
                     Margin="0,0,0,5">
 
                     <Label
-                        Grid.Column="3"
                         Width="180"
                         Margin="10,10,0,0"
                         HorizontalAlignment="Left"
@@ -86,8 +80,6 @@
                         Margin="0,0,0,10" />
 
 
-
-
                 </StackPanel>
 
             </Border>
@@ -95,15 +87,11 @@
         </DockPanel>
 
 
-
         <Label
             Margin="10,10,10,417"
             Content="Select game.dll:"
             FontSize="14"
             FontWeight="Bold" />
-
-
-
 
 
         <DockPanel Grid.Column="3">
@@ -126,7 +114,6 @@
                     Click="btnLaunchBot_Click"
                     Content="Launch BOT" />
             </Border>
-
 
 
         </DockPanel>

@@ -1,24 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DarkSideModernGUI.Models;
 
-using DarkSideModernGUI.Models;
+namespace DarkSideModernGUI.Helpers;
 
-
-namespace DarkSideModernGUI.Helpers
+public class Movement
 {
-    public class Movement
+    public void checkAndMoveToNearestWaypoint(Waypoint waypoint)
     {
-
-        public void checkAndMoveToNearestWaypoint (Waypoint waypoint){
-
-
-
-
-        }
-
-
     }
 }

@@ -1,22 +1,19 @@
-﻿using Wpf.Ui.Common.Interfaces;
+﻿using DarkSideModernGUI.ViewModels;
+using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.Views.Pages
+namespace DarkSideModernGUI.Views.Pages;
+
+/// <summary>
+///     Interaction logic for DataView.xaml
+/// </summary>
+public partial class DataPage : INavigableView<DataViewModel>
 {
-    /// <summary>
-    /// Interaction logic for DataView.xaml
-    /// </summary>
-    public partial class DataPage : INavigableView<ViewModels.DataViewModel>
+    public DataPage(DataViewModel viewModel)
     {
-        public ViewModels.DataViewModel ViewModel
-        {
-            get;
-        }
+        ViewModel = viewModel;
 
-        public DataPage(ViewModels.DataViewModel viewModel)
-        {
-            ViewModel = viewModel;
-
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
+
+    public DataViewModel ViewModel { get; }
 }

@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helpers="clr-namespace:DarkSideModernGUI.Helpers"
     xmlns:local="clr-namespace:DarkSideModernGUI.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -134,7 +133,6 @@
         </DataGrid>
 
 
-
         <DockPanel Grid.Column="3">
             <Border
                 Width="200"
@@ -148,11 +146,9 @@
 
                 <StackPanel
                     x:Name="Waypoint_Route_Load"
-                    Grid.Column="3"
                     Margin="0,0,0,5">
 
                     <Label
-                        Grid.Column="3"
                         Width="180"
                         Margin="10,10,0,0"
                         HorizontalAlignment="Left"
@@ -168,15 +164,12 @@
                         Margin="0,0,0,10" SelectionChanged="cmbWaypointRouteLoad_SelectionChanged" />
 
                     <ui:Button
-                        Grid.Column="3"
                         Width="160"
                         Margin="0,0,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
-                        Content="Load Route" 
-                        Name="btnLoadRoute" Click="btnLoadRoute_Click"/>
-
-
+                        Content="Load Route"
+                        Name="btnLoadRoute" Click="btnLoadRoute_Click" />
 
 
                 </StackPanel>
@@ -186,16 +179,12 @@
         </DockPanel>
 
 
-
         <Label
             Grid.ColumnSpan="3"
             Margin="10,10,130,417"
             Content="Current Player Location:"
             FontSize="14"
             FontWeight="Bold" />
-
-
-
 
 
         <DockPanel Grid.Column="3">
@@ -210,15 +199,12 @@
 
                 <StackPanel
                     x:Name="Waypoint_Route_Save"
-                    Grid.Column="3"
                     Margin="0,1,9,-61"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top">
 
 
-
                     <Label
-                        Grid.Column="3"
                         Width="180"
                         Margin="10,10,0,0"
                         HorizontalAlignment="Left"
@@ -228,7 +214,6 @@
                         FontWeight="Bold" />
 
                     <Label
-                        Grid.Column="3"
                         Width="100"
                         Margin="10,0,10,0"
                         Content="Overwrite Route"
@@ -241,7 +226,6 @@
 
 
                     <Label
-                        Grid.Column="3"
                         Width="30"
                         Margin="0,0,0,0"
                         HorizontalAlignment="Center"
@@ -252,7 +236,6 @@
 
 
                     <Label
-                        Grid.Column="3"
                         Width="100"
                         Margin="10,0,0,0"
                         HorizontalAlignment="Center"
@@ -263,7 +246,7 @@
                     <ui:TextBox
                         x:Name="txtSaveNewRouteFileName"
                         Width="160 "
-                        Margin="0,0,0,10"  />
+                        Margin="0,0,0,10" />
 
                     <ui:Button
                         x:Name="btnSaveRoute"
@@ -281,8 +264,6 @@
         </DockPanel>
 
     </Grid>
-
-
 
 
 </ui:UiPage>
