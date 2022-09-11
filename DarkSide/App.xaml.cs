@@ -1,6 +1,7 @@
 ﻿using DarkSide.Views;
 using Prism.Ioc;
 using System.Windows;
+using DarkSide.Modules.Main;
 using Prism.Modularity;
 using Prism.Regions;
 
@@ -18,12 +19,12 @@ namespace DarkSide
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-
+            
         }
 
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
-           // moduleCatalog.AddModule<MainModule>();
+            moduleCatalog.AddModule<MainModule>();
         }
 
         protected override void ConfigureRegionAdapterMappings(RegionAdapterMappings regionAdapterMappings)

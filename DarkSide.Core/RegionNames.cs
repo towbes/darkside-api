@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DarkSide.Core;
 
-namespace DarkSide.Core
+public static class RegionNames
 {
-    public static class RegionNames
-    {
-        public const string ContentRegion="ContentRegion";
-    }
+    public const string HeaderRegion = "HeaderRegion";
+    public const string MainMenuRegion = "MainMenuRegion";
+    public const string ContentRegion = "ContentRegion";
+    public const string StatusBarRegion = "StatusBarRegion";
 }

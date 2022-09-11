@@ -13,9 +13,5 @@ namespace DarkSide.Views
             InitializeComponent();
         }
 
-        private void HamburgerMenuControl_OnItemInvoked(object sender, HamburgerMenuItemInvokedEventArgs args)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

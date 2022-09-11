@@ -8,19 +8,53 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:prism="http://prismlibrary.com/"
-    Title="MainWindow"
-    Width="525"
-    Height="350"
+    MinWidth="750"
+    MinHeight="600"
+    Width="750"
+    Height="600"
     prism:ViewModelLocator.AutoWireViewModel="True"
     Background="{DynamicResource MaterialDesignPaper}"
     BorderThickness="0"
     FontFamily="{materialDesign:MaterialDesignFont}"
     GlowBrush="Black"
     Icon="/Assets/logo_icon.png"
-    SaveWindowPosition="True"
     TextElement.FontSize="14"
     TextElement.FontWeight="Medium"
     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
     WindowTransitionsEnabled="False">
+    <Grid ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="90" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
+        </Grid.RowDefinitions>
+        <!--  Top info  -->
+        <ContentControl
+            Grid.Row="0"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            prism:RegionManager.RegionName="HeaderRegion" />
+        <!--  menu bar  -->
+        <ContentControl
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            prism:RegionManager.RegionName="MainMenuRegion" />
+        <!--  maint conent  -->
+        <ContentControl
+            Grid.Row="1"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            prism:RegionManager.RegionName="ContentRegion" />
+        <!--  bottom status bar  -->
+        <ContentControl
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            prism:RegionManager.RegionName="StatusBarRegion" />
 
+    </Grid>
 </controls:MetroWindow>

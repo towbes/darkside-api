@@ -17,7 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DarkSide.Core\DarkSide.Core.csproj" />
-    <ProjectReference Include="..\Modules\DarkSide.Modules.Automation\DarkSide.Modules.Automation.csproj" />
+    <ProjectReference Include="..\Modules\DarkSide.Modules.Main\DarkSide.Modules.Main.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Regions\" />

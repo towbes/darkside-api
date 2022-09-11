@@ -1,0 +1,76 @@
+﻿<UserControl
+    x:Class="DarkSide.Modules.Main.Views.MainMenuView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:prism="http://prismlibrary.com/"
+    materialDesign:ColorZoneAssist.Mode="PrimaryLight"
+    prism:ViewModelLocator.AutoWireViewModel="True">
+    <materialDesign:Card MinHeight="150">
+        <TabControl
+            VerticalContentAlignment="Top"
+            materialDesign:ColorZoneAssist.Mode="Dark"
+            Style="{StaticResource MaterialDesignNavigationRailTabControl}">
+            <TabItem Margin="0,15,0,15">
+                <TabItem.Header>
+                    <StackPanel Width="auto" Height="auto">
+                        <materialDesign:PackIcon
+                            Width="45"
+                            Height="45"
+                            HorizontalAlignment="Center"
+                            Kind="RobotExcited" />
+                        <TextBlock HorizontalAlignment="Center" Text="Home" />
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Margin="0,15,0,15">
+                <TabItem.Header>
+                    <StackPanel Width="auto" Height="auto">
+                        <materialDesign:PackIcon
+                            Width="45"
+                            Height="45"
+                            HorizontalAlignment="Center"
+                            Kind="Human" />
+                        <TextBlock HorizontalAlignment="Center" Text="Info" />
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Margin="0,15,0,15">
+                <TabItem.Header>
+                    <StackPanel Width="auto" Height="auto">
+                        <materialDesign:PackIcon
+                            Width="45"
+                            Height="45"
+                            HorizontalAlignment="Center"
+                            Kind="FileDocumentMultiple" />
+                        <TextBlock HorizontalAlignment="Center" Text="Logs" />
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Margin="0,15,0,15">
+                <TabItem.Header>
+                    <StackPanel Width="auto" Height="auto">
+                        <materialDesign:PackIcon
+                            Width="45"
+                            Height="45"
+                            HorizontalAlignment="Center"
+                            Kind="DebugStepInto" />
+                        <TextBlock HorizontalAlignment="Center" Text="Debug" />
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Margin="0,15,0,15">
+                <TabItem.Header>
+                    <StackPanel Width="auto" Height="auto">
+                        <materialDesign:PackIcon
+                            Width="45"
+                            Height="45"
+                            HorizontalAlignment="Center"
+                            Kind="Cogs" />
+                        <TextBlock HorizontalAlignment="Center" Text="Settings" />
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+        </TabControl>
+    </materialDesign:Card>
+</UserControl>
