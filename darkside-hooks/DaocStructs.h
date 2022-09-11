@@ -44,7 +44,13 @@ struct headingupdate_t {
 struct useSpell_t {
     char name[64];
     short spellLevel;
-    char unknown[26];
+    short unknown1;
+    int tickCount;
+    int unknown2;
+    int unknown3;
+    int unknown4;
+    int unknown5;
+    int unknown6;
 };
 
 //array start address is 161d9f0
@@ -91,8 +97,10 @@ struct buff_t {
 ////Skills
 //useSkill_t plyrUseSkillTable[150];
 struct useSkill_t {
-    unsigned char name[72];
+    unsigned char name[64];
     int unknown1;
+    int unknown2;
+    int tickCount;
 };
 
 //player hp/pow/endu
@@ -106,6 +114,8 @@ struct plyrinfo_t {
     spellCategory_t spells[8];
     buff_t buffs[75];
     item_t inventory[40];
+    int entIndex;
+    int petEntIndex;
 };
 
 //entList[2000]

@@ -61,6 +61,7 @@ namespace DarkSideModernGUI.Helpers
             public float pos_y { get; private set; }
             public float pos_z { get; private set; }
             public short heading { get; private set; }
+            public int castCountdown { get; private set; }
         }
         //Playerinfo struct
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -74,16 +75,36 @@ namespace DarkSideModernGUI.Helpers
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Skill_t
         {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 72)] public String name;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)] public String name;
             public int unknown1 { get; private set; }
+            public int unknown2 { get; private set; }
+            public int tickCount { get; private set; }
         }
         //useSpell_t
+        //struct useSpell_t
+        //{
+        //    char name[64];
+        //    short spellLevel;
+        //    short unknown1;
+        //    int tickCount;
+        //    int unknown2;
+        //    int unknown3;
+        //    int unknown4;
+        //    int unknown5;
+        //    int unknown6;
+        //};
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Spell_t
         {
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)] public String name;
             public short spellLevel { get; private set; }
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 26)] public char[] unknown1;
+            public short unknown1 { get; private set; }
+            public int tickCount { get; private set; }
+            public int unknown2 { get; private set; }
+            public int unknown3 { get; private set; }
+            public int unknown4 { get; private set; }
+            public int unknown5 { get; private set; }
+            public int unknown6 { get; private set; }
         }
         //spellCategory_t
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -129,6 +150,8 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public spellCategory_t[] SpellLines;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 75)] public Buff_t[] Buffs;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public Item_t[] Inventory;
+            public int entListIndex { get; private set; }
+            public int petEntIndex { get; private set; }
         }
         //Playerinfo struct
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -249,7 +272,22 @@ namespace DarkSideModernGUI.Helpers
             return 0;
         }
 
-        public static int UseSkillByName(Skill_t[] skills, string skillName)
+
+        public static bool HasBuffByName(Buff_t[] buffs, string buffName)
+        {
+            buffName = buffName.ToLower();
+            for (int i = 0; i < 75; i++)
+            {
+                if (buffs[i].name.ToLower().StartsWith(buffName))
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        public static int GetSkillByName(Skill_t[] skills, string skillName)
         {
             skillName = skillName.ToLower();
             for (int i = 0; i < 150; i++)
@@ -263,8 +301,47 @@ namespace DarkSideModernGUI.Helpers
             return 999;
         }
 
+        //This function auto checks recast to avoid additional lookups
+        public static bool UseSkillByName(IntPtr apiObject, Skill_t[] skills, string skillName)
+        {
+            int skillNum = GetSkillByName(skills, skillName);
+            if (skillNum == 999)
+            {
+                return false;
+            }
+            //Check recast
+            if (RecastSkillByOffset(skills, skillNum) == 0)
+            {
+                if (UseSkill(apiObject, skillNum))
+                {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+
+        public static int RecastSkillByOffset(Skill_t[] skills, int skillNum)
+        {
+            int currTick = Environment.TickCount;
+            int recast = skills[skillNum].tickCount - currTick;
+            if (recast < 0)
+                recast = 0;
+            return recast;
+        }
+
+        public static int RecastSkillByName(Skill_t[] skills, string skillName)
+        {
+            int currTick = Environment.TickCount;
+            int skillNum = GetSkillByName(skills, skillName);
+            int recast = skills[skillNum].tickCount - currTick;
+            if (recast < 0)
+                recast = 0;
+            return recast;
+        }
+
         //Returns spell category and level
-        public static (int category, int level) UseSpellByName(spellCategory_t[] spellLines, string spellName)
+        public static (int category, int level) GetSpellByName(spellCategory_t[] spellLines, string spellName)
         {
             spellName = spellName.ToLower();
             for (int cat = 0; cat < 8; cat++)
@@ -285,6 +362,44 @@ namespace DarkSideModernGUI.Helpers
             //return 999 if failed
             return (999,999);
         }
+
+        public static bool UseSpellByName(IntPtr apiObject, spellCategory_t[] spellLines, string spellName)
+        {
+            (int cat, int lvl) = GetSpellByName(spellLines, spellName);
+            if (cat == 999)
+            {
+                return false;
+            }
+            //Check if recast is up
+            if (RecastSpellByOffset(spellLines, cat, lvl) == 0)
+            {
+                if (UseSpell(apiObject, cat, lvl))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static int RecastSpellByName(spellCategory_t[] spellLines, string spellName)
+        {
+            int currTick = Environment.TickCount;
+            (int spellCat, int spellLevel) = GetSpellByName(spellLines, spellName);
+            int recast = spellLines[spellCat].spells[spellLevel].tickCount - currTick;
+            if (recast < 0)
+                recast = 0;
+            return recast;
+        }
+
+        public static int RecastSpellByOffset(spellCategory_t[] spellLines, int spellCat, int spellLevel)
+        {
+            int currTick = Environment.TickCount;
+            int recast = spellLines[spellCat].spells[spellLevel].tickCount - currTick;
+            if (recast < 0)
+                recast = 0;
+            return recast;
+        }
+
         public static bool UsePetCmdByName(IntPtr apiObject, string petCommand)
         {
             //pet window packet function
@@ -299,6 +414,7 @@ namespace DarkSideModernGUI.Helpers
             }
             return false;
         }
+
 
 
     }

@@ -36,7 +36,7 @@ bool DarksideAPI::GetPlayerInfo(LPVOID lpBuffer) {
         return false;
 
     }
-    pShmPlayerInfo->hp;
+    //pShmPlayerInfo->hp;
     memcpy(lpBuffer, pShmPlayerInfo, sizeof(plyrinfo_t));
     UnmapViewOfFile(pShmPlayerInfo);
     CloseHandle(hMapFile);

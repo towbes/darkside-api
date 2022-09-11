@@ -15,6 +15,7 @@ struct entityInfoAPI_t {
     float pos_y;
     float pos_z;
     short heading;
+    int castingCountdown; //in milliseconds
 };
 
 struct entityListAPI_t {

@@ -36,6 +36,9 @@
 #define ptrPlyrUseSkill_x		0x9a9730
 #define ptrInventory_x		0xf9b8d0
 #define ptrPlayerName_x		0xfd7090
+//Player ent index is at +0x64 from address in ptrGameState_x
+#define ptrGameState_x		0x104a7f0
+#define ptrPetEntIndex_x	0x10498d0
 
 //Chat related
 #define ptrChatiMode_x		0x10498D8

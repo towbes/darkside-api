@@ -68,6 +68,15 @@
             Click="Button_Click_ResetLoc">
                 DragResetLoc
             </ui:Button>
+            <ui:Button
+                Name="btnFightDragon"
+                Grid.Column="1"
+                Width="136"
+                Margin="67,10,0,0"
+                VerticalAlignment="Top"
+                Click="Button_Click_FightDragon">
+                DragFight
+            </ui:Button>
         </StackPanel>
     </Grid>
 </ui:UiPage>

@@ -33,6 +33,7 @@ namespace DarkSideModernGUI.Views.Pages
         bool autorun = false;
         bool changeHeading = false;
 
+        EntityList entList = new EntityList();
         List<EntityInfo> EntityList = new List<EntityInfo>();
         List<String> strEntityList = new List<String>();
         //PartyList
@@ -125,25 +126,24 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
+            IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
+            if (GetEntityList(DashboardPage.apiObject, entbuf))
+            {
+                entList = (EntityList)Marshal.PtrToStructure(entbuf, typeof(EntityList));
+            }
+
             //Update entity table
             EntityList.Clear();
             strEntityList.Clear();
             for (int i = 0; i < 2000; i++)
             {
-                IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<DarksideGameAPI.EntityInfo>());
                 EntityInfo tmpentity;
-                GetEntityInfo(DashboardPage.apiObject, i, entbuf);
-                tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
-                if (tmpentity.objectId > 0)
-                {
-                    EntityList.Add(tmpentity);
-                }
-                else
-                {
-                    EntityList.Add(new EntityInfo());
-                }
-                Marshal.FreeHGlobal(entbuf);
+                //tmpentity = (EntityInfo)Marshal.PtrToStructure(entbuf, typeof(EntityInfo));
+                tmpentity = entList.EntList[i];
+                EntityList.Add(tmpentity);
+
             }
+
             String entmsg = "";
             for (int j = 0; j < EntityList.Count; j++)
             {
@@ -163,6 +163,8 @@ namespace DarkSideModernGUI.Views.Pages
                 }
             }
             //EntityInfoTextBlock.Text = String.Join(Environment.NewLine, strEntityList);
+
+            Marshal.FreeHGlobal(entbuf);
 
             IntPtr chatbuf = Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
             Chatbuffer tmpChat;
@@ -207,7 +209,7 @@ namespace DarkSideModernGUI.Views.Pages
                     targetInfo.color,
                     targetInfo.name,
                     EntityList[targetInfo.entOffset].level,
-                    DistanceToPoint(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y, EntityList[targetInfo.entOffset].pos_z),
+                    DistanceToPoint(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y),
                     GetDegreesHeading(playerPos, EntityList[targetInfo.entOffset].pos_x, EntityList[targetInfo.entOffset].pos_y));
             }
             else
@@ -221,17 +223,22 @@ namespace DarkSideModernGUI.Views.Pages
 
             PlayerPositionInfo.Text = String.Join(Environment.NewLine, strPlayerPos);
 
+            
 
             //PlayerInfo
             strPlayerInfo.Clear();
             IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
             GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
             PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+            int playerIndex = playerInfo.entListIndex;
+            int castCount = EntityList[playerIndex].castCountdown;
             string pInfoMsg = String.Format("PlayerInfo:" + Environment.NewLine +
-                "HP:{0:0} - Pow:{1:0} - Endu:{2:0}",
+                "HP:{0:0} - Pow:{1:0} - Endu:{2:0} - Casting: {3:0} - PetIdx: {4:0}",
                 playerInfo.health,
                 playerInfo.power,
-                playerInfo.endu);
+                playerInfo.endu,
+                castCount,
+                playerInfo.petEntIndex);
 
             strPlayerInfo.Add(pInfoMsg);
             strPlayerInfo.Add("---Buffs---");
@@ -503,7 +510,7 @@ namespace DarkSideModernGUI.Views.Pages
 
             string spellName = UseSpellOffset.Text;
 
-            (int spellCategory, int spellLevel) = UseSpellByName(playerInfo.SpellLines, spellName);
+            (int spellCategory, int spellLevel) = GetSpellByName(playerInfo.SpellLines, spellName);
 
             if (spellCategory != 999)
             {
@@ -605,13 +612,13 @@ namespace DarkSideModernGUI.Views.Pages
                 int trackerTarget = findEntityByName(EntityList, "Tracker");
                 SetTarget(DashboardPage.apiObject, trackerTarget);
 
-                float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                 short newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                 if (dist > stoppingDist)
                 {
                     SetAutorun(DashboardPage.apiObject, true);
                     SetPlayerHeading(DashboardPage.apiObject, true, newheading);
-                    dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                    dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                     newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                 } else
                 {
@@ -626,13 +633,13 @@ namespace DarkSideModernGUI.Views.Pages
                 int trackerTarget = findEntityByName(EntityList, "Nera");
                 SetTarget(DashboardPage.apiObject, trackerTarget);
 
-                float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                 short newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                 if (dist > stoppingDist)
                 {
                     SetAutorun(DashboardPage.apiObject, true);
                     SetPlayerHeading(DashboardPage.apiObject, true, newheading);
-                    dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                    dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                     newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                 } else
                 {

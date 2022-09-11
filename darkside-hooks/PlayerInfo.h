@@ -20,6 +20,8 @@ private:
     void* ptrBuffs;
     void* ptrInventory;
     void* ptrPlayerName;
+    uintptr_t ptrPlayerEntIndex;
+    void* ptrPetEntIndex;
 
     //Use Skill and usespell Shared memory
     //Function will check this every frame

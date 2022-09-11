@@ -208,6 +208,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     const auto posy = *(float*)(ptrShmBytePtr + 0x370) - ptrZoneOffsets->zoneYoffset;
     const auto posz = *(float*)(ptrShmBytePtr + 0xE7C);
     const auto heading = ((((*(uint16_t*)(ptrShmBytePtr + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168); //from 0x41948d //from 0x41948d
+    const auto castCountdown = *(int*)(ptrShmBytePtr + 0x260);
     //Create struct to hold the entity data for API
     entityInfoAPI_t* tempEnt = new entityInfoAPI_t();
     memcpy(tempEnt->name, ptrEntNameShmBytePtr, sizeof(entName_t));
@@ -219,6 +220,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     tempEnt->pos_y = posy;
     tempEnt->pos_z = posz;
     tempEnt->heading = heading;
+    tempEnt->castingCountdown = castCountdown;
     //Copy the entityInfoAPI_t to buffer
     memcpy(lpBuffer, tempEnt, sizeof(entityInfoAPI_t));
 
@@ -433,6 +435,7 @@ bool DarksideAPI::GetEntityList(LPVOID lpBuffer) {
             const auto posy = *(float*)(ptrShmBytePtr + 0x370) - ptrZoneOffsets->zoneYoffset;
             const auto posz = *(float*)(ptrShmBytePtr + 0xE7C);
             const auto heading = ((((*(uint16_t*)(ptrShmBytePtr + 0xcb6) + 0x800) * 0x168) / 0x1000) % 0x168); //from 0x41948d //from 0x41948d
+            const auto castCountdown = *(int*)(ptrShmBytePtr + 0x260);
             //Create struct to hold the entity data for API
             entityInfoAPI_t* tempEnt = new entityInfoAPI_t();
             memcpy(tempEnt->name, ptrEntNameShmBytePtr, sizeof(entName_t));
@@ -444,6 +447,7 @@ bool DarksideAPI::GetEntityList(LPVOID lpBuffer) {
             tempEnt->pos_y = posy;
             tempEnt->pos_z = posz;
             tempEnt->heading = heading;
+            tempEnt->castingCountdown = castCountdown;
             //Copy the entityInfoAPI_t to buffer
             memcpy(&tmpEntList->entList[i], tempEnt, sizeof(entityInfoAPI_t));
             delete (tempEnt);

@@ -10,6 +10,8 @@ PlayerInfo::PlayerInfo() {
     ptrBuffs = (void*)ptrPlyrBuffs_x;
     ptrInventory = (void*)ptrInventory_x;
     ptrPlayerName = (void*)ptrPlayerName_x;
+    ptrPlayerEntIndex = *(int*)ptrGameState_x;
+    ptrPetEntIndex = (void*)ptrPetEntIndex_x;
 
 #ifdef _DEBUG
     std::cout << "ptrPlayerHp: " << std::hex << (int)ptrPlayerHp << std::endl;
@@ -58,6 +60,11 @@ PlayerInfo::PlayerInfo() {
         memcpy(pShmPlayerInfo->spells, ptrUseSpells, sizeof(pShmPlayerInfo->spells));
         memcpy(pShmPlayerInfo->buffs, ptrBuffs, sizeof(pShmPlayerInfo->buffs));
         memcpy(pShmPlayerInfo->inventory, ptrInventory, sizeof(pShmPlayerInfo->inventory));
+        //Player entity list index
+        tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerEntIndex);
+        //entIndex is at 0x64;
+        pShmPlayerInfo->entIndex = *(int*)(tempPtr + 0x64);
+        pShmPlayerInfo->petEntIndex = *(int*)ptrPetEntIndex;
 
 #ifdef _DEBUG
         std::cout << "plyrHP: " << std::dec << pShmPlayerInfo->hp << std::endl;
@@ -227,6 +234,11 @@ void PlayerInfo::GetPlayerInfo() {
         memcpy(pShmPlayerInfo->spells, ptrUseSpells, sizeof(pShmPlayerInfo->spells));
         memcpy(pShmPlayerInfo->buffs, ptrBuffs, sizeof(pShmPlayerInfo->buffs));
         memcpy(pShmPlayerInfo->inventory, ptrInventory, sizeof(pShmPlayerInfo->inventory));
+        //Player entity list index
+        tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerEntIndex);
+        //entIndex is at 0x64;
+        pShmPlayerInfo->entIndex = *(int*)(tempPtr + 0x64);
+        pShmPlayerInfo->petEntIndex = *(int*)ptrPetEntIndex;
     }
 }
 

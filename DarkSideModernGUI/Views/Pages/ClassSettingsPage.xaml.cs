@@ -7,7 +7,9 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Converters;
+using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using Wpf.Ui.Common.Interfaces;
 using static DarkSideModernGUI.Helpers.DarksideGameAPI;
@@ -32,6 +34,8 @@ namespace DarkSideModernGUI.Views.Pages
 
         Dictionary<string, int> charNames = new Dictionary<string, int>();
 
+        //Global bool to trigger dragon script on/off
+        bool dragonRunning = false;
 
         public ViewModels.ClassSettingsViewModel ViewModel
         {
@@ -239,13 +243,13 @@ namespace DarkSideModernGUI.Views.Pages
                     int trackerTarget = findEntityByName(EntityList, "Zander");
                     SetTarget(apiObject, trackerTarget);
 
-                    float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                    float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                     short newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                     if (dist > stoppingDist)
                     {
                         SetAutorun(apiObject, true);
                         SetPlayerHeading(apiObject, true, newheading);
-                        dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                        dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                         newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                     }
                     else
@@ -262,13 +266,13 @@ namespace DarkSideModernGUI.Views.Pages
                     int trackerTarget = findEntityByName(EntityList, "Drucill");
                     SetTarget(apiObject, trackerTarget);
 
-                    float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                    float dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                     short newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                     if (dist > stoppingDist)
                     {
                         SetAutorun(apiObject, true);
                         SetPlayerHeading(apiObject, true, newheading);
-                        dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y, EntityList[trackerTarget].pos_z);
+                        dist = DistanceToPoint(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                         newheading = GetGameHeading(playerPos, EntityList[trackerTarget].pos_x, EntityList[trackerTarget].pos_y);
                     }
                     else
@@ -299,9 +303,12 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_Stick(object sender, RoutedEventArgs e)
         {
-            int stickPid = charNames[leaderName];
-
-            int readyPid = charNames[readyName];
+            int stickPid = 0;
+            int readyPid = 0;
+            if (charNames.ContainsKey(leaderName))
+                stickPid = charNames[leaderName];
+            if (charNames.ContainsKey(readyName))
+                readyPid = charNames[readyName];
 
             DashboardPage.GameDLL stickProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == stickPid);
 
@@ -330,7 +337,12 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_BattleLoc(object sender, RoutedEventArgs e)
         {
-            int readyPid = charNames[readyName];
+            int stickPid = 0;
+            int readyPid = 0;
+            if (charNames.ContainsKey(leaderName))
+                stickPid = charNames[leaderName];
+            if (charNames.ContainsKey(readyName))
+                readyPid = charNames[readyName];
 
             foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
             {
@@ -347,7 +359,12 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_ResetLoc(object sender, RoutedEventArgs e)
         {
-            int readyPid = charNames[readyName];
+            int stickPid = 0;
+            int readyPid = 0;
+            if (charNames.ContainsKey(leaderName))
+                stickPid = charNames[leaderName];
+            if (charNames.ContainsKey(readyName))
+                readyPid = charNames[readyName];
 
 
             foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
@@ -359,6 +376,42 @@ namespace DarkSideModernGUI.Views.Pages
                     newThread.Start();
                 }
 
+            }
+
+        }
+
+        private void Button_Click_FightDragon(object sender, RoutedEventArgs e)
+        {
+            int stickPid = 0;
+            int readyPid = 0;
+            if (charNames.ContainsKey(leaderName))
+                stickPid = charNames[leaderName];
+            if (charNames.ContainsKey(readyName))
+                readyPid = charNames[readyName];
+
+            DashboardPage.GameDLL stickProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == stickPid);
+
+            if (!dragonRunning)
+            {
+                btnFightDragon.Content = "Dragon is On";
+                dragonRunning = true;
+                foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+                {
+                    if (proc.procId != readyPid)
+                    {
+                        //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                        Thread newThread = new Thread(() => battleFunc(proc.apiObject));
+                        newThread.Start();
+                    }
+
+                }
+                btnFightDragon.Background = new SolidColorBrush(Colors.Green);
+            }
+            else
+            {
+                btnFightDragon.Content = "Dragon is Off";
+                dragonRunning = false;
+                btnFightDragon.Background = new SolidColorBrush(Colors.Orange);
             }
 
         }
@@ -468,7 +521,7 @@ namespace DarkSideModernGUI.Views.Pages
                 //SetTarget(apiObject, currentTarget);
 
 
-                float dist = DistanceToPoint(playerPos, xloc, yloc, zloc);
+                float dist = DistanceToPoint(playerPos, xloc, yloc);
                 short newheading = GetGameHeading(playerPos, xloc, yloc);
                 if (dist > stoppingDist)
                 {
@@ -500,6 +553,7 @@ namespace DarkSideModernGUI.Views.Pages
             Marshal.FreeHGlobal(pInfobuf);
             Marshal.FreeHGlobal(pbuf);
         }
+
 
         private void resetLocFunc(IntPtr apiObject)
         {
@@ -607,7 +661,7 @@ namespace DarkSideModernGUI.Views.Pages
                 //SetTarget(apiObject, currentTarget);
 
 
-                float dist = DistanceToPoint(playerPos, xloc, yloc, zloc);
+                float dist = DistanceToPoint(playerPos, xloc, yloc);
                 short newheading = GetGameHeading(playerPos, xloc, yloc);
                 if (dist > stoppingDist)
                 {
@@ -642,7 +696,13 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void battleFunc(IntPtr apiObject)
         {
-            bool goleAlive = true;
+            int threadSleep = 100; // milliseconds
+            int castSleep = 0; // milliseconds
+
+            //This is a countdown that gets reset after a cast to prevent spell spamming
+            int timeoutMax = 15;
+            int castTimeout = 0;
+
             bool fightStarted = false;
 
             List<EntityInfo> EntityList = new List<EntityInfo>();
@@ -650,11 +710,9 @@ namespace DarkSideModernGUI.Views.Pages
             List<String> chatLog = new List<String>();
             List<PartyMemberInfo> partyMemberList = new List<PartyMemberInfo>();
             PlayerPosition playerPos;
-            PlayerPosition stickTargPos;
             TargetInfo targetInfo;
             PlayerInfo playerInfo;
 
-            int currentTarget = 0;
 
             //alloc buffers
             IntPtr entbuf = Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
@@ -665,7 +723,48 @@ namespace DarkSideModernGUI.Views.Pages
             IntPtr pbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
             IntPtr stickTargplayerPosbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
 
-            while (goleAlive)
+            //Globals
+            bool buffTime = true;
+
+            //Tank abilities/variables
+            string tankClass = "Paladin";
+            string tankMeleeTaunt = "Rile";
+            string tankSpellTaunt = "Infuriate";
+            //Implement two tank waypoints for dodging clouds
+            bool cloudNear = false;
+            Pos_2d[] tankPoints = new Pos_2d[2];
+            int currentTankPoint = 0;
+            tankPoints[0].x = 37134f;
+            tankPoints[0].y = 59840f;
+            tankPoints[1].x = 37134f;
+            tankPoints[1].y = 59840f;
+
+            //Damage caster
+            string dmgClass = "Spiritmaster";
+            string petSpell = "Spirit Warrior";
+            string shieldSpell = "Superior Suppressive Barrier";
+            string absorbSpell = "Suppressive Buffer";
+            string grpAbsorb = "Shield of the Einherjar";
+
+            //Bard
+            string brdClass = "Bard";
+            //songs
+            string speedSong = "Clear Horizon";
+            string powSong = "Rhyme of Creation";
+            string endSong = "Rhythm of the Cosmos";
+            string healSong = "Euphony of Healing";
+            //buff
+            string ablBuff = "Battlesong of Apotheosis";
+            //heals
+            string smallHeal = "Apotheosis";
+            string bigHeal = "Major Apotheosis";
+            string grpHeal = "Group Apotheosis";
+            
+
+            //Healer
+            string healClass = "Druid";
+
+            while (dragonRunning)
             {
                 if (GetEntityList(apiObject, entbuf))
                 {
@@ -727,13 +826,109 @@ namespace DarkSideModernGUI.Views.Pages
 
                 }
 
+                //Check if we're casting and have more than castSleep left
+                if (EntityList[playerInfo.entListIndex].castCountdown > castSleep)
+                {
+                    //isCasting = true;
+                }
+                else
+                {
+                    //isCasting = false;
+                    castTimeout -= 1;
+                    if (castTimeout < 0)
+                        castTimeout = 0;
+                }
+
+
+                if (buffTime && !fightStarted && castTimeout == 0)
+                {
+                    if (playerInfo.className.Contains(tankClass))
+                    {
+
+                    }else if (playerInfo.className.Contains(dmgClass))
+                    {
+                        //Pet spell
+                        if(playerInfo.petEntIndex == 0)
+                            UseSpellByName(apiObject, playerInfo.SpellLines, petSpell);
+                        //Shield
+                        else if (!HasBuffByName(playerInfo.Buffs, shieldSpell))
+                            UseSpellByName(apiObject, playerInfo.SpellLines, shieldSpell);
+                        //Absorb
+                        else if (!HasBuffByName(playerInfo.Buffs, absorbSpell))
+                            UseSpellByName(apiObject, playerInfo.SpellLines, absorbSpell);
+                        //Group Absorb
+                        else if (!HasBuffByName(playerInfo.Buffs, grpAbsorb))
+                            UseSpellByName(apiObject, playerInfo.SpellLines, grpAbsorb);
+                    }
+                    else if (playerInfo.className.Contains(brdClass))
+                    {
+                        //Bard Songs/spells are all skills
+                        if (!HasBuffByName(playerInfo.Buffs, speedSong))
+                            UseSkillByName(apiObject, playerInfo.Skills, speedSong);
+                        else if (!HasBuffByName(playerInfo.Buffs, powSong))
+                            UseSkillByName(apiObject, playerInfo.Skills, powSong);
+                        else if (!HasBuffByName(playerInfo.Buffs, healSong))
+                            UseSkillByName(apiObject, playerInfo.Skills, healSong);
+                        else if (!HasBuffByName(playerInfo.Buffs, endSong))
+                            UseSkillByName(apiObject, playerInfo.Skills, endSong);
+                        else if (!HasBuffByName(playerInfo.Buffs, ablBuff))
+                            UseSkillByName(apiObject, playerInfo.Skills, ablBuff);
+                    }
+                    castTimeout = timeoutMax;
+                }
+
+
                 if (fightStarted)
                 {
                     int morellaOffset = findEntityByName(EntityList, "Morella");
                     int goleOffset = findEntityByName(EntityList, "Golestandt");
                     int graniteOffset = findEntityByName(EntityList, "granite giant");
+                    int cloudOffset = findEntityByName(EntityList, "smoke cloud");
 
+                    //Paladin check for clouds
+                    if (playerInfo.className.Contains(tankClass))
+                    {
+                        if (cloudNear)
+                        {
+                            float tankstoppingDist = 10f;
+                            float tankdist = DistanceToPoint(playerPos, tankPoints[currentTankPoint].x, tankPoints[currentTankPoint].y);
+                            short tanknewheading = GetGameHeading(playerPos, tankPoints[currentTankPoint].x, tankPoints[currentTankPoint].y);
+                            while (tankdist > tankstoppingDist)
+                            {
+                                tankdist = DistanceToPoint(playerPos, tankPoints[currentTankPoint].x, tankPoints[currentTankPoint].y);
+                                tanknewheading = GetGameHeading(playerPos, tankPoints[currentTankPoint].x, tankPoints[currentTankPoint].y);
+                                SetAutorun(apiObject, true);
+                                SetPlayerHeading(apiObject, true, tanknewheading);
+                                //dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                                //newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                            }
+                            short tankfinalheading = GetGameHeading(playerPos, EntityList[goleOffset].pos_x, EntityList[goleOffset].pos_y);
+                            SetPlayerHeading(apiObject, true, ConvertDirHeading(tankfinalheading));
+                            //SetPlayerHeading(apiObject, false, 0);
+                            SetAutorun(apiObject, false);
+                            //This isn't turning them the direction of the leader for some reason
+                            //
+                            cloudNear = false;
+                        }
+                        if (cloudOffset > 0)
+                        {
+                            float cloudPosX = EntityList[cloudOffset].pos_x;
+                            float cloudPosY = EntityList[cloudOffset].pos_y;
+                            //If distance to cloud is less than 100
+                            if (DistanceToPoint(playerPos, cloudPosX, cloudPosY) <= 100) {
+                                if (currentTankPoint == 0)
+                                {
+                                    currentTankPoint = 1;
+                                }
+                                else
+                                {
+                                    currentTankPoint = 0;
+                                }
+                                cloudNear = true;
+                            }
 
+                        }
+                    }
 
                     //always check morella offset first, then check for a granite giant spawn, then gole
                     if (morellaOffset > 0)
@@ -742,18 +937,19 @@ namespace DarkSideModernGUI.Views.Pages
                         if (morellaEnt.health > 0)
                         {
                             //Paladin will target gole, everyone else morella
-                            if (playerInfo.className.Contains("Paladin"))
+                            if (playerInfo.className.Contains(tankClass))
                             {
                                 SetTarget(apiObject, goleOffset);
-                                int rileOffset = UseSkillByName(playerInfo.Skills, "Rile");
-                                UseSkill(apiObject, rileOffset);
-                                int infOffset = UseSkillByName(playerInfo.Skills, "Infuriate");
-                                UseSkill(apiObject, infOffset);
+                                
+                                //Melee Taunt
+                                UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
+                                //Spell taunt
+                                UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
                             }
-                            else if (playerInfo.className.Contains("Spiritmaster"))
+                            else if (playerInfo.className.Contains(dmgClass))
                             {
                                 SetTarget(apiObject, morellaOffset);
-                                //UseSkill
+                                
                                 
                             }
 
@@ -762,10 +958,19 @@ namespace DarkSideModernGUI.Views.Pages
                     else if (graniteOffset > 0)
                     {
                         EntityInfo giant = EntityList[graniteOffset];
-                        float giantdist = DistanceToPoint(playerPos, giant.pos_x, giant.pos_y, giant.pos_z);
+                        float giantdist = DistanceToPoint(playerPos, giant.pos_x, giant.pos_y);
                         if (giantdist < 500)
                         {
-                            //kill the giant
+                            //Paladin will target gole, everyone else morella
+                            if (playerInfo.className.Contains(tankClass))
+                            {
+                                SetTarget(apiObject, goleOffset);
+
+                                //Melee Taunt
+                                UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
+                                //Spell taunt
+                                UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
+                            }
                         }
                     }
                     else if (goleOffset > 0)
@@ -773,65 +978,33 @@ namespace DarkSideModernGUI.Views.Pages
                         EntityInfo goleEnt = EntityList[goleOffset];
                         if (goleEnt.health > 0)
                         {
+                            //Paladin will target gole, everyone else morella
+                            if (playerInfo.className.Contains(tankClass))
+                            {
+                                SetTarget(apiObject, goleOffset);
 
+                                //Melee Taunt
+                                UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
+                                //Spell taunt
+                                UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
+                            }
+                        } else
+                        {
+                            //Gole's dead, set flags to false to stop loops
+                            fightStarted = false;
+                            dragonRunning = false;
                         }
                     }
-
-
-
-                    string plyrName = new string(playerInfo.name);
-                    float xloc = 0;
-                    float yloc = 0;
-                    float zloc = 0;
-                    short finalheading = 0;
-                    //Set up locs
-                    if (playerInfo.className.Contains("Paladin"))
-                    {
-                        xloc = 37134f;
-                        yloc = 59840f;
-                        zloc = 200f;
-                        finalheading = 71;
-                    }
-                    else
-                    {
-                        xloc = 37134f;
-                        yloc = 59840f;
-                        zloc = 200f;
-                        finalheading = 71;
-                    }
-
-                    float stoppingDist = 20.0f;
-                    //currentTarget = findEntityByName(EntityList, "Asmoe");
-                    //SetTarget(apiObject, currentTarget);
-
-
-                    float dist = DistanceToPoint(playerPos, xloc, yloc, zloc);
-                    short newheading = GetGameHeading(playerPos, xloc, yloc);
-                    if (dist > stoppingDist)
-                    {
-                        SetAutorun(apiObject, true);
-                        SetPlayerHeading(apiObject, true, newheading);
-                        //dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                        //newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
-                    }
-                    else
-                    {
-                        SetPlayerHeading(apiObject, true, ConvertDirHeading(finalheading));
-                        //SetPlayerHeading(apiObject, false, 0);
-                        SetAutorun(apiObject, false);
-                        //This isn't turning them the direction of the leader for some reason
-                        //
-                        goleAlive = false;
-                    }
+                    castTimeout = timeoutMax;
                 }
-
-
-
-                Thread.Sleep(750);
+                
+                Thread.Sleep(threadSleep);
             }
+            //Make sure we aren't moving
             SetPlayerHeading(apiObject, false, 0);
             SetAutorun(apiObject, false);
 
+            //Free all the buffers
             Marshal.FreeHGlobal(entbuf);
             Marshal.FreeHGlobal(chatbuf);
             Marshal.FreeHGlobal(playerPosbuf);
@@ -935,7 +1108,7 @@ namespace DarkSideModernGUI.Views.Pages
                     //currentTarget = findEntityByName(EntityList, "Asmoe");
                     //SetTarget(apiObject, currentTarget);
 
-                    float dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                    float dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
                     short newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
                     if (dist > stoppingDist)
                     {

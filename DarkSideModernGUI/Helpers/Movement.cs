@@ -11,8 +11,19 @@ namespace DarkSideModernGUI.Helpers
 {
     public class Movement
     {
+        public struct Pos_2d
+        {
+            public float x;
+            public float y;
+        }
+        public struct Pos_3d
+        {
+            public float x;
+            public float y;
+            public float z;
+        }
 
-        static public float DistanceToPoint(PlayerPosition playerPos, float targX, float targY, float targZ)
+        static public float DistanceToPoint(PlayerPosition playerPos, float targX, float targY)
         {
             float dist = (float)(Math.Sqrt((playerPos.pos_x - targX) * (playerPos.pos_x - targX) + (playerPos.pos_y - targY) * (playerPos.pos_y - targY)));
             return (float)dist;
