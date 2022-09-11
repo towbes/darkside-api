@@ -236,6 +236,11 @@ namespace DarkSideModernGUI.Views.Pages
         private void scanDirectoryForWaypointRoute()
         {
             string routepath = Path.Combine(this.currentDirectory, "Routes");
+
+            if (!Directory.Exists(routepath))
+            {
+                return;
+            }
             string[] wprs = Directory.GetFiles(routepath, "*.json");
             if (wprs.Length > 0)
             {
