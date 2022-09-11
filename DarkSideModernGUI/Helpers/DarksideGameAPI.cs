@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkSideModernGUI.Views.Pages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -415,7 +416,30 @@ namespace DarkSideModernGUI.Helpers
             return false;
         }
 
+        //Set Target Helpers
+        public static bool SetTargetByName(IntPtr apiObject, List<EntityInfo> EntityList, string name)
+        {
+            int targ = findEntityByName(EntityList, name);
 
+            return SetTarget(DashboardPage.apiObject, targ);
+        }
+
+        //Returns the entitylist offset for party member that needs heal
+        public static int PartyMemberNeedsHeal(List<PartyMemberInfo> partyMemberList, List<EntityInfo> EntityList)
+        {
+            for (int j = 0; j < partyMemberList.Count; j++)
+            {
+                String cname = new string(partyMemberList[j].name);
+                //Check if someone needs heal
+                if (partyMemberList[j].hp_pct < 80)
+                {
+                    int targ = findEntityByName(EntityList, cname);
+                    return targ;
+                }
+            }
+            //return 0 if not found
+            return 0;
+        }
 
     }
 }

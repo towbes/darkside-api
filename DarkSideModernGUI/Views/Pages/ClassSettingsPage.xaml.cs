@@ -700,7 +700,7 @@ namespace DarkSideModernGUI.Views.Pages
             int castSleep = 0; // milliseconds
 
             //This is a countdown that gets reset after a cast to prevent spell spamming
-            int timeoutMax = 15;
+            int timeoutMax = 12;
             int castTimeout = 0;
 
             bool fightStarted = false;
@@ -926,31 +926,19 @@ namespace DarkSideModernGUI.Views.Pages
                                 }
                                 cloudNear = true;
                             }
-
                         }
                     }
 
+                    //target checks
                     //always check morella offset first, then check for a granite giant spawn, then gole
                     if (morellaOffset > 0)
                     {
                         EntityInfo morellaEnt = EntityList[morellaOffset];
                         if (morellaEnt.health > 0)
                         {
-                            //Paladin will target gole, everyone else morella
-                            if (playerInfo.className.Contains(tankClass))
-                            {
-                                SetTarget(apiObject, goleOffset);
-                                
-                                //Melee Taunt
-                                UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
-                                //Spell taunt
-                                UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
-                            }
-                            else if (playerInfo.className.Contains(dmgClass))
+                            if (playerInfo.className.Contains(dmgClass))
                             {
                                 SetTarget(apiObject, morellaOffset);
-                                
-                                
                             }
 
                         }
@@ -959,17 +947,12 @@ namespace DarkSideModernGUI.Views.Pages
                     {
                         EntityInfo giant = EntityList[graniteOffset];
                         float giantdist = DistanceToPoint(playerPos, giant.pos_x, giant.pos_y);
-                        if (giantdist < 500)
+                        if (giantdist < 500 && giant.health > 0)
                         {
-                            //Paladin will target gole, everyone else morella
-                            if (playerInfo.className.Contains(tankClass))
+                            if (playerInfo.className.Contains(dmgClass))
                             {
-                                SetTarget(apiObject, goleOffset);
+                                SetTarget(apiObject, graniteOffset);
 
-                                //Melee Taunt
-                                UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
-                                //Spell taunt
-                                UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
                             }
                         }
                     }
@@ -978,15 +961,10 @@ namespace DarkSideModernGUI.Views.Pages
                         EntityInfo goleEnt = EntityList[goleOffset];
                         if (goleEnt.health > 0)
                         {
-                            //Paladin will target gole, everyone else morella
-                            if (playerInfo.className.Contains(tankClass))
+                            if (playerInfo.className.Contains(dmgClass))
                             {
                                 SetTarget(apiObject, goleOffset);
 
-                                //Melee Taunt
-                                UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
-                                //Spell taunt
-                                UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
                             }
                         } else
                         {
@@ -995,6 +973,22 @@ namespace DarkSideModernGUI.Views.Pages
                             dragonRunning = false;
                         }
                     }
+
+                    //combat
+                    //Paladin will target gole, everyone else morella
+                    if (playerInfo.className.Contains(tankClass))
+                    {
+                        SetTarget(apiObject, goleOffset);
+                        //Melee Taunt
+                        UseSkillByName(apiObject, playerInfo.Skills, tankMeleeTaunt);
+                        //Spell taunt
+                        UseSkillByName(apiObject, playerInfo.Skills, tankSpellTaunt);
+                    } else if (playerInfo.className.Contains(dmgClass))
+                    {
+
+                    }
+
+
                     castTimeout = timeoutMax;
                 }
                 
