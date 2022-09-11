@@ -1,22 +1,19 @@
-﻿using Wpf.Ui.Common.Interfaces;
+﻿using DarkSideModernGUI.ViewModels;
+using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.Views.Pages
+namespace DarkSideModernGUI.Views.Pages;
+
+/// <summary>
+///     Interaction logic for TestPage.xaml
+/// </summary>
+public partial class ClassSettingsPage : INavigableView<ClassSettingsViewModel>
 {
-    /// <summary>
-    /// Interaction logic for TestPage.xaml
-    /// </summary>
-    public partial class ClassSettingsPage : INavigableView<ViewModels.ClassSettingsViewModel>
+    public ClassSettingsPage(ClassSettingsViewModel viewModel)
     {
-        public ViewModels.ClassSettingsViewModel ViewModel
-        {
-            get;
-        }
+        ViewModel = viewModel;
 
-        public ClassSettingsPage(ViewModels.ClassSettingsViewModel viewModel)
-        {
-            ViewModel = viewModel;
-
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
+
+    public ClassSettingsViewModel ViewModel { get; }
 }
