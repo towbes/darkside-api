@@ -494,7 +494,22 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_UseSpell(object sender, RoutedEventArgs e)
         {
-            UseSpell(DashboardPage.apiObject, Int32.Parse(UseSpellOffset.Text));
+            //PlayerInfo
+            strPlayerInfo.Clear();
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
+            PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+            Marshal.FreeHGlobal(pInfobuf);
+
+            string spellName = UseSpellOffset.Text;
+
+            (int spellCategory, int spellLevel) = UseSpellByName(playerInfo.SpellLines, spellName);
+
+            if (spellCategory != 999)
+            {
+                UseSpell(DashboardPage.apiObject, spellCategory, spellLevel);
+            }
+            
         }
 
         private void Button_Click_6(object sender, RoutedEventArgs e)

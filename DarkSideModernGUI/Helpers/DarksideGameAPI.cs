@@ -81,8 +81,17 @@ namespace DarkSideModernGUI.Helpers
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Spell_t
         {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public String name;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 60)] public char[] unknown1;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)] public String name;
+            public short spellLevel { get; private set; }
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 26)] public char[] unknown1;
+        }
+        //spellCategory_t
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct spellCategory_t
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)] public String name;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 75)] public Spell_t[] spells;
+            public int align { get; private set; }
         }
         //item_t
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -117,7 +126,7 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 168)] public String name;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 168)] public String className;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 150)] public Skill_t[] Skills;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 150)] public Spell_t[] Spells;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public spellCategory_t[] SpellLines;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 75)] public Buff_t[] Buffs;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public Item_t[] Inventory;
         }
@@ -191,7 +200,7 @@ namespace DarkSideModernGUI.Helpers
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UseSkill(IntPtr pApiObject, int skillOffset);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool UseSpell(IntPtr pApiObject, int spellOffset);
+        public static extern bool UseSpell(IntPtr pApiObject, int spellCategory, int spellLevel);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UsePetCmd(IntPtr pApiObject, int aggroState, int walkState, int petCmd);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -207,12 +216,13 @@ namespace DarkSideModernGUI.Helpers
 
         public static int findEntityByName(List<EntityInfo> EntityList, String entName)
         {
+            entName = entName.ToLower();
             //Skip index 0 for now
             for (int i = 1; i < 2000; i++)
             {
                 if (!String.IsNullOrEmpty(EntityList[i].name))
                 {
-                    if (EntityList[i].name.StartsWith(entName))
+                    if (EntityList[i].name.ToLower().StartsWith(entName))
                     {
                         return i;
                     }
@@ -224,12 +234,13 @@ namespace DarkSideModernGUI.Helpers
 
         public static int ItemSlotByName(Item_t[] inventory, String itemName)
         {
+            itemName = itemName.ToLower();
             //add +40 at the end to get proper slot number
             for (int slotNum = 0; slotNum < 41; slotNum++)
             {
                 if (!String.IsNullOrEmpty(inventory[slotNum].name))
                 {
-                    if (inventory[slotNum].name.StartsWith(itemName))
+                    if (inventory[slotNum].name.ToLower().StartsWith(itemName))
                     {
                         return slotNum + 40;
                     }
@@ -240,9 +251,10 @@ namespace DarkSideModernGUI.Helpers
 
         public static int UseSkillByName(Skill_t[] skills, string skillName)
         {
+            skillName = skillName.ToLower();
             for (int i = 0; i < 150; i++)
             {
-                if (skills[i].name.StartsWith(skillName))
+                if (skills[i].name.ToLower().StartsWith(skillName))
                 {
                     return i;
                 }
@@ -251,17 +263,27 @@ namespace DarkSideModernGUI.Helpers
             return 999;
         }
 
-        public static int UseSpellByName(Spell_t[] spells, string spellName)
+        //Returns spell category and level
+        public static (int category, int level) UseSpellByName(spellCategory_t[] spellLines, string spellName)
         {
-            for (int i = 0; i < 150; i++)
+            spellName = spellName.ToLower();
+            for (int cat = 0; cat < 8; cat++)
             {
-                if (spells[i].name.StartsWith(spellName))
-                {
-                    return i;
+                for (int i = 0; i < 75; i++) {
+                    string curSpellName = spellLines[cat].spells[i].name.ToLower();
+                    int curSpellLevel = spellLines[cat].spells[i].spellLevel;
+                    if (!string.IsNullOrEmpty(curSpellName)) {
+                        if (curSpellName.StartsWith(spellName))
+                        {
+                            return (cat, curSpellLevel);
+                        }
+                    }
+
                 }
+
             }
             //return 999 if failed
-            return 999;
+            return (999,999);
         }
         public static bool UsePetCmdByName(IntPtr apiObject, string petCommand)
         {

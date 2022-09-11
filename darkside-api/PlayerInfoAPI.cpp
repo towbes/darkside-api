@@ -76,10 +76,10 @@ bool DarksideAPI::UseSkill(int skillOffset) {
     return false;
 }
 
-bool DarksideAPI::UseSpell(int spellOffset) {
+bool DarksideAPI::UseSpell(int spellCategory, int spellLevel) {
     //set up skill and spell casting function shaerd memory
     std::wstring spellmmf_name = std::to_wstring(pidHandle) + L"_plyrUseSpell";
-    std::size_t useSpellfileSize = sizeof(int);
+    std::size_t useSpellfileSize = sizeof(spellQueue_t);
 
     auto spellMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
@@ -96,10 +96,12 @@ bool DarksideAPI::UseSpell(int spellOffset) {
         return false;
     }
 
-    int* pShmUseSpell = (int*)MapViewOfFile(spellMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    spellQueue_t* pShmUseSpell = (spellQueue_t*)MapViewOfFile(spellMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
-    if (*pShmUseSpell == -1) {
-        *pShmUseSpell = spellOffset;
+    if (pShmUseSpell->rdySend == true) {
+        pShmUseSpell->spellCategory = spellCategory;
+        pShmUseSpell->spellLevel = spellLevel;
+        pShmUseSpell->rdySend = false;
         UnmapViewOfFile(pShmUseSpell);
         CloseHandle(spellMapFile);
         return true;

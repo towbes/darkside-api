@@ -21,7 +21,7 @@ namespace daoc {
     void __stdcall GetEntityName(int table_idx, int entity_idx, char* Destination, size_t Count);
 
     //canCastSpell should always be 1
-    void UseSpell(int spellSlot, int canCastSpell);
+    void UseSpell(int spellCategory, int spellLevel);
     //Use spell and use skill functions
     //typedef void(__cdecl* _UseSpell)(int canCastSpell, int spellSlot);
     //_UseSpell UseSpell = (_UseSpell)funcUseSpell_x;

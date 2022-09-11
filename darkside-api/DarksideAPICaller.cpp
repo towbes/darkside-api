@@ -136,9 +136,9 @@ bool UseSkill(DarksideAPI* apiObject, int skillOffset) {
 	return false;
 }
 
-bool UseSpell(DarksideAPI* apiObject, int spellOffset) {
+bool UseSpell(DarksideAPI* apiObject, int spellCategory, int spellLevel) {
 	if (apiObject != NULL) {
-		if (apiObject->UseSpell(spellOffset)) {
+		if (apiObject->UseSpell(spellCategory, spellLevel)) {
 			return true;
 		}
 	}

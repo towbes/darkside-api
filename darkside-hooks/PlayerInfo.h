@@ -34,11 +34,11 @@ private:
     int currSkill;
 
     //Use spell MMF
-    int* pShmUseSpell;
+    spellQueue_t* pShmUseSpell;
     void* spellMapFile;
     std::wstring spellmmf_name;
     //Spell Queue
-    std::queue<int> spellQueue;
+    std::queue<spellQueue_t> spellQueue;
     int currSpell;
 
     //Pet cmd MMF

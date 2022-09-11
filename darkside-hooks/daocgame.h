@@ -31,7 +31,7 @@
 #define ptrZoneYoffset_x		0x1495820
 #define ptrZoneXoffset_x		0x149581c
 #define ptrPlayerHp_x		0xf69df0
-#define ptrPlyrSpells_x		0x161da70
+#define ptrPlyrSpells_x		0x161d9f0
 #define ptrPlyrBuffs_x		0xfdd300
 #define ptrPlyrUseSkill_x		0x9a9730
 #define ptrInventory_x		0xf9b8d0

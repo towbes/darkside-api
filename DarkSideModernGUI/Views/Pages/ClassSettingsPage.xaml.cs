@@ -745,8 +745,10 @@ namespace DarkSideModernGUI.Views.Pages
                             if (playerInfo.className.Contains("Paladin"))
                             {
                                 SetTarget(apiObject, goleOffset);
-                                UseSkillByName(playerInfo.Skills, "Rile");
-                                UseSkillByName(playerInfo.Skills, "Infuriate");
+                                int rileOffset = UseSkillByName(playerInfo.Skills, "Rile");
+                                UseSkill(apiObject, rileOffset);
+                                int infOffset = UseSkillByName(playerInfo.Skills, "Infuriate");
+                                UseSkill(apiObject, infOffset);
                             }
                             else if (playerInfo.className.Contains("Spiritmaster"))
                             {

@@ -42,8 +42,23 @@ struct headingupdate_t {
 
 //useSpell_t plyrUseSpellTable[150];
 struct useSpell_t {
-    char name[32];
-    char unknown[60];
+    char name[64];
+    short spellLevel;
+    char unknown[26];
+};
+
+//array start address is 161d9f0
+//6968 bytes total = 0x1B38
+struct spellCategory_t {
+    char categoryName[64];
+    useSpell_t spellArray[75];
+    int alignBuf;
+};
+
+struct spellQueue_t {
+    bool rdySend;
+    int spellCategory;
+    int spellLevel;
 };
 
 struct petCmd_t {
@@ -88,7 +103,7 @@ struct plyrinfo_t {
     unsigned char name[168];
     unsigned char className[168];
     useSkill_t skills[150];
-    useSpell_t spells[150];
+    spellCategory_t spells[8];
     buff_t buffs[75];
     item_t inventory[40];
 };

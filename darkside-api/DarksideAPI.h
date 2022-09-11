@@ -52,7 +52,7 @@ public:
     //Player Info
     bool GetPlayerInfo(LPVOID lpBuffer);
     bool UseSkill(int skillOffset);
-    bool UseSpell(int spellOffset);
+    bool UseSpell(int spellCategory, int spellLevel);
     bool UsePetCmd(int aggState, int walkState, int petCmd);
     bool MoveItem(int fromSlot, int toSlot, int count);
 

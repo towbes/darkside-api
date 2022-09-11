@@ -102,7 +102,7 @@ PlayerInfo::PlayerInfo() {
 
     //set up skill and spell casting function shaerd memory
     spellmmf_name = std::to_wstring(pid) + L"_plyrUseSpell";
-    std::size_t useSpellfileSize = sizeof(int);
+    std::size_t useSpellfileSize = sizeof(spellQueue_t);
 
     auto spellMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
@@ -118,7 +118,7 @@ PlayerInfo::PlayerInfo() {
             GetLastError());
     }
     else {
-        pShmUseSpell = (int*)MapViewOfFile(spellMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+        pShmUseSpell = (spellQueue_t*)MapViewOfFile(spellMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }
 
     
@@ -128,8 +128,9 @@ PlayerInfo::PlayerInfo() {
             GetLastError());
     }
     else {
+        spellQueue_t temp = { true, 0,0 };
         //Set to -1 while waiting for spell
-        *pShmUseSpell = -1;
+        memcpy(pShmUseSpell, &temp, sizeof(spellQueue_t));
     }
 
     //set up petCommand shaerd memory
@@ -250,14 +251,9 @@ void PlayerInfo::QueueSkill() {
 //Function pushes that to queue and resets shared memory to -1
 //Todo: add a condition to only try to empty the queue when not casting or moving
 void PlayerInfo::QueueSpell() {
-    if (*pShmUseSpell >= 0) {
-        skillQueue.push(*pShmUseSpell);
-        *pShmUseSpell = -1;
-    }
-    if (!spellQueue.empty()) {
-        currSpell = spellQueue.front();
-        spellQueue.pop();
-        daoc::UseSpell(currSpell, 1);
+    if (pShmUseSpell->rdySend == false) {
+        daoc::UseSpell(pShmUseSpell->spellCategory, pShmUseSpell->spellLevel);
+        pShmUseSpell->rdySend = true;
     }
 }
 
