@@ -1,4 +1,4 @@
-﻿namespace DarkSideModernGUI.Models;
+﻿namespace DarkSide.WPF.Models;
 
 public struct Waypoint
 {

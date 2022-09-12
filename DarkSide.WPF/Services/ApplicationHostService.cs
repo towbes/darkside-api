@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using DarkSideModernGUI.Views;
-using DarkSideModernGUI.Views.Pages;
+using DarkSide.WPF.Views;
+using DarkSide.WPF.Views.Pages;
 using Microsoft.Extensions.Hosting;
 using Wpf.Ui.Mvvm.Contracts;
 
-namespace DarkSideModernGUI.Services;
+namespace DarkSide.WPF.Services;
 
 /// <summary>
 ///     Managed host of the application.

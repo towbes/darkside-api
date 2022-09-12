@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.ViewModels;
+namespace DarkSide.WPF.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject, INavigationAware
 {

@@ -8,12 +8,12 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows;
-using DarkSideModernGUI.Models;
-using DarkSideModernGUI.ViewModels;
+using DarkSide.WPF.Models;
+using DarkSide.WPF.ViewModels;
 using Newtonsoft.Json;
 using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.Views.Pages;
+namespace DarkSide.WPF.Views.Pages;
 
 /// <summary>
 ///     Interaction logic for DashboardPage.xaml

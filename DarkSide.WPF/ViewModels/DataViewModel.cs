@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DarkSideModernGUI.Models;
+using DarkSide.WPF.Models;
 using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.ViewModels;
+namespace DarkSide.WPF.ViewModels;
 
 public partial class DataViewModel : ObservableObject, INavigationAware
 {

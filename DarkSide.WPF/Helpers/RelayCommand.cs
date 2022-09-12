@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace DarkSideModernGUI.Helpers;
+namespace DarkSide.WPF.Helpers;
 
 //Code from: https://stackoverflow.com/questions/3531772/binding-button-click-to-a-method
 /// <summary>

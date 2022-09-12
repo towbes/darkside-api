@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using DarkSideModernGUI.ViewModels;
+using DarkSide.WPF.ViewModels;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 
-namespace DarkSideModernGUI.Views;
+namespace DarkSide.WPF.Views;
 
 /// <summary>
 ///     Interaction logic for Container.xaml

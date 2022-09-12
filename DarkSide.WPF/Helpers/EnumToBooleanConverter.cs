@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using Wpf.Ui.Appearance;
 
-namespace DarkSideModernGUI.Helpers;
+namespace DarkSide.WPF.Helpers;
 
 internal class EnumToBooleanConverter : IValueConverter
 {

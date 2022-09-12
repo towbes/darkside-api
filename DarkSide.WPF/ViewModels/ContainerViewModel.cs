@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DarkSideModernGUI.Views.Pages;
+using DarkSide.WPF.Views.Pages;
 using Wpf.Ui.Common;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 
-namespace DarkSideModernGUI.ViewModels;
+namespace DarkSide.WPF.ViewModels;
 
 public partial class ContainerViewModel : ObservableObject
 {

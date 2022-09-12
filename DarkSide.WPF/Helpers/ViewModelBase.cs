@@ -5,7 +5,7 @@ using System.Windows.Input;
 //Not currently using this viewmodelbase
 //Mvvm references: https://stackoverflow.com/questions/56952535/how-to-save-wpf-textbox-value-to-variable
 
-namespace DarkSideModernGUI.Helpers;
+namespace DarkSide.WPF.Helpers;
 
 public class ViewModelBase
 {

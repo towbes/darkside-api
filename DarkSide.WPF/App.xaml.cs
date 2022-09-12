@@ -2,18 +2,18 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
-using DarkSideModernGUI.Models;
-using DarkSideModernGUI.Services;
-using DarkSideModernGUI.ViewModels;
-using DarkSideModernGUI.Views;
-using DarkSideModernGUI.Views.Pages;
+using DarkSide.WPF.Models;
+using DarkSide.WPF.Services;
+using DarkSide.WPF.ViewModels;
+using DarkSide.WPF.Views;
+using DarkSide.WPF.Views.Pages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
 
-namespace DarkSideModernGUI;
+namespace DarkSide.WPF;
 
 /// <summary>
 ///     Interaction logic for App.xaml

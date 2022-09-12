@@ -1,7 +1,7 @@
-﻿using DarkSideModernGUI.ViewModels;
+﻿using DarkSide.WPF.ViewModels;
 using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.Views.Pages;
+namespace DarkSide.WPF.Views.Pages;
 
 /// <summary>
 ///     Interaction logic for DataView.xaml

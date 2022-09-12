@@ -1,6 +1,6 @@
-﻿using DarkSideModernGUI.Models;
+﻿using DarkSide.WPF.Models;
 
-namespace DarkSideModernGUI.Helpers;
+namespace DarkSide.WPF.Helpers;
 
 public class Movement
 {

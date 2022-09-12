@@ -2,7 +2,7 @@
 using System.Windows;
 using Wpf.Ui.Mvvm.Contracts;
 
-namespace DarkSideModernGUI.Services;
+namespace DarkSide.WPF.Services;
 
 /// <summary>
 ///     Service that provides pages for navigation.

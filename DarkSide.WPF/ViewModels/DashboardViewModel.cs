@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.ViewModels;
+namespace DarkSide.WPF.ViewModels;
 
 public partial class DashboardViewModel : ObservableObject, INavigationAware
 {

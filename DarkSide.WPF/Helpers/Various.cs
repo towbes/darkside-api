@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace DarkSideModernGUI.Helpers;
+namespace DarkSide.WPF.Helpers;
 
 public class Various
 {

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace DarkSideModernGUI.Models;
+namespace DarkSide.WPF.Models;
 
 public struct DataColor
 {

@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using DarkSideModernGUI.ViewModels;
+using DarkSide.WPF.ViewModels;
 using Wpf.Ui.Common.Interfaces;
 
-namespace DarkSideModernGUI.Views.Pages;
+namespace DarkSide.WPF.Views.Pages;
 
 /// <summary>
 ///     Interaction logic for TestPage.xaml
