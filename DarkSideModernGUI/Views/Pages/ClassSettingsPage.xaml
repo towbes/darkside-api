@@ -36,13 +36,13 @@
         <StackPanel
             Grid.Column="1">
             <ui:Button
-            Name="btnGlobalLoop"
+            Name="btnHealLoop"
             Grid.Column="1"
             Width="136"
             Margin="67,0,0,0"
             VerticalAlignment="Top"
-            Click="Button_Click_GlobalLoop">
-            GlobalLoop
+            Click="Button_Click_HealLoop">
+            HealLoop
             </ui:Button>
             <ui:Button
             Grid.Column="1"

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Formats.Asn1;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,15 +14,43 @@ namespace DarkSideModernGUI.Helpers
 {
     internal class CharacterLoops
     {
-        bool stickRunning = false;
-
-        string leaderName = "Asmoe";
-        string readyName = "Suzuha";
+        public static string leaderName = "Asmoe";
+        public static string readyName = "";
 
         //Global bool to trigger dragon script on/off
-        bool dragonRunning = false;
+        public static bool dragonRunning = false;
+        public static bool stickRunning = false;
+        public static bool healRunning = false;
 
-        private void UpdateGlobals(int procId)
+        //Dicts to maintain currently injected state
+        static public Dictionary<string, int> charNames = new Dictionary<string, int>();
+        static public Dictionary<int, CharGlobals> CharGlobalDict = new Dictionary<int, CharGlobals>();
+
+        public struct CharGlobals
+        {
+            //Api Object
+            public IntPtr apiObject;
+            //alloc buffers
+            public IntPtr entbuf { get; set; }//= Marshal.AllocHGlobal(Marshal.SizeOf<EntityList>());
+            public IntPtr chatbuf { get; set; }//= Marshal.AllocHGlobal(Marshal.SizeOf<Chatbuffer>());
+            public IntPtr playerPosbuf { get; set; }//= Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
+            public IntPtr tInfobuf { get; set; }//= Marshal.AllocHGlobal(Marshal.SizeOf<TargetInfo>());
+            public IntPtr pInfobuf { get; set; }//= Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            public IntPtr pbuf { get; set; }//= Marshal.AllocHGlobal(Marshal.SizeOf<PartyMemberInfo>());
+            //Global lists
+            public List<EntityInfo> EntityList; //= new List<EntityInfo>();
+            public EntityList entList; // = new EntityList();
+            public List<String> chatLog; //= new List<String>();
+            public List<PartyMemberInfo> partyMemberList; //= new List<PartyMemberInfo>();
+            //Global info
+            public PlayerPosition playerPos;
+            public TargetInfo targetInfo;
+            public PlayerInfo playerInfo;
+            public Chatbuffer chatLine;
+
+        }
+
+        public static void UpdateGlobals(int procId)
         {
             //Copy the globals to a temp object to mod
             CharGlobals modGlobals = CharGlobalDict[procId];
@@ -92,7 +121,17 @@ namespace DarkSideModernGUI.Helpers
 
         }
 
-        private void battleLocFunc(int procId)
+        static public void ReleasecharGlobals(CharGlobals charBuffer)
+        {
+            Marshal.FreeHGlobal(charBuffer.entbuf);
+            Marshal.FreeHGlobal(charBuffer.chatbuf);
+            Marshal.FreeHGlobal(charBuffer.playerPosbuf);
+            Marshal.FreeHGlobal(charBuffer.tInfobuf);
+            Marshal.FreeHGlobal(charBuffer.pInfobuf);
+            Marshal.FreeHGlobal(charBuffer.pbuf);
+        }
+
+        public static void battleLocFunc(int procId)
         {
             bool isMoving = true;
 
@@ -155,7 +194,7 @@ namespace DarkSideModernGUI.Helpers
 
         }
 
-        private void resetLocFunc(int procId)
+        public static void resetLocFunc(int procId)
         {
             bool isMoving = true;
 
@@ -219,7 +258,7 @@ namespace DarkSideModernGUI.Helpers
 
         }
 
-        private void battleFunc(int procId)
+        public static void battleFunc(int procId)
         {
             int threadSleep = 75; // milliseconds
             int castSleep = 0; // milliseconds
@@ -598,13 +637,14 @@ namespace DarkSideModernGUI.Helpers
             SetAutorun(globalFinish.apiObject, false);
         }
 
-        private void stickFunc(int procId)
+        public static void stickFunc(int procId)
         {
 
             while (stickRunning)
             {
                 UpdateGlobals(procId);
-                UpdateGlobals(charNames[leaderName]);
+                if (charNames.ContainsKey(leaderName))
+                    UpdateGlobals(charNames[leaderName]);
 
                 CharGlobals stickGlobals;
                 if (charNames.ContainsKey(leaderName))
@@ -652,14 +692,18 @@ namespace DarkSideModernGUI.Helpers
             SetAutorun(charGlobalFinish.apiObject, false);
         }
 
-        private void getBuffs(int procId)
+        public static void getBuffs(int procId)
         {
-            UpdateGlobals(procId);
-            UpdateGlobals(charNames[leaderName]);
 
-            CharGlobals stickGlobals;
+
+            
             if (charNames.ContainsKey(leaderName))
             {
+                UpdateGlobals(procId);
+                UpdateGlobals(charNames[leaderName]);
+
+                CharGlobals stickGlobals;
+
                 stickGlobals = CharGlobalDict[charNames[leaderName]];
                 CharGlobals charGlobals = CharGlobalDict[procId];
                 //MoveItem Example
@@ -667,16 +711,17 @@ namespace DarkSideModernGUI.Helpers
                 string targName = stickGlobals.targetInfo.name;
                 string buffItem = "Full Buffs";
 
+                int entOffset = findEntityByName(charGlobals.EntityList, targName);
 
                 if (!String.IsNullOrEmpty(targName))
                 {
                     //string[] args = tmp.Split(',');
                     //int entOffset = -1;
                     //entOffset = findEntityByName(EntityList, args[0]);
-                    if (stickGlobals.targetInfo.entOffset >= 0)
+                    if (entOffset >= 0)
                     {
-                        SetTarget(charGlobals.apiObject, stickGlobals.targetInfo.entOffset);
-                        InteractRequest(charGlobals.apiObject, charGlobals.EntityList[stickGlobals.targetInfo.entOffset].objectId);
+                        SetTarget(charGlobals.apiObject, entOffset);
+                        InteractRequest(charGlobals.apiObject, charGlobals.EntityList[entOffset].objectId);
                         //After interacting, send the buy item packet
                         //alloc a buf and zero it out
                         IntPtr pktbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PktBuffer>());
@@ -695,13 +740,166 @@ namespace DarkSideModernGUI.Helpers
                         if (fromSlot > 0)
                         {
                             //Add 1000 to objectId for moving item to NPCs
-                            MoveItem(charGlobals.apiObject, fromSlot, charGlobals.EntityList[stickGlobals.targetInfo.entOffset].objectId + 1000, 0);
+                            MoveItem(charGlobals.apiObject, fromSlot, charGlobals.EntityList[entOffset].objectId + 1000, 0);
                         }
                         Marshal.FreeHGlobal(pktbuf);
                     }
                 }
             }
 
+
+        }
+
+        public static void HealFunc(int procId)
+        {
+            int threadSleep = 75; // milliseconds
+            int castSleep = 0; // milliseconds
+
+            //This is a countdown that gets reset after a cast to prevent spell spamming
+            int timeoutMax = 20;
+            int castTimeout = 0;
+
+            //Bard
+            string brdClass = "Bard";
+            //songs
+            string speedSong = "Clear Horizon";
+            bool brdSpeedOn = false;
+            string powSong = "Rhyme of Creation";
+            bool brdPowOn = false;
+            string endSong = "Rhythm of the Cosmos";
+            bool brdEndOn = false;
+            string healSong = "Euphony of Healing";
+            bool brdHealOn = false;
+            //buff
+            string ablBuff = "Battlesong of Apotheosis";
+            //heals
+            int smallHealPct = 95;
+            int bigHealPct = 70;
+            string brdSmallHeal = "Apotheosis";
+            string brdBigHeal = "Major Apotheosis";
+            string brdGrpHeal = "Group Apotheosis";
+
+            //Healer
+            string hlrClass = "Druid";
+            //resist buff
+            string hlrResistBuff = "Warmth of the Bear";
+            bool hlrBuffOn = false;
+            //heals
+            string hlrSmallHeal = "Apotheosis";
+            string hlrBigHeal = "Major Renascence";
+            string hlrGrpHeal = "Group Apotheosis";
+
+            while (healRunning)
+            {
+                UpdateGlobals(procId);
+
+                CharGlobals charGlobals = CharGlobalDict[procId];
+                string plyrName = new string(charGlobals.playerInfo.name);
+
+                string className = new string(charGlobals.playerInfo.className);
+
+                //Check if we're casting and have more than castSleep left
+                if (charGlobals.EntityList[charGlobals.playerInfo.entListIndex].castCountdown > castSleep)
+                {
+                    //isCasting = true;
+                }
+                else
+                {
+                    //isCasting = false;
+                    castTimeout -= 1;
+                    if (castTimeout < 0)
+                        castTimeout = 0;
+                }
+
+                //Buff check
+                if (castTimeout == 0)
+                {
+                    //Heal check
+                    //******single target heals not working at all
+                    if (charGlobals.playerInfo.className.Contains(brdClass))
+                    {
+                        //check if a party member needs heal
+                        int ptEntOffset = PartyMemberNeedsHeal(charGlobals.partyMemberList, charGlobals.EntityList);
+                        if (ptEntOffset > 0)
+                        {
+                            SetTarget(charGlobals.apiObject, ptEntOffset);
+                            if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdSmallHeal);
+                            else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdBigHeal);
+                        }
+                        //spam grp heal
+                        //UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdGrpHeal);
+
+                    }
+                    else if (charGlobals.playerInfo.className.Contains(hlrClass))
+                    {
+                        //check if a party member needs heal
+                        int ptEntOffset = PartyMemberNeedsHeal(charGlobals.partyMemberList, charGlobals.EntityList);
+                        if (ptEntOffset > 0)
+                        {
+                            SetTarget(charGlobals.apiObject, ptEntOffset);
+                            if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrSmallHeal);
+                            else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrBigHeal);
+                        }
+                        //spam grp heal
+                        //UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrGrpHeal);
+                    }
+                    else
+                    {
+                        //if we're not a healer break loop and end thread
+                        break;
+                    }
+                    //Buff check
+                    if (charGlobals.playerInfo.className.Contains(brdClass))
+                    {
+                        //Bard Songs/spells are all skills
+                        if (!brdSpeedOn && !HasBuffByName(charGlobals.playerInfo.Buffs, speedSong))
+                        {
+                            brdSpeedOn = true;
+                            UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, speedSong);
+                        }
+                        else if (!brdPowOn && !HasBuffByName(charGlobals.playerInfo.Buffs, powSong))
+                        {
+                            brdPowOn = true;
+                            UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, powSong);
+                        }
+
+                        else if (!brdHealOn && !HasBuffByName(charGlobals.playerInfo.Buffs, healSong))
+                        {
+                            brdHealOn = true;
+                            UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, healSong);
+                        }
+
+                        else if (!brdEndOn && !HasBuffByName(charGlobals.playerInfo.Buffs, endSong))
+                        {
+                            brdEndOn = true;
+                            UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, endSong);
+                        }
+                        else if (!HasBuffByName(charGlobals.playerInfo.Buffs, ablBuff))
+                            UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, ablBuff);
+                    }
+                    else if (charGlobals.playerInfo.className.Contains(hlrClass))
+                    {
+                        //resist buff
+                        if (!hlrBuffOn && !HasBuffByName(charGlobals.playerInfo.Buffs, hlrResistBuff))
+                        {
+                            hlrBuffOn = true;
+                            UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrResistBuff);
+                        }
+
+                    }
+                    //Reset cast timeout
+                    castTimeout = timeoutMax;
+                }
+
+
+
+
+                Thread.Sleep(threadSleep);
+            }
 
         }
 

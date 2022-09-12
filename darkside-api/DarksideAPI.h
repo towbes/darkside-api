@@ -34,6 +34,8 @@ private:
     //New thread for chat listener
     std::thread* chatThread = nullptr;
 
+    std::mutex chatMutex;
+
 public:
     DarksideAPI();
     ~DarksideAPI();

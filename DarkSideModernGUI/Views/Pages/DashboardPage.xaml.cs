@@ -151,7 +151,6 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void btnUnloadAll_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            btnInjectAll.Content = "Inject All";
             foreach (GameDLL proc in gameprocs)
             {
                 if (GetPid(proc.apiObject) > 0)
@@ -159,15 +158,16 @@ namespace DarkSideModernGUI.Views.Pages
                     if (Unload(proc.apiObject, proc.procId))
                     {
                         //Call the clearbuffers function
-                        ClassSettingsPage.ReleasecharGlobals(ClassSettingsPage.CharGlobalDict[proc.procId]);
+                        CharacterLoops.ReleasecharGlobals(CharacterLoops.CharGlobalDict[proc.procId]);
                         //API calls dispose so this object is now deleted
                     }
                 }
                 Thread.Sleep(10);
 
             }
-            ClassSettingsPage.CharGlobalDict.Clear();
-            ClassSettingsPage.charNames.Clear();
+            btnInjectAll.Content = "Inject All";
+            CharacterLoops.CharGlobalDict.Clear();
+            CharacterLoops.charNames.Clear();
             gameprocs.Clear();
             btnInjectAll.Background = new SolidColorBrush(Colors.Orange);
         }

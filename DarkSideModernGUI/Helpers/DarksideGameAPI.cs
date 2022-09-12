@@ -1,6 +1,7 @@
 ﻿using DarkSideModernGUI.Views.Pages;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -262,7 +263,7 @@ namespace DarkSideModernGUI.Helpers
         {
             itemName = itemName.ToLower();
             //add +40 at the end to get proper slot number
-            for (int slotNum = 0; slotNum < 41; slotNum++)
+            for (int slotNum = 0; slotNum < 40; slotNum++)
             {
                 if (!String.IsNullOrEmpty(inventory[slotNum].name))
                 {
@@ -432,8 +433,10 @@ namespace DarkSideModernGUI.Helpers
             for (int j = 0; j < partyMemberList.Count; j++)
             {
                 String cname = new string(partyMemberList[j].name);
+
+                cname = cname.Trim('\0');
                 //Check if someone needs heal
-                if (partyMemberList[j].hp_pct < 80)
+                if (partyMemberList[j].hp_pct < 95)
                 {
                     int targ = findEntityByName(EntityList, cname);
                     return targ;
@@ -442,6 +445,5 @@ namespace DarkSideModernGUI.Helpers
             //return 0 if not found
             return 0;
         }
-
     }
 }
