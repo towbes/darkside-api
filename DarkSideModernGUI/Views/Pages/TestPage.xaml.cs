@@ -81,9 +81,9 @@ namespace DarkSideModernGUI.Views.Pages
 
             DashboardPage.GameDLL stickProc;
 
-            if (charNames.ContainsKey("Asmoe"))
+            if (charNames.ContainsKey("Okarin"))
             {
-                int stickPid = charNames["Asmoe"];
+                int stickPid = charNames["Okarin"];
 
                 stickProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == stickPid);
             } else
@@ -496,7 +496,14 @@ namespace DarkSideModernGUI.Views.Pages
 
         private void Button_Click_UseSkill(object sender, RoutedEventArgs e)
         {
-            UseSkill(DashboardPage.apiObject, Int32.Parse(UseSkillOffset.Text));
+            //PlayerInfo
+            strPlayerInfo.Clear();
+            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            GetPlayerInfo(DashboardPage.apiObject, pInfobuf);
+            PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+            Marshal.FreeHGlobal(pInfobuf);
+
+            UseSkillByName(DashboardPage.apiObject, playerInfo.Skills, UseSkillOffset.Text);
         }
 
         private void Button_Click_UseSpell(object sender, RoutedEventArgs e)

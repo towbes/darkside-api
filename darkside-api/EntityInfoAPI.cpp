@@ -213,7 +213,7 @@ bool DarksideAPI::GetEntityInfo(int entIndex, LPVOID lpBuffer) {
     const auto isDead = *(short*)(ptrShmBytePtr + 0xcf4);
     //Create struct to hold the entity data for API
     entityInfoAPI_t* tempEnt = new entityInfoAPI_t();
-    memcpy(tempEnt->name, ptrEntNameShmBytePtr, sizeof(entName_t));
+    strcpy_s(tempEnt->name, sizeof(entName_t), (const char*)ptrEntNameShmBytePtr);
     tempEnt->health = health;
     tempEnt->type = type;
     tempEnt->objectId = objId;
@@ -444,7 +444,7 @@ bool DarksideAPI::GetEntityList(LPVOID lpBuffer) {
             const auto isDead = *(short*)(ptrShmBytePtr + 0xcf4);
             //Create struct to hold the entity data for API
             entityInfoAPI_t* tempEnt = new entityInfoAPI_t();
-            memcpy(tempEnt->name, ptrEntNameShmBytePtr, sizeof(entName_t));
+            strcpy_s(tempEnt->name, sizeof(entName_t), (const char*)ptrEntNameShmBytePtr);
             tempEnt->health = health;
             tempEnt->type = type;
             tempEnt->objectId = objId;

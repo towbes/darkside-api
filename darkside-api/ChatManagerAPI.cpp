@@ -103,7 +103,7 @@ bool DarksideAPI::SendCommand(int cmdMode, int iMode, LPVOID lpBuffer) {
         //std::scoped_lock<std::mutex> lg(pShmSendCmd->cmdMutex);
         pShmSendCmd->cmdMode = cmdMode;
         pShmSendCmd->iMode = iMode;
-        memcpy(pShmSendCmd->buffer, lpBuffer, sizeof(char) * 512);
+        strcpy_s(pShmSendCmd->buffer, sizeof(char) * 512, (const char*)lpBuffer);
         pShmSendCmd->rdyRecv = false;
     }
     else {

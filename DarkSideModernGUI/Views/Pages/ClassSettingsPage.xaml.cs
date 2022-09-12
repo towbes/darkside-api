@@ -339,7 +339,19 @@ namespace DarkSideModernGUI.Views.Pages
             }
 
         }
-        
+        private void Button_Click_CleanInventory(object sender, RoutedEventArgs e)
+        {
+
+            foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+            {
+                //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                Thread newThread = new Thread(() => clean_inventory(proc.procId));
+                newThread.Start();
+                
+
+            }
+        }
+
 
     }
 }

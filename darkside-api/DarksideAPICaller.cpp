@@ -55,6 +55,24 @@ bool SetPlayerHeading(DarksideAPI* apiObject, bool changeHeading, short newHeadi
 	return false;
 }
 
+bool SetPlayerFwdSpeed(DarksideAPI* apiObject, bool changeSpeed, float newSpeed) {
+	if (apiObject != NULL) {
+		if (apiObject->SetPlayerFwdSpeed(changeSpeed, newSpeed)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool SetPlayerStrafeSpeed(DarksideAPI* apiObject, bool changeSpeed, float newSpeed) {
+	if (apiObject != NULL) {
+		if (apiObject->SetPlayerFwdSpeed(changeSpeed, newSpeed)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool SetAutorun(DarksideAPI* apiObject, bool autorun) {
 	if (apiObject != NULL) {
 		if (apiObject->SetAutorun(autorun)) {

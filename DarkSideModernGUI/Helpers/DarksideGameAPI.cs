@@ -23,9 +23,9 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)] public char[] unknown2;
             public int momentumMaxFwdBack { get; private set; }
             public float momentumFwdBack { get; private set; }
-            public float momentumLeftRight { get; private set; }
+            public float momentumLeftRight { get; private set; } // Left = Positive, Right=Negative | Nospeed: 137 | (204%)Bard Speed: 224
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)] public char[] unknown3;
-            public float momentumFwdBackWritable { get; private set; }
+            public float momentumFwdBackWritable { get; private set; } //Max values:  Nospeed: 238  | (204%)Bard Speed: 389
             public int unknown4 { get; private set; }
             public float pos_y { get; private set; }
             public float writeablePos_Zadd { get; private set; }
@@ -209,6 +209,11 @@ namespace DarkSideModernGUI.Helpers
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetPlayerHeading(IntPtr pApiObject, bool changeHeading, short newHeading);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetPlayerFwdSpeed(IntPtr pApiObject, bool changeSpeed, float newSpeed);
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetPlayerStrafeSpeed(IntPtr pApiObject, bool changeSpeed, float newSpeed);
+
+        [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetAutorun(IntPtr pApiObject, bool autorun);
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetPartyMember(IntPtr pApiObject, int memberIndex, IntPtr lpBuffer);
@@ -241,17 +246,24 @@ namespace DarkSideModernGUI.Helpers
         [DllImport("darkside-api.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SendPacket(IntPtr pApiObject, IntPtr lpBuffer);
 
-        public static int findEntityByName(List<EntityInfo> EntityList, String entName)
+
+        public static int findEntityByName(List<EntityInfo> EntityList, String entName, bool exactMatch=false)
         {
             entName = entName.ToLower();
             //Skip index 0 for now
             for (int i = 1; i < EntityList.Count; i++)
             {
                 if (!String.IsNullOrEmpty(EntityList[i].name))
-                {
-                    if (EntityList[i].name.ToLower().StartsWith(entName))
+                {   
+                    if (exactMatch)
                     {
-                        return i;
+                        if (EntityList[i].name.ToLower().Equals(entName))
+                            return i;
+                    }
+                    else 
+                    {
+                        if (EntityList[i].name.ToLower().StartsWith(entName))
+                            return i;
                     }
                 }
 
@@ -411,10 +423,10 @@ namespace DarkSideModernGUI.Helpers
             //walkState // 1-Follow, 2-Stay, 3-GoTarg, 4-Here
             //command // 1-Attack, 2-Release
             if (petCommand.ToLower().StartsWith("passive")) {
-                return UsePetCmd(apiObject, 3, 1, 0);
+                return UsePetCmd(apiObject, 3, 0, 0);
 
             } else if (petCommand.ToLower().StartsWith("attack")) {
-                return UsePetCmd(apiObject, 2, 1, 1);
+                return UsePetCmd(apiObject, 0, 0, 1);
             }
             return false;
         }

@@ -1,23 +1,23 @@
 #pragma once
 
 struct playerpos_t {
-    float pos_x;
-    short heading;
-    unsigned char unknown[20];
-    int playerSpeedFwd;
+    float pos_x;                //0x0
+    short heading;              //0x4
+    unsigned char unknown[20];  
+    int playerSpeedFwd;         //0x1c
     unsigned char unknown2[12];
-    int momentumMaxFwdBack;
-    float momentumFwdBack;
-    float momentumLeftRight;
+    int momentumMaxFwdBack;     //0x2c
+    float momentumFwdBack;      //0x30
+    float momentumLeftRight;    //0x34
     unsigned char unknown3[12];
-    float momentumFwdBackWrite;
+    float momentumFwdBackWrite; //0x44
     int unknown4;
-    float pos_y;
-    float writeablePos_zAdd;
+    float pos_y;                //0x4c
+    float writeablePos_zAdd;    //0x50
     int unknown5;
-    float pos_z;
+    float pos_z;                //0x58
     unsigned char unknown6[16];
-    int rotatePlayer;
+    int rotatePlayer;           //0x6c
 };
 
 struct partymemberinfo_t {
@@ -35,9 +35,13 @@ struct partymembers_t {
 	partymemberinfo_t members[8];
 };
 
-struct headingupdate_t {
+struct positionUpdate_t {
 	bool changeHeading;
-	short heading;
+    bool changeFwd;
+    bool changeStrafe;
+    short newHeading;
+    float newFwd;
+    float newStrafe;
 };
 
 //useSpell_t plyrUseSpellTable[150];

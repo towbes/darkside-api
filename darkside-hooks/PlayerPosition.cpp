@@ -50,31 +50,34 @@ PlayerPosition::PlayerPosition() {
     }//Todo add exception
 
     //setup the heading overwrite flag mmf
-    headingmmf_name = std::to_wstring(pid) + L"_heading";
-    std::size_t headingFileSize = sizeof(headingupdate_t);
+    posUpdateMmf_name = std::to_wstring(pid) + L"_posUpdate";
+    std::size_t headingFileSize = sizeof(positionUpdate_t);
 
 
-    auto headingMapFile = CreateFileMapping(
+    auto posUpdateMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
         PAGE_READWRITE,          // read/write access
         0,                       // maximum object size (high-order DWORD)
         headingFileSize,                // maximum object size (low-order DWORD)
-        headingmmf_name.c_str());                 // name of mapping object
+        posUpdateMmf_name.c_str());                 // name of mapping object
 
-    if (headingMapFile == NULL)
+    if (posUpdateMapFile == NULL)
     {
         _tprintf(TEXT("Heading Could not create file mapping object (%d).\n"),
             GetLastError());
     }
 
-    if (headingMapFile != 0) {
-        headingUpdate = (headingupdate_t*)MapViewOfFile(headingMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    if (posUpdateMapFile != 0) {
+        posUpdate = (positionUpdate_t*)MapViewOfFile(posUpdateMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     }//Todo add exception
 
-
-    headingUpdate->changeHeading = false;
-    headingUpdate->heading = 0;
+    posUpdate->changeHeading = false;
+    posUpdate->changeFwd = false;
+    posUpdate->changeStrafe = false;
+    posUpdate->newHeading = 0;
+    posUpdate->newFwd = 0;
+    posUpdate->newStrafe = 0;
     
     //Setup the autorun toggle mmf
     ptrAutorunToggle = (BYTE*)ptrAutorunToggle2_x;
@@ -115,13 +118,13 @@ PlayerPosition::~PlayerPosition() {
     CloseHandle(hMapFile);
     UnmapViewOfFile(shmAutorunToggle);
     CloseHandle(arunMapFile);
-    UnmapViewOfFile(headingUpdate);
-    CloseHandle(headingMapFile);
+    UnmapViewOfFile(posUpdate);
+    CloseHandle(posUpdateMapFile);
 }
 
 bool PlayerPosition::GetPlayerPosition() {
     //Lock the pointer when we read it
-    std::scoped_lock<std::mutex> lg(posUpdateMutex);
+    //std::scoped_lock<std::mutex> lg(posUpdateMutex);
     zoneYoffset = *(float*)ptrZoneYoffset_x;
     zoneXoffset = *(float*)ptrZoneXoffset_x;
     playerpos_t tempPos = *playerPositionInfo;
@@ -133,15 +136,21 @@ bool PlayerPosition::GetPlayerPosition() {
 }
 
 void PlayerPosition::SetHeading() {
-    if ((bool)headingUpdate->changeHeading) {
+    if ((bool)posUpdate->changeHeading) {
         //lock the pointer when we write it
         //std::scoped_lock<std::mutex> lg(posUpdateMutex);
         //convert radian to heading
         //https://github.com/Dawn-of-Light/DOLSharp/blob/9af87af011497c3fda852559b01a269c889b162e/GameServer/world/Point2D.cs
-        //short oHeading = headingUpdate->heading * (4096.0 / 360.0);
+        //short oHeading = posUpdate->heading * (4096.0 / 360.0);
         //S = 0/4096  E = 3072  N = 2048  W = 1024
-        //headingUpdate->heading * 0x1000 / 0x168 
-        playerPositionInfo->heading = headingUpdate->heading;
+        //posUpdate->heading * 0x1000 / 0x168 
+        playerPositionInfo->heading = posUpdate->newHeading;
+    }
+    if ((bool)posUpdate->changeFwd) {
+        playerPositionInfo->momentumFwdBackWrite = posUpdate->newFwd;
+    }
+    if ((bool)posUpdate->changeStrafe) {
+        playerPositionInfo->momentumLeftRight = posUpdate->newStrafe;
     }
 }
 

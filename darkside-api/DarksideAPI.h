@@ -52,6 +52,8 @@ public:
     //Player Position
     bool GetPlayerPosition(LPVOID lpBuffer);
     bool SetPlayerHeading(bool changeHeading, short newHeading);
+    bool SetPlayerFwdSpeed(bool changeSpeed, float newSpeed);
+    bool SetPlayerStrafeSpeed(bool changeSpeed, float newSpeed);
     bool SetAutorun(bool autorun);
 
     //Player Info
