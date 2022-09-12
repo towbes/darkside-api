@@ -6,8 +6,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:models="clr-namespace:DarkSide.WPF.Models"
+    xmlns:pages="clr-namespace:DarkSide.WPF.Views.Pages"
     Title="DataPage"
-    d:DataContext="{d:DesignInstance local:DataPage,
+    d:DataContext="{d:DesignInstance pages:DataPage,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"

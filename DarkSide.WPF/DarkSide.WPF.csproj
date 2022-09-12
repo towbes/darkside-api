@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -10,6 +9,8 @@
     <ApplicationIcon>applicationIcon.ico</ApplicationIcon>
     <PlatformTarget>x86</PlatformTarget>
     <StartupObject></StartupObject>
+    <BaseOutputPath>$(SolutionDir)$(Configuration)\..\</BaseOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DarkSide.WPF", "DarkSide.WPF\DarkSide.WPF.csproj", "{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6DF0DD79-DFFC-438C-88CD-C7F2BB3E9E48} = {6DF0DD79-DFFC-438C-88CD-C7F2BB3E9E48}
+		{F50145F6-FEBF-4625-9697-1C4C46CE62E7} = {F50145F6-FEBF-4625-9697-1C4C46CE62E7}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "darkside-api", "darkside-api\darkside-api.vcxproj", "{6DF0DD79-DFFC-438C-88CD-C7F2BB3E9E48}"
 EndProject
@@ -15,16 +19,16 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}.Debug|x86.Build.0 = Debug|Any CPU
+		{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}.Release|x86.Build.0 = Release|Any CPU
 		{6DF0DD79-DFFC-438C-88CD-C7F2BB3E9E48}.Debug|x86.ActiveCfg = Debug|Win32
 		{6DF0DD79-DFFC-438C-88CD-C7F2BB3E9E48}.Debug|x86.Build.0 = Debug|Win32
 		{6DF0DD79-DFFC-438C-88CD-C7F2BB3E9E48}.Release|x86.ActiveCfg = Release|Win32
 		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Debug|x86.ActiveCfg = Debug|Win32
 		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Debug|x86.Build.0 = Debug|Win32
 		{F50145F6-FEBF-4625-9697-1C4C46CE62E7}.Release|x86.ActiveCfg = Release|Win32
-		{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}.Debug|x86.Build.0 = Debug|Any CPU
-		{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}.Release|x86.ActiveCfg = Release|Any CPU
-		{BA30000D-9EFF-4CBB-9832-F0E39A2140B9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

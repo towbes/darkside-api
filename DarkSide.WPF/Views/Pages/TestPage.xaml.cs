@@ -16,20 +16,20 @@ namespace DarkSide.WPF.Views.Pages;
 public partial class TestPage : INavigableView<TestViewModel>
 {
     public static IntPtr apiObject;
-    private bool autorun;
-    private bool changeHeading = false;
-
-    private DispatcherTimer dispatcherTimer;
 
     private readonly List<EntityInfo> EntityList = new();
-
-    private bool loopRunning;
     //PartyList
     private readonly List<PartyMemberInfo> partyMemberList = new();
     private readonly List<string> strEntityList = new();
     private readonly List<string> strPartyList = new();
     private readonly List<string> strPlayerInfo = new();
     private readonly List<string> strPlayerPos = new();
+    private bool autorun;
+    private bool changeHeading = false;
+
+    private DispatcherTimer dispatcherTimer;
+
+    private bool loopRunning;
 
     public TestPage(TestViewModel viewModel)
     {
