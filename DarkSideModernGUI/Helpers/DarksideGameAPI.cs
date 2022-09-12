@@ -245,7 +245,7 @@ namespace DarkSideModernGUI.Helpers
         {
             entName = entName.ToLower();
             //Skip index 0 for now
-            for (int i = 1; i < 2000; i++)
+            for (int i = 1; i < EntityList.Count; i++)
             {
                 if (!String.IsNullOrEmpty(EntityList[i].name))
                 {
@@ -263,7 +263,7 @@ namespace DarkSideModernGUI.Helpers
         {
             itemName = itemName.ToLower();
             //add +40 at the end to get proper slot number
-            for (int slotNum = 0; slotNum < 40; slotNum++)
+            for (int slotNum = 0; slotNum < inventory.Length; slotNum++)
             {
                 if (!String.IsNullOrEmpty(inventory[slotNum].name))
                 {
@@ -280,7 +280,7 @@ namespace DarkSideModernGUI.Helpers
         public static bool HasBuffByName(Buff_t[] buffs, string buffName)
         {
             buffName = buffName.ToLower();
-            for (int i = 0; i < 75; i++)
+            for (int i = 0; i < buffs.Length; i++)
             {
                 if (buffs[i].name.ToLower().StartsWith(buffName))
                 {
@@ -294,7 +294,7 @@ namespace DarkSideModernGUI.Helpers
         public static int GetSkillByName(Skill_t[] skills, string skillName)
         {
             skillName = skillName.ToLower();
-            for (int i = 0; i < 150; i++)
+            for (int i = 0; i < skills.Length; i++)
             {
                 if (skills[i].name.ToLower().StartsWith(skillName))
                 {
@@ -348,7 +348,7 @@ namespace DarkSideModernGUI.Helpers
         public static (int category, int level) GetSpellByName(spellCategory_t[] spellLines, string spellName)
         {
             spellName = spellName.ToLower();
-            for (int cat = 0; cat < 8; cat++)
+            for (int cat = 0; cat < spellLines.Length; cat++)
             {
                 for (int i = 0; i < 75; i++) {
                     string curSpellName = spellLines[cat].spells[i].name.ToLower();
@@ -444,6 +444,29 @@ namespace DarkSideModernGUI.Helpers
             }
             //return 0 if not found
             return 0;
+        }
+
+        public static int GetPartyAverageHP(List<PartyMemberInfo> partyMemberList)
+        {
+            //If there are party members calculate average, otherwise just return 100
+            if (partyMemberList.Count > 0)
+            {
+                int totalhp = 0;
+                int hpavg = 0;
+                for (int j = 0; j < partyMemberList.Count; j++)
+                {
+                    totalhp += partyMemberList[j].hp_pct;
+                }
+
+                hpavg = totalhp / partyMemberList.Count;
+
+                return hpavg;
+            }
+            else
+            {
+                return 100;
+            }
+            
         }
     }
 }

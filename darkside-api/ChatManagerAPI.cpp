@@ -44,7 +44,6 @@ void DarksideAPI::ChatListener() {
 
     while (injected) {
         if (pShmChatmanager->rdySend == false) {
-            std::scoped_lock<std::mutex> lock(chatMutex);
             std::string tmp = std::string(pShmChatmanager->buffer);
             if (tmp.length() > 0) {
                 chatLog.push(tmp);
@@ -57,10 +56,9 @@ void DarksideAPI::ChatListener() {
 }
 
 bool DarksideAPI::GetChatline(LPVOID lpBuffer) {
-    std::scoped_lock<std::mutex> lock(chatMutex);
     if (chatLog.size() > 0) {
-        ::OutputDebugStringA(std::format("Text: {}", chatLog.front()).c_str());
-        memcpy(lpBuffer, chatLog.front().c_str(), 2048);
+        //::OutputDebugStringA(std::format("Text: {}", chatLog.front()).c_str());
+        ::strcpy_s((char*)lpBuffer, 2048, chatLog.front().c_str());
         chatLog.pop();
         return true;
     }

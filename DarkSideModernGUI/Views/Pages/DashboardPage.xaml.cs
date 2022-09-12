@@ -158,8 +158,10 @@ namespace DarkSideModernGUI.Views.Pages
                     if (Unload(proc.apiObject, proc.procId))
                     {
                         //Call the clearbuffers function
-                        CharacterLoops.ReleasecharGlobals(CharacterLoops.CharGlobalDict[proc.procId]);
-                        //API calls dispose so this object is now deleted
+                        if (CharacterLoops.CharGlobalDict.ContainsKey(proc.procId))
+                        {
+                            CharacterLoops.ReleasecharGlobals(CharacterLoops.CharGlobalDict[proc.procId]);
+                        }
                     }
                 }
                 Thread.Sleep(10);
