@@ -66,7 +66,7 @@ bool SetPlayerFwdSpeed(DarksideAPI* apiObject, bool changeSpeed, float newSpeed)
 
 bool SetPlayerStrafeSpeed(DarksideAPI* apiObject, bool changeSpeed, float newSpeed) {
 	if (apiObject != NULL) {
-		if (apiObject->SetPlayerFwdSpeed(changeSpeed, newSpeed)) {
+		if (apiObject->SetPlayerStrafeSpeed(changeSpeed, newSpeed)) {
 			return true;
 		}
 	}

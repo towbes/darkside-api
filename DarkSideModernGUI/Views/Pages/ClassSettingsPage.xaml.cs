@@ -247,22 +247,57 @@ namespace DarkSideModernGUI.Views.Pages
 
         }
 
+        private void Button_Click_FullDragon(object sender, RoutedEventArgs e)
+        {
+            int stickPid = 0;
+            int readyPid = 0;
+            if (charNames.ContainsKey(leaderName))
+                stickPid = charNames[leaderName];
+            //if (charNames.ContainsKey(readyName))
+            //    readyPid = charNames[readyName];
+
+            if (!dragonLooping)
+            {
+                dragonLooping = true;
+                btnFullDragon.Content = "Dragon ON";
+                currentState = DragonState.idle;
+                foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+                {
+                    if (proc.procId != readyPid)
+                    {
+                        //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                        Thread newThread = new Thread(() => DragonLoop(proc.procId));
+                        newThread.Start();
+                    }
+                }
+                btnFightDragon.Background = new SolidColorBrush(Colors.Green);
+            } else
+            {
+                btnFullDragon.Content = "Dragon OFF";
+                dragonLooping = false;
+                btnFightDragon.Background = new SolidColorBrush(Colors.Red);
+            }
+
+
+        }
+
         private void Button_Click_BattleLoc(object sender, RoutedEventArgs e)
         {
             int stickPid = 0;
             int readyPid = 0;
             if (charNames.ContainsKey(leaderName))
                 stickPid = charNames[leaderName];
-            if (charNames.ContainsKey(readyName))
-                readyPid = charNames[readyName];
+            //if (charNames.ContainsKey(readyName))
+            //    readyPid = charNames[readyName];
 
             foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
             {
                 if (proc.procId != readyPid)
                 {
-                    //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
-                    Thread newThread = new Thread(() => battleLocFunc(proc.procId));
-                    newThread.Start();
+                    ////https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                    //Thread newThread = new Thread(() => battleLocFunc(proc.procId));
+                    //newThread.Start();
+                    currentState = DragonState.moveTo;
                 }
 
             }

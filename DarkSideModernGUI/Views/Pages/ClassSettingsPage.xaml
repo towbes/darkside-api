@@ -61,7 +61,16 @@
             Click="Button_Click_Stick">
             Stick is Off
         </ui:Button>
-        <ui:Button
+            <ui:Button
+                Name="btnFullDragon"
+                Grid.Column="1"
+                Width="136"
+                Margin="67,10,0,0"
+                VerticalAlignment="Top"
+                Click="Button_Click_FullDragon">
+                Full Dragon
+            </ui:Button>
+            <ui:Button
             Grid.Column="1"
             Width="136"
             Margin="67,10,0,0"

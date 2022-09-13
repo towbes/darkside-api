@@ -19,11 +19,23 @@ namespace DarkSideModernGUI.Helpers
     {
         public static string leaderName = "Asmoe";
         public static string readyName = "Suzuha";
+        public static string tankName = "Okarin";
 
         //Global bool to trigger dragon script on/off
         public static bool dragonRunning = false;
         public static bool stickRunning = false;
         public static bool healRunning = false;
+
+        public enum DragonState
+        {
+            idle,
+            reset,
+            moveTo,
+            fighting
+        }
+
+        public static DragonState currentState =  DragonState.idle;
+        public static bool dragonLooping = false;
 
         //Run speed globals
         public static float fwdSpeed = 300;
@@ -139,11 +151,41 @@ namespace DarkSideModernGUI.Helpers
             Marshal.FreeHGlobal(charBuffer.pbuf);
         }
 
+        public static void DragonLoop(int procId)
+        {
+            while (dragonLooping)
+            {
+                switch (currentState)
+                {
+                    case DragonState.idle:
+                        //do nothing
+                        break;
+                    case DragonState.reset:
+                        if (procId == charNames[tankName])
+                            currentState = DragonState.idle;
+                        resetLocFunc(procId);
+                        goto case DragonState.idle;
+                    case DragonState.moveTo:
+                        if (procId == charNames[tankName])
+                            currentState = DragonState.idle;
+                        battleLocFunc(procId);
+                        goto case DragonState.idle;
+                    case DragonState.fighting:
+                        dragonRunning = true;
+                        if (procId == charNames[tankName])
+                            currentState = DragonState.idle;
+                        battleFunc(procId);
+                        goto case DragonState.idle;
+                }
+                Thread.Sleep(1000);
+            }
+        }
+
         public static void battleLocFunc(int procId)
         {
             int threadsleep = 50;
             bool isMoving = true;
-            bool isLooting = true;
+            bool isLooting = false;
 
             float xloc = 0;
             float yloc = 0;
@@ -159,6 +201,17 @@ namespace DarkSideModernGUI.Helpers
                 string plyrName = new string(charGlobals.playerInfo.name);
 
                 string className = new string(charGlobals.playerInfo.className);
+
+
+                if (plyrName.Contains(readyName))
+                {
+                    isMoving = false;
+                    IntPtr cmdbuf = Marshal.AllocHGlobal(Marshal.SizeOf<CmdBuffer>());
+                    cmdbuf = Marshal.StringToHGlobalAnsi("/say ready");
+                    SendCommand(charGlobals.apiObject, 0, 0, cmdbuf);
+                    Marshal.FreeHGlobal(cmdbuf);
+                    break;
+                }
 
                 //Set up locs
                 if (className.Contains("Paladin"))
@@ -181,66 +234,6 @@ namespace DarkSideModernGUI.Helpers
                 //currentTarget = findEntityByName(EntityList, "Asmoe");
                 //SetTarget(charGlobals.apiObject, currentTarget);
 
-                //turn off looting for everyone but pala
-                if (!className.Contains("Paladin"))
-                {
-                    isLooting = false;
-                }
-
-                //tank should get loot first
-                
-                if (isLooting && className.Contains("Paladin"))
-                {
-                    int loot = findEntityByName(charGlobals.EntityList, "Sanguine");
-                    if (loot > 0)
-                    {
-                        SetTarget(charGlobals.apiObject, loot);
-                        //float lootdist = DistanceToPoint(charGlobals.playerPos, lootlocx, lootlocy);
-                        //short loothead = GetGameHeading(charGlobals.playerPos, lootlocx, lootlocy);
-                        float lootdist = DistanceToPoint(charGlobals.playerPos, charGlobals.EntityList[loot].pos_x, charGlobals.EntityList[loot].pos_y);
-                        short loothead = GetGameHeading(charGlobals.playerPos, charGlobals.EntityList[loot].pos_x, charGlobals.EntityList[loot].pos_y);
-                        if (lootdist > stoppingDist)
-                        {
-                            SetPlayerFwdSpeed(charGlobals.apiObject, true, fwdSpeed);
-                            SetPlayerHeading(charGlobals.apiObject, true, loothead);
-                            //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                            //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
-                        }
-                        else
-                        {
-                            SetPlayerHeading(charGlobals.apiObject, false, 0);
-                            //SetPlayerHeading(charGlobals.apiObject, false, 0);
-                            SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
-                            //Looting packets:
-                            //74 00 01 12 05 68
-                            //B0 00 00 00 00 68 
-                            //B0 2F C1 60 00 E0
-                            //B5 00 26
-                            string pickupPkt = "B5 00 26";
-                            IntPtr pktbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PktBuffer>());
-                            pktbuf = Marshal.StringToHGlobalAnsi(pickupPkt);
-                            while (loot > 0)
-                            {
-                               
-                                loot = findEntityByName(charGlobals.EntityList, "Sanguine");
-                                UpdateGlobals(procId);
-                                CharGlobals lootGlobals = CharGlobalDict[procId];
-                                SetTarget(charGlobals.apiObject, loot);
-                                Thread.Sleep(250);
-                                SendPacket(charGlobals.apiObject, pktbuf);
-                                Thread.Sleep(250);
-                            }
-                            Marshal.FreeHGlobal(pktbuf);
-                            isLooting = false;
-                        }
-                    } else
-                    {
-                        isLooting = false;
-                    }
-
-                }
-
-
 
                 float dist = DistanceToPoint(charGlobals.playerPos, xloc, yloc);
                 short newheading = GetGameHeading(charGlobals.playerPos, xloc, yloc);
@@ -261,7 +254,70 @@ namespace DarkSideModernGUI.Helpers
                         //This isn't turning them the direction of the leader for some reason
                         //
                         isMoving = false;
-                        
+                        isLooting = true;
+
+                    }
+                    
+                }
+
+                //tank should get loot first
+
+                if (isLooting && className.Contains("Paladin"))
+                {
+                    while (isLooting)
+                    {
+                        UpdateGlobals(procId);
+                        charGlobals = CharGlobalDict[procId];
+                        int loot = findEntityByName(charGlobals.EntityList, "Sanguine");
+                        if (loot > 0)
+                        {
+
+                            SetTarget(charGlobals.apiObject, loot);
+                            //float lootdist = DistanceToPoint(charGlobals.playerPos, lootlocx, lootlocy);
+                            //short loothead = GetGameHeading(charGlobals.playerPos, lootlocx, lootlocy);
+                            float lootdist = DistanceToPoint(charGlobals.playerPos, charGlobals.EntityList[loot].pos_x, charGlobals.EntityList[loot].pos_y);
+                            short loothead = GetGameHeading(charGlobals.playerPos, charGlobals.EntityList[loot].pos_x, charGlobals.EntityList[loot].pos_y);
+                            if (lootdist > stoppingDist)
+                            {
+                                SetPlayerFwdSpeed(charGlobals.apiObject, true, fwdSpeed);
+                                SetPlayerHeading(charGlobals.apiObject, true, loothead);
+                                //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                                //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                            }
+                            else
+                            {
+                                SetPlayerHeading(charGlobals.apiObject, false, 0);
+                                //SetPlayerHeading(charGlobals.apiObject, false, 0);
+                                SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
+                                //Looting packets:
+                                //74 00 01 12 05 68
+                                //B0 00 00 00 00 68 
+                                //B0 2F C1 60 00 E0
+                                //B5 00 26
+                                string pickupPkt = "B5 00 26";
+                                IntPtr pktbuf = Marshal.AllocHGlobal(Marshal.SizeOf<PktBuffer>());
+                                pktbuf = Marshal.StringToHGlobalAnsi(pickupPkt);
+                                while (loot > 0)
+                                {
+
+                                    loot = findEntityByName(charGlobals.EntityList, "Sanguine");
+                                    UpdateGlobals(procId);
+                                    CharGlobals lootGlobals = CharGlobalDict[procId];
+                                    SetTarget(charGlobals.apiObject, loot);
+                                    Thread.Sleep(250);
+                                    SendPacket(charGlobals.apiObject, pktbuf);
+                                    Thread.Sleep(250);
+                                }
+                                Marshal.FreeHGlobal(pktbuf);
+                                isLooting = false;
+                                isMoving = true;
+                            }
+                        }
+                        else
+                        {
+                            isLooting = false;
+                            isMoving = false;
+                        }
                     }
                 }
 
@@ -270,7 +326,12 @@ namespace DarkSideModernGUI.Helpers
             CharGlobals finalGlobals = CharGlobalDict[procId];
             SetPlayerHeading(finalGlobals.apiObject, false, 0);
             SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
-
+            string cName = finalGlobals.playerInfo.className;
+            //Set the state to battle
+            if (cName.Contains("Paladin"))
+            {
+                currentState = DragonState.fighting;
+            }
         }
 
         public static void resetLocFunc(int procId)
@@ -286,10 +347,17 @@ namespace DarkSideModernGUI.Helpers
                 UpdateGlobals(procId);
 
 
+
                 CharGlobals charGlobals = CharGlobalDict[procId];
                 string plyrName = new string(charGlobals.playerInfo.name);
 
                 string className = new string(charGlobals.playerInfo.className);
+
+                //don't move if we're readyName
+                if (plyrName.Contains(readyName))
+                {
+                    break;
+                }
 
                 //Set up locs
                 if (className.Contains("Paladin"))
@@ -337,6 +405,21 @@ namespace DarkSideModernGUI.Helpers
             SetPlayerHeading(finalGlobals.apiObject, false, 0);
             //SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
             SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
+
+            int goleOffset = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
+            string cName = finalGlobals.playerInfo.className;
+            //Set the state to battle
+            if (cName.Contains("Paladin"))
+            {
+                //wait for gole to come back, or not be dead
+                while (goleOffset == 0 || finalGlobals.EntityList[goleOffset].isDead == 1)
+                {
+                    finalGlobals = CharGlobalDict[procId];
+                    goleOffset = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
+                }
+                //Progress the state
+                currentState = DragonState.moveTo;
+            }
 
         }
 
@@ -424,6 +507,13 @@ namespace DarkSideModernGUI.Helpers
                 UpdateGlobals(procId);
 
                 CharGlobals charGlobals = CharGlobalDict[procId];
+
+                string plyrName = charGlobals.playerInfo.name;
+                //don't move if we're readyName
+                if (plyrName.Contains(readyName))
+                {
+                    break;
+                }
 
                 int decimusOffset = findEntityByName(charGlobals.EntityList, "Decimus",true);
 
@@ -585,46 +675,58 @@ namespace DarkSideModernGUI.Helpers
                     {
                         if (cloudNear)
                         {
-                            float tankstoppingDist = 60f;
+                            //Sleep for 2 seconds while the cloud spawns
+                            Thread.Sleep(4000);
+
+                            float tankstoppingDist = 40f;
                             short tanknewheading;
                             float tankdist = 0;
-                            while (tankdist <= tankstoppingDist)
+                            //while (tankdist <= tankstoppingDist)
+                            for (int i = 0; i < 7; i ++)
                             {
                                 UpdateGlobals(procId);
                                 CharGlobals cloudGlobals = CharGlobalDict[procId];
                                 tankdist = DistanceToPoint(charGlobals.playerPos, cloudGlobals.EntityList[cloudOffset].pos_x, cloudGlobals.EntityList[cloudOffset].pos_y);
 
-                                tanknewheading = GetGameHeading(cloudGlobals.playerPos, cloudGlobals.EntityList[goleOffset].pos_x, cloudGlobals.EntityList[goleOffset].pos_y);
+                                //tanknewheading = GetGameHeading(cloudGlobals.playerPos, cloudGlobals.EntityList[goleOffset].pos_x, cloudGlobals.EntityList[goleOffset].pos_y);
                                 SetPlayerStrafeSpeed(cloudGlobals.apiObject, true, strafeSpeed * currentTankPoint);
                                 //SetPlayerHeading(cloudGlobals.apiObject, true, tanknewheading);
                                 //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
                                 //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                                //Melee Taunt
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankMeleeTaunt);
+                                Thread.Sleep(threadSleep);
+                                //Spell taunt
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankSpellTaunt);
+                                Thread.Sleep(100);
+
                             }
-                            UpdateGlobals(procId);
-                            CharGlobals finishCloudGlobals = CharGlobalDict[procId];
-                            short tankfinalheading = GetGameHeading(finishCloudGlobals.playerPos, finishCloudGlobals.EntityList[goleOffset].pos_x, finishCloudGlobals.EntityList[goleOffset].pos_y);
-                            SetPlayerHeading(finishCloudGlobals.apiObject, true, ConvertDirHeading(tankfinalheading));
+
+                            //short tankfinalheading = GetGameHeading(finishCloudGlobals.playerPos, finishCloudGlobals.EntityList[goleOffset].pos_x, finishCloudGlobals.EntityList[goleOffset].pos_y);
+                            //SetPlayerHeading(finishCloudGlobals.apiObject, true, ConvertDirHeading(tankfinalheading));
                             //SetPlayerHeading(charGlobals.apiObject, false, 0);
-                            SetPlayerStrafeSpeed(finishCloudGlobals.apiObject, false, 0);
+                            SetPlayerStrafeSpeed(charGlobals.apiObject, true, 0);
+                            SetPlayerStrafeSpeed(charGlobals.apiObject, false, 0);
                             //This isn't turning them the direction of the leader for some reason
                             //
                             cloudNear = false;
+                            currentTankPoint = currentTankPoint * -1;
                         }
                         if (cloudOffset > 0)
                         {
                             float cloudPosX = charGlobals.EntityList[cloudOffset].pos_x;
                             float cloudPosY = charGlobals.EntityList[cloudOffset].pos_y;
                             //If distance to cloud is less than 100
-                            if (DistanceToPoint(charGlobals.playerPos, cloudPosX, cloudPosY) <= 50)
+                            if (DistanceToPoint(charGlobals.playerPos, cloudPosX, cloudPosY) <= 10)
                             {
-                                if (currentTankPoint == -1)
-                                {
-                                    currentTankPoint = 1;
-                                }
-                                else
-                                {
-                                    currentTankPoint = -1;
-                                }
+                                //if (currentTankPoint == -1)
+                                //{
+                                //    currentTankPoint = 1;
+                                //}
+                                //else
+                                //{
+                                //    currentTankPoint = -1;
+                                //}
                                 cloudNear = true;
                             }
                         }
@@ -651,20 +753,24 @@ namespace DarkSideModernGUI.Helpers
 
                             }
                         }
-                        //else if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && graniteOffset > 0 && charGlobals.targetInfo.entOffset != graniteOffset)
+                        //if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && graniteOffset > 0 && charGlobals.targetInfo.entOffset != graniteOffset)
                         //{
                         //    EntityInfo giant = charGlobals.EntityList[graniteOffset];
                         //    float giantdist = DistanceToPoint(charGlobals.playerPos, giant.pos_x, giant.pos_y);
-                        //    if (giantdist < 500 && giant.isDead == 0)
+                        //    if (giantdist < 200 && giant.isDead == 0)
                         //    {
                         //        if (charGlobals.playerInfo.className.Contains(dmgClass))
                         //        {
                         //            SetTarget(charGlobals.apiObject, graniteOffset);
                         //
                         //        }
+                        //    } else
+                        //    {
+                        //        //set the granite offset to 0 if it's too far away so that we target gole instead
+                        //        graniteOffset = 0;
                         //    }
                         //}
-                        else if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && ((graniteOffset == 0 || charGlobals.EntityList[graniteOffset].isDead == 1)) && goleOffset > 0 && charGlobals.targetInfo.entOffset != goleOffset)
+                        if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && goleOffset > 0 && charGlobals.targetInfo.entOffset != goleOffset)
                         {
                             EntityInfo goleEnt = charGlobals.EntityList[goleOffset];
                             if (goleEnt.isDead == 0)
@@ -705,6 +811,12 @@ namespace DarkSideModernGUI.Helpers
                         {
                             //Tank always targets gole
                             SetTarget(charGlobals.apiObject, goleOffset);
+                            //face gole
+                            short facegoleheading = GetGameHeading(charGlobals.playerPos, charGlobals.EntityList[goleOffset].pos_x, charGlobals.EntityList[goleOffset].pos_y);
+                            SetPlayerHeading(charGlobals.apiObject, true, facegoleheading);
+                            Thread.Sleep(50);
+                            //set to false to avoid locking heading update
+                            SetPlayerHeading(charGlobals.apiObject, false, 0);
                             //Melee Taunt
                             UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankMeleeTaunt);
                             Thread.Sleep(threadSleep);
@@ -769,11 +881,25 @@ namespace DarkSideModernGUI.Helpers
 
                 Thread.Sleep(threadSleep);
             }
-            CharGlobals globalFinish = CharGlobalDict[procId];
+            CharGlobals finalGlobals = CharGlobalDict[procId];
             //Make sure we aren't moving and clean our inventory
-            SetPlayerHeading(globalFinish.apiObject, false, 0);
-            SetPlayerFwdSpeed(globalFinish.apiObject, false, 0);
+            SetPlayerHeading(finalGlobals.apiObject, true, 0);
+            SetPlayerFwdSpeed(finalGlobals.apiObject, true, 0);
+            SetPlayerStrafeSpeed(finalGlobals.apiObject, true, 0);
+            SetPlayerHeading(finalGlobals.apiObject, false, 0);
+            SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
+            SetPlayerStrafeSpeed(finalGlobals.apiObject, false, 0);
             clean_inventory(procId);
+
+            //adjust state with tank
+            string cName = finalGlobals.playerInfo.className;
+            //Set the state to battle
+            if (cName.Contains("Paladin"))
+            {
+                //Progress the state
+                currentState = DragonState.reset;
+            }
+
         }
 
         public static void stickFunc(int procId)
@@ -875,6 +1001,8 @@ namespace DarkSideModernGUI.Helpers
                         pktbuf = Marshal.StringToHGlobalAnsi(buyItem);
                         SendPacket(charGlobals.apiObject, pktbuf);
                         //Find the item and trae it to the npc
+                        UpdateGlobals(procId);
+                        charGlobals = CharGlobalDict[procId];
                         int fromSlot = 0;
                         fromSlot = ItemSlotByName(charGlobals.playerInfo.Inventory, buffItem);
                         if (fromSlot > 0)
@@ -885,6 +1013,8 @@ namespace DarkSideModernGUI.Helpers
                         Marshal.FreeHGlobal(pktbuf);
                     }
                 }
+
+                Thread.Sleep(100);
             }
 
 
