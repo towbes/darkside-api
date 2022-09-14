@@ -319,14 +319,12 @@ namespace DarkSideModernGUI.Helpers
                                 pktbuf = Marshal.StringToHGlobalAnsi(pickupPkt);
                                 while (loot > 0)
                                 {
-
+                                    SetTarget(charGlobals.apiObject, loot);
+                                    Thread.Sleep(300);
+                                    SendPacket(charGlobals.apiObject, pktbuf);
+                                    Thread.Sleep(300);
                                     loot = findEntityByName(charGlobals.EntityList, "Sanguine");
                                     UpdateGlobals(procId);
-                                    CharGlobals lootGlobals = CharGlobalDict[procId];
-                                    SetTarget(charGlobals.apiObject, loot);
-                                    Thread.Sleep(550);
-                                    SendPacket(charGlobals.apiObject, pktbuf);
-                                    Thread.Sleep(550);
                                 }
                                 Marshal.FreeHGlobal(pktbuf);
                                 isLooting = false;
@@ -570,7 +568,7 @@ namespace DarkSideModernGUI.Helpers
                         for (int i = 0; i < 7; i++)
                         {
                             SendPacket(charGlobals.apiObject, pktbuf);
-                            Thread.Sleep(5000);
+                            Thread.Sleep(3500);
                         }
                         //2 fulgent
                         pktbuf = Marshal.StringToHGlobalAnsi(bigSeal);
@@ -741,8 +739,8 @@ namespace DarkSideModernGUI.Helpers
                                 //{
                                 //    currentTankPoint = -1;
                                 //}
-                                //Sleep for 5 seconds while the cloud spawns
-                                Thread.Sleep(5000);
+                                //Sleep for 6 seconds while the cloud spawns
+                                Thread.Sleep(6000);
                                 cloudNear = true;
                             }
                         }
