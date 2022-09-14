@@ -66,6 +66,7 @@ namespace DarkSideModernGUI.Helpers
             public TargetInfo targetInfo;
             public PlayerInfo playerInfo;
             public Chatbuffer chatLine;
+            public DragonState currentState;
 
         }
 
@@ -153,31 +154,32 @@ namespace DarkSideModernGUI.Helpers
 
         public static void DragonLoop(int procId)
         {
+            //Maybe each char should have it's own state?
             while (dragonLooping)
             {
-                switch (currentState)
+                UpdateGlobals(procId);
+
+                CharGlobals charGlobals = CharGlobalDict[procId];
+                switch (charGlobals.currentState)
                 {
                     case DragonState.idle:
                         //do nothing
                         break;
                     case DragonState.reset:
-                        if (procId == charNames[tankName])
-                            currentState = DragonState.idle;
+                        charGlobals.currentState = DragonState.idle;
                         resetLocFunc(procId);
                         goto case DragonState.idle;
                     case DragonState.moveTo:
-                        if (procId == charNames[tankName])
-                            currentState = DragonState.idle;
+                        charGlobals.currentState = DragonState.idle;
                         battleLocFunc(procId);
                         goto case DragonState.idle;
                     case DragonState.fighting:
                         dragonRunning = true;
-                        if (procId == charNames[tankName])
-                            currentState = DragonState.idle;
+                        charGlobals.currentState = DragonState.idle;
                         battleFunc(procId);
                         goto case DragonState.idle;
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
         }
 
@@ -206,10 +208,28 @@ namespace DarkSideModernGUI.Helpers
                 if (plyrName.Contains(readyName))
                 {
                     isMoving = false;
-                    IntPtr cmdbuf = Marshal.AllocHGlobal(Marshal.SizeOf<CmdBuffer>());
-                    cmdbuf = Marshal.StringToHGlobalAnsi("/say ready");
-                    SendCommand(charGlobals.apiObject, 0, 0, cmdbuf);
-                    Marshal.FreeHGlobal(cmdbuf);
+                    
+                    int maxEnt = findEntityByName(charGlobals.EntityList, "Maximilian");
+                    while (maxEnt == 0 && dragonLooping)
+                    {
+                        UpdateGlobals(procId);
+                        charGlobals = CharGlobalDict[procId];
+                        maxEnt = findEntityByName(charGlobals.EntityList, "Maximilian");
+                        Thread.Sleep(100);
+                    }
+                    if (maxEnt > 0)
+                    {
+                        float maxdist = DistanceToPoint(charGlobals.playerPos, charGlobals.EntityList[maxEnt].pos_x, charGlobals.EntityList[maxEnt].pos_y);
+                        if (maxdist < 100)
+                        {
+                            IntPtr cmdbuf = Marshal.AllocHGlobal(Marshal.SizeOf<CmdBuffer>());
+                            cmdbuf = Marshal.StringToHGlobalAnsi("/say ready");
+                            SendCommand(charGlobals.apiObject, 0, 0, cmdbuf);
+                            Marshal.FreeHGlobal(cmdbuf);
+                        }
+                    }
+
+                   
                     break;
                 }
 
@@ -304,9 +324,9 @@ namespace DarkSideModernGUI.Helpers
                                     UpdateGlobals(procId);
                                     CharGlobals lootGlobals = CharGlobalDict[procId];
                                     SetTarget(charGlobals.apiObject, loot);
-                                    Thread.Sleep(250);
+                                    Thread.Sleep(550);
                                     SendPacket(charGlobals.apiObject, pktbuf);
-                                    Thread.Sleep(250);
+                                    Thread.Sleep(550);
                                 }
                                 Marshal.FreeHGlobal(pktbuf);
                                 isLooting = false;
@@ -326,13 +346,10 @@ namespace DarkSideModernGUI.Helpers
             CharGlobals finalGlobals = CharGlobalDict[procId];
             SetPlayerHeading(finalGlobals.apiObject, false, 0);
             SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
-            string cName = finalGlobals.playerInfo.className;
-            //Set the state to battle
-            if (cName.Contains("Paladin"))
-            {
-                currentState = DragonState.fighting;
-            }
+            finalGlobals.currentState = DragonState.fighting;
+            CharGlobalDict[procId] = finalGlobals;
         }
+
 
         public static void resetLocFunc(int procId)
         {
@@ -409,17 +426,16 @@ namespace DarkSideModernGUI.Helpers
             int goleOffset = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
             string cName = finalGlobals.playerInfo.className;
             //Set the state to battle
-            if (cName.Contains("Paladin"))
+            //wait for gole to come back, or not be dead
+            while (goleOffset == 0 || finalGlobals.EntityList[goleOffset].isDead == 1)
             {
-                //wait for gole to come back, or not be dead
-                while (goleOffset == 0 || finalGlobals.EntityList[goleOffset].isDead == 1)
-                {
-                    finalGlobals = CharGlobalDict[procId];
-                    goleOffset = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
-                }
-                //Progress the state
-                currentState = DragonState.moveTo;
+                UpdateGlobals(procId);
+                finalGlobals = CharGlobalDict[procId];
+                goleOffset = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
             }
+            //Progress the state
+            finalGlobals.currentState = DragonState.moveTo;
+            CharGlobalDict[procId] = finalGlobals;
 
         }
 
@@ -675,14 +691,12 @@ namespace DarkSideModernGUI.Helpers
                     {
                         if (cloudNear)
                         {
-                            //Sleep for 2 seconds while the cloud spawns
-                            Thread.Sleep(4000);
-
+  
                             float tankstoppingDist = 40f;
                             short tanknewheading;
                             float tankdist = 0;
                             //while (tankdist <= tankstoppingDist)
-                            for (int i = 0; i < 7; i ++)
+                            for (int i = 0; i < 5; i ++)
                             {
                                 UpdateGlobals(procId);
                                 CharGlobals cloudGlobals = CharGlobalDict[procId];
@@ -727,6 +741,8 @@ namespace DarkSideModernGUI.Helpers
                                 //{
                                 //    currentTankPoint = -1;
                                 //}
+                                //Sleep for 5 seconds while the cloud spawns
+                                Thread.Sleep(5000);
                                 cloudNear = true;
                             }
                         }
@@ -891,14 +907,8 @@ namespace DarkSideModernGUI.Helpers
             SetPlayerStrafeSpeed(finalGlobals.apiObject, false, 0);
             clean_inventory(procId);
 
-            //adjust state with tank
-            string cName = finalGlobals.playerInfo.className;
-            //Set the state to battle
-            if (cName.Contains("Paladin"))
-            {
-                //Progress the state
-                currentState = DragonState.reset;
-            }
+            finalGlobals.currentState = DragonState.reset;
+            CharGlobalDict[procId] = finalGlobals;
 
         }
 

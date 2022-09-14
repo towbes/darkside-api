@@ -97,7 +97,8 @@ namespace DarkSideModernGUI.Views.Pages
                         playerInfo = new PlayerInfo(),
                         apiObject = proc.apiObject,
                         chatLine = new Chatbuffer(),
-                    });
+                        currentState = DragonState.idle
+                });
                 }
 
                 loadedList.Add(pInfoMsg);
@@ -158,8 +159,9 @@ namespace DarkSideModernGUI.Views.Pages
                         playerPos = new PlayerPosition(),
                         targetInfo = new TargetInfo(),
                         playerInfo = new PlayerInfo(),
-                        chatLine = new Chatbuffer()
-                    });
+                        chatLine = new Chatbuffer(),
+                        currentState = DragonState.idle
+                });
                 }
                 loadedList.Add(pInfoMsg);
                 //
@@ -260,7 +262,7 @@ namespace DarkSideModernGUI.Views.Pages
             {
                 dragonLooping = true;
                 btnFullDragon.Content = "Dragon ON";
-                currentState = DragonState.idle;
+                
                 foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
                 {
                     if (proc.procId != readyPid)
@@ -270,7 +272,7 @@ namespace DarkSideModernGUI.Views.Pages
                         newThread.Start();
                     }
                 }
-                btnFightDragon.Background = new SolidColorBrush(Colors.Green);
+                btnFullDragon.Background = new SolidColorBrush(Colors.Green);
             } else
             {
                 btnFullDragon.Content = "Dragon OFF";
@@ -297,7 +299,9 @@ namespace DarkSideModernGUI.Views.Pages
                     ////https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
                     //Thread newThread = new Thread(() => battleLocFunc(proc.procId));
                     //newThread.Start();
-                    currentState = DragonState.moveTo;
+                    CharGlobals newGlobal = CharGlobalDict[proc.procId];
+                    newGlobal.currentState = DragonState.moveTo;
+                    CharGlobalDict[proc.procId] = newGlobal;
                 }
 
             }
