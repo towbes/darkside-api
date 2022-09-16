@@ -284,7 +284,7 @@ namespace DarkSideModernGUI.Helpers
 
                 if (isLooting && className.Contains("Paladin"))
                 {
-                    while (isLooting)
+                    while (isLooting && dragonRunning)
                     {
                         UpdateGlobals(procId);
                         charGlobals = CharGlobalDict[procId];
@@ -455,6 +455,7 @@ namespace DarkSideModernGUI.Helpers
             string tankMeleeTaunt = "Rile";
             string tankSpellTaunt = "Infuriate";
             string tankArmorBuff = "Aura of Salvation";
+            string tankHealSkill = "Holy Revitalization";
             //chants
             string tankStrChant = "Greater Battle Zeal";
             bool tankStrOn = false;
@@ -537,6 +538,9 @@ namespace DarkSideModernGUI.Helpers
                 if (decimusOffset == 0)
                 {
                     fightStarted = true;
+                } else
+                {
+                    fightStarted = false;
                 }
 
                 //Check if we're casting and have more than castSleep left
@@ -687,49 +691,12 @@ namespace DarkSideModernGUI.Helpers
                     //******this type of movement doesn't work for this.  Maybe just a timed movement instead?
                     if (charGlobals.playerInfo.className.Contains(tankClass))
                     {
-                        if (cloudNear)
-                        {
-  
-                            float tankstoppingDist = 40f;
-                            short tanknewheading;
-                            float tankdist = 0;
-                            //while (tankdist <= tankstoppingDist)
-                            for (int i = 0; i < 5; i ++)
-                            {
-                                UpdateGlobals(procId);
-                                CharGlobals cloudGlobals = CharGlobalDict[procId];
-                                tankdist = DistanceToPoint(charGlobals.playerPos, cloudGlobals.EntityList[cloudOffset].pos_x, cloudGlobals.EntityList[cloudOffset].pos_y);
-
-                                //tanknewheading = GetGameHeading(cloudGlobals.playerPos, cloudGlobals.EntityList[goleOffset].pos_x, cloudGlobals.EntityList[goleOffset].pos_y);
-                                SetPlayerStrafeSpeed(cloudGlobals.apiObject, true, strafeSpeed * currentTankPoint);
-                                //SetPlayerHeading(cloudGlobals.apiObject, true, tanknewheading);
-                                //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                                //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
-                                //Melee Taunt
-                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankMeleeTaunt);
-                                Thread.Sleep(threadSleep);
-                                //Spell taunt
-                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankSpellTaunt);
-                                Thread.Sleep(100);
-
-                            }
-
-                            //short tankfinalheading = GetGameHeading(finishCloudGlobals.playerPos, finishCloudGlobals.EntityList[goleOffset].pos_x, finishCloudGlobals.EntityList[goleOffset].pos_y);
-                            //SetPlayerHeading(finishCloudGlobals.apiObject, true, ConvertDirHeading(tankfinalheading));
-                            //SetPlayerHeading(charGlobals.apiObject, false, 0);
-                            SetPlayerStrafeSpeed(charGlobals.apiObject, true, 0);
-                            SetPlayerStrafeSpeed(charGlobals.apiObject, false, 0);
-                            //This isn't turning them the direction of the leader for some reason
-                            //
-                            cloudNear = false;
-                            currentTankPoint = currentTankPoint * -1;
-                        }
                         if (cloudOffset > 0)
                         {
                             float cloudPosX = charGlobals.EntityList[cloudOffset].pos_x;
                             float cloudPosY = charGlobals.EntityList[cloudOffset].pos_y;
                             //If distance to cloud is less than 100
-                            if (DistanceToPoint(charGlobals.playerPos, cloudPosX, cloudPosY) <= 10)
+                            if (DistanceToPoint(charGlobals.playerPos, cloudPosX, cloudPosY) <= 30)
                             {
                                 //if (currentTankPoint == -1)
                                 //{
@@ -740,10 +707,29 @@ namespace DarkSideModernGUI.Helpers
                                 //    currentTankPoint = -1;
                                 //}
                                 //Sleep for 6 seconds while the cloud spawns
-                                Thread.Sleep(6000);
-                                cloudNear = true;
+                                for (int i = 0; i < 5; i ++)
+                                {
+                                    UpdateGlobals(procId);
+                                    CharGlobals cloudGlobals = CharGlobalDict[procId];
+                                    //tanknewheading = GetGameHeading(cloudGlobals.playerPos, cloudGlobals.EntityList[goleOffset].pos_x, cloudGlobals.EntityList[goleOffset].pos_y);
+                                    SetPlayerStrafeSpeed(cloudGlobals.apiObject, true, strafeSpeed * currentTankPoint);
+                                    //SetPlayerHeading(cloudGlobals.apiObject, true, tanknewheading);
+                                    //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                                    //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                                    //Melee Taunt
+                                    UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankMeleeTaunt);
+                                    Thread.Sleep(threadSleep);
+                                    //Spell taunt
+                                    UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankSpellTaunt);
+                                    Thread.Sleep(100);
+
+                                }
+                                SetPlayerStrafeSpeed(charGlobals.apiObject, true, 0);
+                                SetPlayerStrafeSpeed(charGlobals.apiObject, false, 0);
+                                currentTankPoint = currentTankPoint * -1;
                             }
                         }
+
                     }
 
                     //target checks for DPS / Debuff only
@@ -767,24 +753,24 @@ namespace DarkSideModernGUI.Helpers
 
                             }
                         }
-                        //if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && graniteOffset > 0 && charGlobals.targetInfo.entOffset != graniteOffset)
-                        //{
-                        //    EntityInfo giant = charGlobals.EntityList[graniteOffset];
-                        //    float giantdist = DistanceToPoint(charGlobals.playerPos, giant.pos_x, giant.pos_y);
-                        //    if (giantdist < 200 && giant.isDead == 0)
-                        //    {
-                        //        if (charGlobals.playerInfo.className.Contains(dmgClass))
-                        //        {
-                        //            SetTarget(charGlobals.apiObject, graniteOffset);
-                        //
-                        //        }
-                        //    } else
-                        //    {
-                        //        //set the granite offset to 0 if it's too far away so that we target gole instead
-                        //        graniteOffset = 0;
-                        //    }
-                        //}
-                        if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && goleOffset > 0 && charGlobals.targetInfo.entOffset != goleOffset)
+                        if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && graniteOffset > 0 && charGlobals.targetInfo.entOffset != graniteOffset)
+                        {
+                            EntityInfo giant = charGlobals.EntityList[graniteOffset];
+                            float giantdist = DistanceToPoint(charGlobals.playerPos, giant.pos_x, giant.pos_y);
+                            if (giantdist < 500 && giant.isDead == 0)
+                            {
+                                if (charGlobals.playerInfo.className.Contains(dmgClass))
+                                {
+                                    SetTarget(charGlobals.apiObject, graniteOffset);
+                        
+                                }
+                            } else
+                            {
+                                //set the granite offset to 0 if it's too far away so that we target gole instead
+                                graniteOffset = 0;
+                            }
+                        }
+                        if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && (graniteOffset == 0 || charGlobals.EntityList[graniteOffset].isDead == 1) && goleOffset > 0 && charGlobals.targetInfo.entOffset != goleOffset)
                         {
                             EntityInfo goleEnt = charGlobals.EntityList[goleOffset];
                             if (goleEnt.isDead == 0)
@@ -807,7 +793,7 @@ namespace DarkSideModernGUI.Helpers
                                 UsePetCmdByName(charGlobals.apiObject, "passive");
                             }
                         }
-                        else if (goleOffset == 0 || charGlobals.EntityList[goleOffset].isDead == 1)
+                        if (goleOffset == 0)
                         {
                             fightStarted = false;
                             dragonRunning = false;
@@ -836,6 +822,10 @@ namespace DarkSideModernGUI.Helpers
                             Thread.Sleep(threadSleep);
                             //Spell taunt
                             UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankSpellTaunt);
+                            if (charGlobals.playerInfo.health < 75)
+                            {
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankHealSkill);
+                            }
                         }
                         else if (charGlobals.playerInfo.className.Contains(dmgClass))
                         {
@@ -858,34 +848,49 @@ namespace DarkSideModernGUI.Helpers
                         }
 
                         //******single target heals not working at all
-                        else if (charGlobals.playerInfo.className.Contains(brdClass))
+                        if (charGlobals.playerInfo.className.Contains(brdClass))
                         {
-                            //check if a party member needs heal
-                            //int ptEntOffset = PartyMemberNeedsHeal(charGlobals.partyMemberList, charGlobals.EntityList);
-                            //if (ptEntOffset > 0)
-                            //{
-                            //    SetTarget(charGlobals.apiObject, ptEntOffset);
-                            //    if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
-                            //        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdSmallHeal);
-                            //    else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
-                            //        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdBigHeal);
-                            //}
-                            UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdGrpHeal);
+                            //check if need to group heal
+                            if (GetPartyAverageHP(charGlobals.partyMemberList) < 75)
+                            {
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdGrpHeal);
+                            }
+                            else
+                            {
+                                //check if a party member needs heal
+                                int ptEntOffset = PartyMemberNeedsHeal(charGlobals.partyMemberList, charGlobals.EntityList);
+                                if (ptEntOffset > 0)
+                                {
+                                    SetTarget(charGlobals.apiObject, ptEntOffset);
+                                    if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdSmallHeal);
+                                    else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdBigHeal);
+                                }
+                            }
+
 
                         }
                         else if (charGlobals.playerInfo.className.Contains(hlrClass))
                         {
-                            //check if a party member needs heal
-                            //int ptEntOffset = PartyMemberNeedsHeal(charGlobals.partyMemberList, charGlobals.EntityList);
-                            //if (ptEntOffset > 0)
-                            //{
-                            //    SetTarget(charGlobals.apiObject, ptEntOffset);
-                            //    if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
-                            //        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrSmallHeal);
-                            //    else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
-                            //        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrBigHeal);
-                            //}
-                            UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrGrpHeal);
+                            //first check for group heal
+                            if (GetPartyAverageHP(charGlobals.partyMemberList) < 85)
+                            {
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrGrpHeal);
+                            }
+                            else
+                            {
+                                //check if a party member needs heal
+                                int ptEntOffset = PartyMemberNeedsHeal(charGlobals.partyMemberList, charGlobals.EntityList);
+                                if (ptEntOffset > 0)
+                                {
+                                    SetTarget(charGlobals.apiObject, ptEntOffset);
+                                    if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrSmallHeal);
+                                    else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrBigHeal);
+                                }
+                            }
                         }
                         //We made it into the cast loop so reset the cast timeout
                         castTimeout = timeoutMax;
@@ -905,8 +910,13 @@ namespace DarkSideModernGUI.Helpers
             SetPlayerStrafeSpeed(finalGlobals.apiObject, false, 0);
             clean_inventory(procId);
 
-            finalGlobals.currentState = DragonState.reset;
-            CharGlobalDict[procId] = finalGlobals;
+            int goleCheck = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
+            if (goleCheck == 0)
+            {
+                finalGlobals.currentState = DragonState.reset;
+                CharGlobalDict[procId] = finalGlobals;
+            }
+
 
         }
 
@@ -1011,6 +1021,7 @@ namespace DarkSideModernGUI.Helpers
                         //Find the item and trae it to the npc
                         UpdateGlobals(procId);
                         charGlobals = CharGlobalDict[procId];
+                        Thread.Sleep(500);
                         int fromSlot = 0;
                         fromSlot = ItemSlotByName(charGlobals.playerInfo.Inventory, buffItem);
                         if (fromSlot > 0)

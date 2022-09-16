@@ -12,6 +12,9 @@ PlayerInfo::PlayerInfo() {
     ptrPlayerName = (void*)ptrPlayerName_x;
     ptrPlayerEntIndex = *(int*)ptrGameState_x;
     ptrPetEntIndex = (void*)ptrPetEntIndex_x;
+    keyCounter = (int*)ptrAfkCounter_x;
+
+    startTimer = GetTickCount();
 
 #ifdef _DEBUG
     std::cout << "ptrPlayerHp: " << std::hex << (int)ptrPlayerHp << std::endl;
@@ -220,6 +223,15 @@ PlayerInfo::~PlayerInfo() {
 //Update the plyrInfo_t struct in shared memory
 void PlayerInfo::GetPlayerInfo() {
     if (pShmPlayerInfo != NULL) {
+        //increase the afk counter
+        currentTimer = GetTickCount();
+        //random 250-350s timer
+        //int random = 250000 + (rand() % static_cast<int>(350000 - 250000 + 1));
+        if ((currentTimer - startTimer) > 300000) {
+            *keyCounter += 1;
+            startTimer = GetTickCount();
+        }
+
         //Pointer to grab hp/pow/endu offsets
         unsigned char* tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerHp);
         pShmPlayerInfo->hp = *(int*)tempPtr;

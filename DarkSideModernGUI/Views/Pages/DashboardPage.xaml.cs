@@ -74,9 +74,9 @@ namespace DarkSideModernGUI.Views.Pages
 
             //get all GameDLL processes
             Process[] localByName = Process.GetProcessesByName("game.dll");
-            Dispatcher.Invoke(() => {
-                    //gameprocs.Clear();
-            });
+            //Dispatcher.Invoke(() => {
+            //        //gameprocs.Clear();
+            //});
 
             foreach (var localGameProcess in localByName)
             {
