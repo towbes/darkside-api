@@ -486,6 +486,7 @@ namespace DarkSideModernGUI.Helpers
             string dbfAbsorbSpell = "Barrier of Power";
             string dbfSpell = "Annihilate Soul";
             string dbfStun = "Prismatic Strobe";
+            string dbfNS = "Abrogate Sight";
 
             //Bard
             string brdClass = "Bard";
@@ -845,6 +846,8 @@ namespace DarkSideModernGUI.Helpers
                                 UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, dbfStun);
                             }
                             UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, dbfSpell);
+                            Thread.Sleep(50);
+                            UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, dbfNS);
                         }
 
                         //******single target heals not working at all
