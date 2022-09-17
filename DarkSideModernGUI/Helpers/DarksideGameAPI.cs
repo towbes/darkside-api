@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using static DarkSideModernGUI.Helpers.DarksideGameAPI;
+using static DarkSideModernGUI.Helpers.Movement;
 
 
 namespace DarkSideModernGUI.Helpers
@@ -265,6 +266,35 @@ namespace DarkSideModernGUI.Helpers
                         if (EntityList[i].name.ToLower().StartsWith(entName))
                             return i;
                     }
+                }
+
+            }
+            return 0;
+        }
+
+        public static int findEntityInRadius(List<EntityInfo> EntityList, PlayerPosition playerPos, String entName, float mobDist, bool exactMatch = false)
+        {
+            entName = entName.ToLower();
+            //Skip index 0 for now
+            for (int i = 1; i < EntityList.Count; i++)
+            {
+                if (!String.IsNullOrEmpty(EntityList[i].name))
+                {
+                    float distance = DistanceToPoint(playerPos, EntityList[i].pos_x, EntityList[i].pos_y);
+                    if (distance <= mobDist)
+                    {
+                        if (exactMatch)
+                        {
+                            if (EntityList[i].name.ToLower().Equals(entName))
+                                return i;
+                        }
+                        else
+                        {
+                            if (EntityList[i].name.ToLower().StartsWith(entName))
+                                return i;
+                        }
+                    }
+
                 }
 
             }

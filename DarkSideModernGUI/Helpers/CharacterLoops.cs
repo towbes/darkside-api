@@ -685,7 +685,7 @@ namespace DarkSideModernGUI.Helpers
                 {
                     int morellaOffset = findEntityByName(charGlobals.EntityList, "Morella");
                     int goleOffset = findEntityByName(charGlobals.EntityList, "Golestandt", true);
-                    int graniteOffset = findEntityByName(charGlobals.EntityList, "granite giant");
+                    int graniteOffset = findEntityInRadius(charGlobals.EntityList, charGlobals.playerPos, "granite giant", 1500);
                     int cloudOffset = findEntityByName(charGlobals.EntityList, "smoke cloud");
                     int fireOffset = findEntityByName(charGlobals.EntityList, "Fire");
 
@@ -797,7 +797,7 @@ namespace DarkSideModernGUI.Helpers
                         {
                             EntityInfo giant = charGlobals.EntityList[graniteOffset];
                             float giantdist = DistanceToPoint(charGlobals.playerPos, giant.pos_x, giant.pos_y);
-                            if (giantdist < 500 && giant.isDead == 0)
+                            if (giantdist < 1500 && giant.health > 0)
                             {
                                 if (charGlobals.playerInfo.className.Contains(dmgClass))
                                 {
@@ -810,10 +810,10 @@ namespace DarkSideModernGUI.Helpers
                                 graniteOffset = 0;
                             }
                         }
-                        if ((morellaOffset == 0 || charGlobals.EntityList[morellaOffset].isDead == 1) && (graniteOffset == 0 || charGlobals.EntityList[graniteOffset].isDead == 1) && goleOffset > 0 && charGlobals.targetInfo.entOffset != goleOffset)
+                        if ((morellaOffset == 0) && (graniteOffset == 0) && goleOffset > 0 && charGlobals.targetInfo.entOffset != goleOffset)
                         {
                             EntityInfo goleEnt = charGlobals.EntityList[goleOffset];
-                            if (goleEnt.isDead == 0)
+                            if (goleEnt.health > 0)
                             {
                                 if (charGlobals.playerInfo.className.Contains(dmgClass) || charGlobals.playerInfo.className.Contains(dbfClass))
                                 {
