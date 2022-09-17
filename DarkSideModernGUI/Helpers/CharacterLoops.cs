@@ -502,8 +502,8 @@ namespace DarkSideModernGUI.Helpers
             //buff
             string ablBuff = "Battlesong of Apotheosis";
             //heals
-            int smallHealPct = 90;
-            int bigHealPct = 70;
+            int smallHealPct = 95;
+            int bigHealPct = 90;
             string brdSmallHeal = "Apotheosis";
             string brdBigHeal = "Major Apotheosis";
             string brdGrpHeal = "Group Apotheosis";
@@ -687,6 +687,7 @@ namespace DarkSideModernGUI.Helpers
                     int goleOffset = findEntityByName(charGlobals.EntityList, "Golestandt", true);
                     int graniteOffset = findEntityByName(charGlobals.EntityList, "granite giant");
                     int cloudOffset = findEntityByName(charGlobals.EntityList, "smoke cloud");
+                    int fireOffset = findEntityByName(charGlobals.EntityList, "Fire");
 
                     //Paladin check for clouds
                     //******this type of movement doesn't work for this.  Maybe just a timed movement instead?
@@ -714,6 +715,44 @@ namespace DarkSideModernGUI.Helpers
                                     CharGlobals cloudGlobals = CharGlobalDict[procId];
                                     //tanknewheading = GetGameHeading(cloudGlobals.playerPos, cloudGlobals.EntityList[goleOffset].pos_x, cloudGlobals.EntityList[goleOffset].pos_y);
                                     SetPlayerStrafeSpeed(cloudGlobals.apiObject, true, strafeSpeed * currentTankPoint);
+                                    //SetPlayerHeading(cloudGlobals.apiObject, true, tanknewheading);
+                                    //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
+                                    //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+                                    //Melee Taunt
+                                    UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankMeleeTaunt);
+                                    Thread.Sleep(threadSleep);
+                                    //Spell taunt
+                                    UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankSpellTaunt);
+                                    Thread.Sleep(100);
+
+                                }
+                                SetPlayerStrafeSpeed(charGlobals.apiObject, true, 0);
+                                SetPlayerStrafeSpeed(charGlobals.apiObject, false, 0);
+                                currentTankPoint = currentTankPoint * -1;
+                            }
+                        }
+                        else if (fireOffset > 0)
+                        {
+                            float firePosX = charGlobals.EntityList[fireOffset].pos_x;
+                            float firePosY = charGlobals.EntityList[fireOffset].pos_y;
+                            //If distance to cloud is less than 100
+                            if (DistanceToPoint(charGlobals.playerPos, firePosX, firePosY) <= 30)
+                            {
+                                //if (currentTankPoint == -1)
+                                //{
+                                //    currentTankPoint = 1;
+                                //}
+                                //else
+                                //{
+                                //    currentTankPoint = -1;
+                                //}
+                                //Sleep for 6 seconds while the cloud spawns
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    UpdateGlobals(procId);
+                                    CharGlobals fireGlobals = CharGlobalDict[procId];
+                                    //tanknewheading = GetGameHeading(cloudGlobals.playerPos, cloudGlobals.EntityList[goleOffset].pos_x, cloudGlobals.EntityList[goleOffset].pos_y);
+                                    SetPlayerStrafeSpeed(fireGlobals.apiObject, true, strafeSpeed * currentTankPoint);
                                     //SetPlayerHeading(cloudGlobals.apiObject, true, tanknewheading);
                                     //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
                                     //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
@@ -865,10 +904,11 @@ namespace DarkSideModernGUI.Helpers
                                 if (ptEntOffset > 0)
                                 {
                                     SetTarget(charGlobals.apiObject, ptEntOffset);
-                                    if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
-                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdSmallHeal);
-                                    else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                    if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
                                         UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdBigHeal);
+                                    else if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdSmallHeal);
+
                                 }
                             }
 
@@ -888,10 +928,11 @@ namespace DarkSideModernGUI.Helpers
                                 if (ptEntOffset > 0)
                                 {
                                     SetTarget(charGlobals.apiObject, ptEntOffset);
-                                    if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
-                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrSmallHeal);
-                                    else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                    if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
                                         UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrBigHeal);
+                                    else if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrSmallHeal);
+
                                 }
                             }
                         }

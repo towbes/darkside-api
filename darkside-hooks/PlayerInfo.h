@@ -8,10 +8,6 @@ private:
     //Current process id
     int pid;
 
-    int* keyCounter;
-    DWORD currentTimer;
-    DWORD startTimer;
-
     //player info shared memory
     plyrinfo_t* pShmPlayerInfo;
     void* hMapFile;
