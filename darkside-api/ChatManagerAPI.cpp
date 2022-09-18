@@ -56,6 +56,7 @@ void DarksideAPI::ChatListener() {
 }
 
 bool DarksideAPI::GetChatline(LPVOID lpBuffer) {
+    std::scoped_lock<std::mutex> lg(chatMutex);
     if (chatLog.size() > 0) {
         //::OutputDebugStringA(std::format("Text: {}", chatLog.front()).c_str());
         ::strcpy_s((char*)lpBuffer, 2048, chatLog.front().c_str());

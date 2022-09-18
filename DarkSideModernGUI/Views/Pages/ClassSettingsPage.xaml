@@ -20,8 +20,9 @@
         Margin="0,0,0,0"
         VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="400" />
-            <ColumnDefinition Width="400" />
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="250" />
         </Grid.ColumnDefinitions>
         <StackPanel
             Grid.Column="0">
@@ -47,6 +48,15 @@
         <StackPanel
             Grid.Column="1">
             <ui:Button
+            Name="btnMainLoop"
+            Grid.Column="1"
+            Width="136"
+            Margin="67,0,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_MainLoop">
+                MainLoop
+            </ui:Button>
+            <ui:Button
             Name="btnHealLoop"
             Grid.Column="1"
             Width="136"
@@ -55,56 +65,15 @@
             Click="Button_Click_HealLoop">
             HealLoop
             </ui:Button>
+
             <ui:Button
-            Grid.Column="1"
-            Width="136"
-            Margin="67,10,0,0"
-            VerticalAlignment="Top"
-            Click="Button_Click_RunTarget">
-            GetBuffs
-        </ui:Button>
-        <ui:Button
             Name="StickButton"
             Grid.Column="1"
             Width="136"
             Margin="67,10,0,0"
             VerticalAlignment="Top"
             Click="Button_Click_Stick">
-            Stick is Off
-        </ui:Button>
-            <ui:Button
-                Name="btnFullDragon"
-                Grid.Column="1"
-                Width="136"
-                Margin="67,10,0,0"
-                VerticalAlignment="Top"
-                Click="Button_Click_FullDragon">
-                Full Dragon
-            </ui:Button>
-            <ui:Button
-            Grid.Column="1"
-            Width="136"
-            Margin="67,10,0,0"
-            VerticalAlignment="Top"
-            Click="Button_Click_BattleLoc">
-            DragBattleLoc
-        </ui:Button>
-            <ui:Button
-            Grid.Column="1"
-            Width="136"
-            Margin="67,10,0,0"
-            VerticalAlignment="Top"
-            Click="Button_Click_ResetLoc">
-                DragResetLoc
-            </ui:Button>
-            <ui:Button
-                Name="btnFightDragon"
-                Grid.Column="1"
-                Width="136"
-                Margin="67,10,0,0"
-                VerticalAlignment="Top"
-                Click="Button_Click_FightDragon">
-                DragFight
+                Stick is Off
             </ui:Button>
             <ui:Button
                 Name="btnCleanInv"
@@ -123,6 +92,51 @@
                 VerticalAlignment="Top"
                 Click="Button_Click_LoadSettings">
                 LoadSettings
+            </ui:Button>
+            <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_RunTarget">
+                GetBuffs
+            </ui:Button>
+        </StackPanel>
+        <StackPanel
+            Grid.Column="2">
+            <ui:Button
+                Name="btnFullDragon"
+                Grid.Column="1"
+                Width="136"
+                Margin="67,10,0,0"
+                VerticalAlignment="Top"
+                Click="Button_Click_FullDragon">
+                Full Dragon
+            </ui:Button>
+            <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_BattleLoc">
+                DragBattleLoc
+            </ui:Button>
+            <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_ResetLoc">
+                DragResetLoc
+            </ui:Button>
+            <ui:Button
+                Name="btnFightDragon"
+                Grid.Column="1"
+                Width="136"
+                Margin="67,10,0,0"
+                VerticalAlignment="Top"
+                Click="Button_Click_FightDragon">
+                DragFight
             </ui:Button>
         </StackPanel>
     </Grid>

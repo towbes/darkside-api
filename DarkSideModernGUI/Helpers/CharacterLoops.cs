@@ -41,6 +41,7 @@ namespace DarkSideModernGUI.Helpers
 
         public static DragonState currentState = DragonState.idle;
         public static bool dragonLooping = false;
+        public static bool charLooping = false;
 
         //Run speed globals
         public static float fwdSpeed = 300;
@@ -207,7 +208,6 @@ namespace DarkSideModernGUI.Helpers
             while (dragonLooping)
             {
                 UpdateGlobals(procId);
-
                 CharGlobals charGlobals = CharGlobalDict[procId];
                 switch (charGlobals.currentState)
                 {
@@ -229,6 +229,23 @@ namespace DarkSideModernGUI.Helpers
                         goto case DragonState.idle;
                 }
                 Thread.Sleep(500);
+            }
+        }
+
+        public static void MainLoop(int procId)
+        {
+            //Maybe each char should have it's own state?
+            while (charLooping)
+            {
+                UpdateGlobals(procId);
+                CharGlobals charGlobals = CharGlobalDict[procId];
+                string playerClass = charGlobals.playerInfo.className;
+                if(healRunning && (playerClass.Contains("Bard") || playerClass.Contains("Druid")))
+                    HealFunc(procId);
+                if (stickRunning)
+                    stickFunc(procId);
+
+                Thread.Sleep(50);
             }
         }
 
@@ -1019,56 +1036,55 @@ namespace DarkSideModernGUI.Helpers
 
         public static void stickFunc(int procId)
         {
+            //UpdateGlobals(procId);
 
-            while (stickRunning)
+            CharGlobals charGlobals = CharGlobalDict[procId];
+            //while (stickRunning)
+            //{
+                //UpdateGlobals(procId);
+                //if (charNames.ContainsKey(leaderName))
+                //    UpdateGlobals(charNames[leaderName]);
+                
+
+                
+
+            string plyrName = new string(charGlobals.playerInfo.name);
+
+            CharGlobals stickGlobals;
+            if (charNames.ContainsKey(leaderName))
+                stickGlobals = CharGlobalDict[charNames[leaderName]];
+            else
+                return;
+
+
+            if (!plyrName.Equals(leaderName))
             {
-                UpdateGlobals(procId);
-                if (charNames.ContainsKey(leaderName))
-                    UpdateGlobals(charNames[leaderName]);
+                float stoppingDist = 25.0f;
 
-                CharGlobals stickGlobals;
-                if (charNames.ContainsKey(leaderName))
-                    stickGlobals = CharGlobalDict[charNames[leaderName]];
+
+                float dist = DistanceToPoint(charGlobals.playerPos, stickGlobals.playerPos.pos_x, stickGlobals.playerPos.pos_y);
+                short newheading = GetGameHeading(charGlobals.playerPos, stickGlobals.playerPos.pos_x, stickGlobals.playerPos.pos_y);
+                if (dist > stoppingDist)
+                {
+                    SetAutorun(charGlobals.apiObject, true);
+                    SetPlayerHeading(charGlobals.apiObject, true, newheading);
+
+                }
                 else
-                    break;
-
-                CharGlobals charGlobals = CharGlobalDict[procId];
-
-                string plyrName = new string(charGlobals.playerInfo.name);
-                if (plyrName.Equals(leaderName))
                 {
-                    break;
+                    //have to convert the heading
+                    SetPlayerHeading(charGlobals.apiObject, true, ConvertCharHeading(stickGlobals.playerPos.heading));
+                    //SetPlayerHeading(apiObject, false, 0);
+                    SetAutorun(charGlobals.apiObject, false);
+                    SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
+                    SetPlayerFwdSpeed(charGlobals.apiObject, false, 0);
                 }
-
-                if (!plyrName.Equals(leaderName))
-                {
-                    float stoppingDist = 25.0f;
-
-
-                    float dist = DistanceToPoint(charGlobals.playerPos, stickGlobals.playerPos.pos_x, stickGlobals.playerPos.pos_y);
-                    short newheading = GetGameHeading(charGlobals.playerPos, stickGlobals.playerPos.pos_x, stickGlobals.playerPos.pos_y);
-                    if (dist > stoppingDist)
-                    {
-                        SetAutorun(charGlobals.apiObject, true);
-                        SetPlayerHeading(charGlobals.apiObject, true, newheading);
-
-                    }
-                    else
-                    {
-                        //have to convert the heading
-                        SetPlayerHeading(charGlobals.apiObject, true, ConvertCharHeading(stickGlobals.playerPos.heading));
-                        //SetPlayerHeading(apiObject, false, 0);
-                        SetAutorun(charGlobals.apiObject, false);
-                        SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
-                        SetPlayerFwdSpeed(charGlobals.apiObject, false, 0);
-                    }
-                }
-                Thread.Sleep(100);
             }
-            CharGlobals charGlobalFinish = CharGlobalDict[procId];
-            SetPlayerHeading(charGlobalFinish.apiObject, false, 0);
-            SetAutorun(charGlobalFinish.apiObject, false);
-            SetPlayerFwdSpeed(charGlobalFinish.apiObject, false, 0);
+                //Thread.Sleep(100);
+            //}
+            //SetPlayerHeading(charGlobals.apiObject, false, 0);
+            //SetAutorun(charGlobals.apiObject, false);
+            //SetPlayerFwdSpeed(charGlobals.apiObject, false, 0);
         }
 
         public static void getBuffs(int procId)
@@ -1175,9 +1191,9 @@ namespace DarkSideModernGUI.Helpers
             string hlrBigHeal = drgSettings.dragonFight.healer.heal2;
             string hlrGrpHeal = drgSettings.dragonFight.healer.grpHeal1;
 
-            while (healRunning)
-            {
-                UpdateGlobals(procId);
+            //while (healRunning)
+            //{
+                //UpdateGlobals(procId);
 
                 CharGlobals charGlobals = CharGlobalDict[procId];
                 string plyrName = new string(charGlobals.playerInfo.name);
@@ -1245,11 +1261,11 @@ namespace DarkSideModernGUI.Helpers
                             }
                         }
                     }
-                    else
-                    {
-                        //if we're not a healer break loop and end thread
-                        break;
-                    }
+                    //else
+                    //{
+                    //    //if we're not a healer break loop and end thread
+                    //    break;
+                    //}
                     //Buff check
                     if (charGlobals.playerInfo.className.Contains(brdClass))
                     {
@@ -1296,8 +1312,8 @@ namespace DarkSideModernGUI.Helpers
 
 
 
-                Thread.Sleep(threadSleep);
-            }
+                //Thread.Sleep(threadSleep);
+            //}
 
         }
 

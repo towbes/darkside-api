@@ -189,19 +189,42 @@ namespace DarkSideModernGUI.Views.Pages
             CommandManager.InvalidateRequerySuggested();
         }
 
+        private void Button_Click_MainLoop(object sender, RoutedEventArgs e)
+        {
+            if (!charLooping)
+            {
+                btnMainLoop.Content = "Main Looping";
+                charLooping = true;
+                foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+                {
+                    //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                    Thread newThread = new Thread(() => MainLoop(proc.procId));
+                    newThread.Start();
+
+                }
+                btnMainLoop.Background = new SolidColorBrush(Colors.Green);
+            }
+            else
+            {
+                btnMainLoop.Content = "Main Stopped";
+                charLooping = false;
+                btnMainLoop.Background = new SolidColorBrush(Colors.Orange);
+            }
+        }
+
         private void Button_Click_HealLoop(object sender, RoutedEventArgs e)
         {
             if (!healRunning)
             {
                 btnHealLoop.Content = "Heals Looping";
                 healRunning = true;
-                foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
-                {
-                    //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
-                    Thread newThread = new Thread(() => HealFunc(proc.procId));
-                    newThread.Start();
-
-                }
+                //foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+                //{
+                //    //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                //    Thread newThread = new Thread(() => HealFunc(proc.procId));
+                //    newThread.Start();
+                //
+                //}
                 btnHealLoop.Background = new SolidColorBrush(Colors.Green);
             }
             else
@@ -236,23 +259,23 @@ namespace DarkSideModernGUI.Views.Pages
             int readyPid = 0;
             if (charNames.ContainsKey(leaderName))
                 stickPid = charNames[leaderName];
-            if (charNames.ContainsKey(readyName))
+            if (charNames.ContainsKey(readyName) && dragonLooping)
                 readyPid = charNames[readyName];
 
             if (!stickRunning)
             {
                 StickButton.Content = "Stick is On";
                 stickRunning = true;
-                foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
-                {
-                    if (proc.procId != readyPid)
-                    {
-                        //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
-                        Thread newThread = new Thread(() => stickFunc(proc.procId));
-                        newThread.Start();
-                    }
-
-                }
+                //foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+                //{
+                //    if (proc.procId != readyPid)
+                //    {
+                //        //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
+                //        Thread newThread = new Thread(() => stickFunc(proc.procId));
+                //        newThread.Start();
+                //    }
+                //
+                //}
                 StickButton.Background = new SolidColorBrush(Colors.Green);
             }
             else
