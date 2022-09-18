@@ -3,11 +3,7 @@
              xmlns:local="using:DarkSide.AvaloniaUI"
              xmlns:sty="using:FluentAvalonia.Styling"
              x:Class="DarkSide.AvaloniaUI.App">
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
     <Application.Styles>
-        <FluentTheme Mode="Dark"/>
         <sty:FluentAvaloniaTheme/>
     </Application.Styles>
     <Application.Resources>

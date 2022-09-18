@@ -6,7 +6,7 @@ using DarkSide.AvaloniaUI.Views;
 
 namespace DarkSide.AvaloniaUI
 {
-    public partial class App : Application
+    public class App : Application
     {
         public override void Initialize()
         {
@@ -17,10 +17,7 @@ namespace DarkSide.AvaloniaUI
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = new MainWindowViewModel(),
-                };
+                desktop.MainWindow = new MainWindow();
             }
 
             base.OnFrameworkInitializationCompleted();

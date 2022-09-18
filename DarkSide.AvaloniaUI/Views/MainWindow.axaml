@@ -1,9 +1,8 @@
-<cc:DarkSideWindow xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                   xmlns:ui="using:FluentAvalonia.UI.Controls"
-                   xmlns:cc="clr-namespace:DarkSide.AvaloniaUI.Controls"
+                   xmlns:views="using:DarkSide.AvaloniaUI.Views"
                    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                    x:Class="DarkSide.AvaloniaUI.Views.MainWindow"
                    Width="800"
@@ -13,50 +12,9 @@
                    WindowStartupLocation="CenterScreen"
                    Title="DarkSide"
                    Icon="/Assets/logo_icon.png">
-    <Grid ShowGridLines="False" RowDefinitions="35,*,35" ColumnDefinitions="75,*">
-        <ui:NavigationView x:Name="NavView" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2" CompactPaneLength="75"
-                           PaneTitle="PaneTitle">
-            <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Automation" >
-                    <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="robot" Width="25"/>
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Character info" >
-                    <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="person-circle-exclamation" Width="25"/>
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Debug info" >
-                    <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="bug" Width="25"/>
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Character Navigation" >
-                    <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="compass" Width="25"/>
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="In-game Chat" >
-                    <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="message" Width="25"/>
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Plugins" >
-                    <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="plug" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-            </ui:NavigationView.MenuItems>
-            <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem Content="App Info" >
-                    <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="info-circle" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-            </ui:NavigationView.FooterMenuItems>
-        </ui:NavigationView>
-    </Grid>
+    
+<Panel>
+  <views:MainView/>
+</Panel>
 
-
-</cc:DarkSideWindow>
+</Window>
