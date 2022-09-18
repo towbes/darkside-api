@@ -16,6 +16,7 @@ using static DarkSideModernGUI.Helpers.DarksideGameAPI;
 using static DarkSideModernGUI.Helpers.Movement;
 using static DarkSideModernGUI.Views.Pages.ClassSettingsPage;
 using static DarkSideModernGUI.Helpers.CharacterLoops;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -110,6 +111,9 @@ namespace DarkSideModernGUI.Views.Pages
 
             InjectedInfo.Text = String.Join(Environment.NewLine, loadedList);
 
+
+
+
         }
 
 
@@ -170,6 +174,17 @@ namespace DarkSideModernGUI.Views.Pages
             Marshal.FreeHGlobal(pInfobuf);
             InjectedInfo.Text = String.Join(Environment.NewLine, loadedList);
 
+            string test;
+            if (drgSettings != null)
+            {
+                test = "Settings loaded";
+                SettingsInfo.Text = test;
+            } else
+            {
+                test = "No Settings";
+                SettingsInfo.Text = test;
+            }
+ 
             // Forcing the CommandManager to raise the RequerySuggested event
             CommandManager.InvalidateRequerySuggested();
         }
@@ -388,6 +403,15 @@ namespace DarkSideModernGUI.Views.Pages
                 newThread.Start();
                 
 
+            }
+        }
+
+        private void Button_Click_LoadSettings(object sender, RoutedEventArgs e)
+        {
+
+            foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+            {
+                LoadSettings();
             }
         }
 

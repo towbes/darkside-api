@@ -19,6 +19,7 @@ using static DarkSideModernGUI.Helpers.DarksideGameAPI;
 using System.Threading;
 using System.Windows.Media;
 using System.Drawing;
+using Newtonsoft.Json.Linq;
 
 namespace DarkSideModernGUI.Views.Pages
 {
@@ -96,7 +97,7 @@ namespace DarkSideModernGUI.Views.Pages
             }
 
             
-            scanDirectoryForWaypointRoute();
+            //scanDirectoryForWaypointRoute();
 
             //private static Process p = Process.GetProcessesByName("game.dll").FirstOrDefault(); // get  DAoCMWC
             //IntPtr procId = Process.GetProcessesByName("game.dll").FirstOrDefault().MainWindowHandle; //get Mainwindow
@@ -147,6 +148,7 @@ namespace DarkSideModernGUI.Views.Pages
                 Thread.Sleep(10);
             }
             btnInjectAll.Background = new SolidColorBrush(Colors.Green);
+            CharacterLoops.LoadSettings();
         }
 
         private void btnUnloadAll_Click(object sender, System.Windows.RoutedEventArgs e)

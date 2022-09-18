@@ -11,15 +11,20 @@ using System.Threading.Tasks;
 using static DarkSideModernGUI.Helpers.CharacterLoops;
 using static DarkSideModernGUI.Helpers.DarksideGameAPI;
 using static DarkSideModernGUI.Helpers.Movement;
+using static DarkSideModernGUI.Helpers.DragonSettings;
 using static DarkSideModernGUI.Views.Pages.ClassSettingsPage;
+using Newtonsoft.Json;
+using System.IO;
+using DarkSideModernGUI.Views.Pages;
+using System.Windows.Shapes;
 
 namespace DarkSideModernGUI.Helpers
 {
     internal class CharacterLoops
     {
-        public static string leaderName = "Asmoe";
-        public static string readyName = "Suzuha";
-        public static string tankName = "Okarin";
+        public static string leaderName;
+        public static string readyName;
+        public static string tankName;
 
         //Global bool to trigger dragon script on/off
         public static bool dragonRunning = false;
@@ -34,7 +39,7 @@ namespace DarkSideModernGUI.Helpers
             fighting
         }
 
-        public static DragonState currentState =  DragonState.idle;
+        public static DragonState currentState = DragonState.idle;
         public static bool dragonLooping = false;
 
         //Run speed globals
@@ -44,6 +49,10 @@ namespace DarkSideModernGUI.Helpers
         //Dicts to maintain currently injected state
         static public Dictionary<string, int> charNames = new Dictionary<string, int>();
         static public Dictionary<int, CharGlobals> CharGlobalDict = new Dictionary<int, CharGlobals>();
+
+
+
+        public static DragonSettings drgSettings;
 
         public struct CharGlobals
         {
@@ -70,6 +79,46 @@ namespace DarkSideModernGUI.Helpers
 
         }
 
+        public static void LoadSettings()
+        {
+            string json = "";
+            using (StreamReader r = new StreamReader("DragonSettings.json"))
+            {
+                json = r.ReadToEnd();
+            }
+            
+            if (string.IsNullOrEmpty(json))
+                return;
+                
+            drgSettings = JsonConvert.DeserializeObject<DragonSettings>(json);
+
+
+            leaderName = drgSettings.roleNames.leaderName;
+            tankName = drgSettings.roleNames.tankName;
+            readyName = drgSettings.roleNames.readyName;
+
+            //drgSettings = new DragonSettings();
+            //
+            //drgSettings.roleNames = new Names();
+            //drgSettings.resetLocs = new ResetLocs();
+            //drgSettings.battleLocs = new BattleLocs();
+            //drgSettings.dragonFight = new DragonFight();
+            //
+            ////Names
+            //drgSettings.roleNames.leaderName = "Asmoe";
+            //drgSettings.roleNames.readyName = "Suzuha";
+            //drgSettings.roleNames.tankName = "Okarin";
+            //
+            //drgSettings.resetLocs.tankLocs = new SettingsLoc();
+            //drgSettings.resetLocs.otherLocs = new SettingsLoc();
+            //
+            //drgSettings.resetLocs.tankLocs.xloc = 12222;
+            //
+            //string json = JsonConvert.SerializeObject(drgSettings, Formatting.Indented);
+            //
+            //
+            //File.WriteAllText("DragonSettings.json", json);
+        }
         public static void UpdateGlobals(int procId)
         {
             //Copy the globals to a temp object to mod
@@ -189,11 +238,10 @@ namespace DarkSideModernGUI.Helpers
             bool isMoving = true;
             bool isLooting = false;
 
-            float xloc = 0;
-            float yloc = 0;
-            short finalheading = 0;
-            float lootlocx = 0;
-            float lootlocy = 0;
+            float xloc;
+            float yloc;
+            short finalheading;
+
 
             while (isMoving)
             {
@@ -234,20 +282,18 @@ namespace DarkSideModernGUI.Helpers
                 }
 
                 //Set up locs
-                if (className.Contains("Paladin"))
+                if (className.Contains(drgSettings.dragonFight.tank.className))
                 {
-                    xloc = 39102f;
-                    yloc = 58785f;
-                    finalheading = 181;
+                    xloc = drgSettings.battleLocs.tankLocs.xloc;
+                    yloc = drgSettings.battleLocs.tankLocs.yloc;
+                    finalheading = drgSettings.battleLocs.tankLocs.heading;
 
-                    lootlocx = 39102f;
-                    lootlocy = 59309f;
                 }
                 else
                 {
-                    xloc = 38678f;
-                    yloc = 59418f;
-                    finalheading = 73;
+                    xloc = drgSettings.battleLocs.otherLocs.xloc;
+                    yloc = drgSettings.battleLocs.otherLocs.yloc;
+                    finalheading = drgSettings.battleLocs.otherLocs.heading;
                 }
 
                 float stoppingDist = 25.0f;
@@ -282,7 +328,7 @@ namespace DarkSideModernGUI.Helpers
 
                 //tank should get loot first
 
-                if (isLooting && className.Contains("Paladin"))
+                if (isLooting && className.Contains(drgSettings.dragonFight.tank.className))
                 {
                     while (isLooting && dragonRunning)
                     {
@@ -375,17 +421,18 @@ namespace DarkSideModernGUI.Helpers
                 }
 
                 //Set up locs
-                if (className.Contains("Paladin"))
+                if (className.Contains(drgSettings.dragonFight.tank.className))
                 {
-                    xloc = 37134f;
-                    yloc = 59840f;
-                    finalheading = 71;
+                    xloc = drgSettings.resetLocs.tankLocs.xloc;
+                    yloc = drgSettings.resetLocs.tankLocs.yloc;
+                    finalheading = drgSettings.resetLocs.tankLocs.heading;
+
                 }
                 else
                 {
-                    xloc = 37134f;
-                    yloc = 59840f;
-                    finalheading = 71;
+                    xloc = drgSettings.resetLocs.otherLocs.xloc;
+                    yloc = drgSettings.resetLocs.otherLocs.yloc;
+                    finalheading = drgSettings.resetLocs.otherLocs.heading;
                 }
 
                 float stoppingDist = 10.0f;
@@ -451,72 +498,78 @@ namespace DarkSideModernGUI.Helpers
 
 
             //Tank abilities/variables
-            string tankClass = "Paladin";
-            string tankMeleeTaunt = "Rile";
-            string tankSpellTaunt = "Infuriate";
-            string tankArmorBuff = "Aura of Salvation";
-            string tankHealSkill = "Holy Revitalization";
-            //chants
-            string tankStrChant = "Greater Battle Zeal";
+            string tankClass = drgSettings.dragonFight.tank.className;
+            string tankMeleeTaunt = drgSettings.dragonFight.tank.dps1;
+            string tankSpellTaunt = drgSettings.dragonFight.tank.dps2;
+            
+            //heals
+            string tankHealSkill = drgSettings.dragonFight.tank.heal1;
+            int tankHealpct = drgSettings.dragonFight.tank.heal1pct;
+            //buffs
+            string tankArmorBuff = drgSettings.dragonFight.tank.buff1;
+            string tankStrChant = drgSettings.dragonFight.tank.buff2;
             bool tankStrOn = false;
-            string tankEndChant = "Chant of Perseverance";
+            string tankEndChant = drgSettings.dragonFight.tank.buff3;
             bool tankEndOn = false;
-            string tankAfChant = "Crusader's Mantle";
+            string tankAfChant = drgSettings.dragonFight.tank.buff4;
             bool tankAfOn = false;
-            string tankAblChant = "Barrier of Temperance";
+            string tankAblChant = drgSettings.dragonFight.tank.buff5;
             bool tankAblOn = false;
             //Implement two tank waypoints for dodging clouds
             bool cloudNear = false;
             int currentTankPoint = -1;
 
             //Damage caster
-            string dmgClass = "Spiritmaster";
+            string dmgClass = drgSettings.dragonFight.dps.className;
             //pet and buffs
-            string petSpell = "Spirit Warrior";
-            string shieldSpell = "Superior Suppressive Barrier";
-            string absorbSpell = "Suppressive Buffer";
-            string grpAbsorb = "Shield of the Einherjar";
+            string petSpell = drgSettings.dragonFight.dps.pet1;
+            string mlNine = drgSettings.dragonFight.dps.pet2;
+
+            string shieldSpell = drgSettings.dragonFight.dps.buff1;
+            string absorbSpell = drgSettings.dragonFight.dps.buff2;
+            string grpAbsorb = drgSettings.dragonFight.dps.buff3;
             //nuke
-            string dmgNuke = "Spirit Annihilation";
-            string mlNine = "Summon Mastery";
+            string dmgNuke = drgSettings.dragonFight.dps.dps1;
+            
 
             //Debuffer
-            string dbfClass = "Eldritch";
-            string dbfShieldSpell = "Supreme Powerguard";
-            string dbfAbsorbSpell = "Barrier of Power";
-            string dbfSpell = "Annihilate Soul";
-            string dbfStun = "Prismatic Strobe";
-            string dbfNS = "Abrogate Sight";
+            string dbfClass = drgSettings.dragonFight.debuff.className;
+            string dbfShieldSpell = drgSettings.dragonFight.debuff.buff1;
+            string dbfAbsorbSpell = drgSettings.dragonFight.debuff.buff2;
+            string dbfSpell = drgSettings.dragonFight.debuff.dps1;
+            string dbfStun = drgSettings.dragonFight.debuff.dps2;
+            string dbfNS = drgSettings.dragonFight.debuff.dps3;
 
             //Bard
-            string brdClass = "Bard";
+            string brdClass = drgSettings.dragonFight.bard.className;
             //songs
-            string speedSong = "Clear Horizon";
+            string speedSong = drgSettings.dragonFight.bard.buff1;
             bool brdSpeedOn = false;
-            string powSong = "Rhyme of Creation";
+            string powSong = drgSettings.dragonFight.bard.buff2;
             bool brdPowOn = false;
-            string endSong = "Rhythm of the Cosmos";
+            string endSong = drgSettings.dragonFight.bard.buff3;
             bool brdEndOn = false;
-            string healSong = "Euphony of Healing";
+            string healSong = drgSettings.dragonFight.bard.buff4;
             bool brdHealOn = false;
             //buff
-            string ablBuff = "Battlesong of Apotheosis";
+            string ablBuff = drgSettings.dragonFight.bard.buff5;
             //heals
-            int smallHealPct = 95;
-            int bigHealPct = 90;
-            string brdSmallHeal = "Apotheosis";
-            string brdBigHeal = "Major Apotheosis";
-            string brdGrpHeal = "Group Apotheosis";
+            int smallHealPct = drgSettings.dragonFight.bard.heal1pct;
+            int bigHealPct = drgSettings.dragonFight.bard.heal2pct;
+            string brdSmallHeal = drgSettings.dragonFight.bard.heal1;
+            string brdBigHeal = drgSettings.dragonFight.bard.heal2;
+            string brdGrpHeal = drgSettings.dragonFight.bard.grpHeal1;
+            int grpHealPct = drgSettings.dragonFight.bard.grpHeal1pct;
 
             //Healer
-            string hlrClass = "Druid";
+            string hlrClass = drgSettings.dragonFight.healer.className;
             //resist buff
-            string hlrResistBuff = "Warmth of the Bear";
+            string hlrResistBuff = drgSettings.dragonFight.healer.buff1;
             bool hlrBuffOn = false;
             //heals
-            string hlrSmallHeal = "Apotheosis";
-            string hlrBigHeal = "Major Renascence";
-            string hlrGrpHeal = "Group Apotheosis";
+            string hlrSmallHeal = drgSettings.dragonFight.healer.heal1;
+            string hlrBigHeal = drgSettings.dragonFight.healer.heal2;
+            string hlrGrpHeal = drgSettings.dragonFight.healer.grpHeal1;
 
             while (dragonRunning)
             {
@@ -531,7 +584,7 @@ namespace DarkSideModernGUI.Helpers
                     break;
                 }
 
-                int decimusOffset = findEntityByName(charGlobals.EntityList, "Decimus",true);
+                int decimusOffset = findEntityByName(charGlobals.EntityList, "Decimus", true);
 
                 //Check chat for selan message
                 //******the chat check doesn't seem to be working but the decimus offset does
@@ -862,7 +915,7 @@ namespace DarkSideModernGUI.Helpers
                             Thread.Sleep(threadSleep);
                             //Spell taunt
                             UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankSpellTaunt);
-                            if (charGlobals.playerInfo.health < 75)
+                            if (charGlobals.playerInfo.health < tankHealpct)
                             {
                                 UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankHealSkill);
                             }
@@ -990,18 +1043,15 @@ namespace DarkSideModernGUI.Helpers
                 if (!plyrName.Equals(leaderName))
                 {
                     float stoppingDist = 25.0f;
-                    //currentTarget = findEntityByName(EntityList, "Asmoe");
-                    //SetTarget(apiObject, currentTarget);
+
 
                     float dist = DistanceToPoint(charGlobals.playerPos, stickGlobals.playerPos.pos_x, stickGlobals.playerPos.pos_y);
                     short newheading = GetGameHeading(charGlobals.playerPos, stickGlobals.playerPos.pos_x, stickGlobals.playerPos.pos_y);
                     if (dist > stoppingDist)
                     {
-                        //SetPlayerFwdSpeed(charGlobals.apiObject, true, stickGlobals.playerPos.momentumFwdBackWritable);
                         SetAutorun(charGlobals.apiObject, true);
                         SetPlayerHeading(charGlobals.apiObject, true, newheading);
-                        //dist = DistanceToPoint(playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                        //newheading = GetGameHeading(playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+
                     }
                     else
                     {
@@ -1095,34 +1145,35 @@ namespace DarkSideModernGUI.Helpers
             bool isCasting = false;
 
             //Bard
-            string brdClass = "Bard";
+            string brdClass = drgSettings.dragonFight.bard.className;
             //songs
-            string speedSong = "Clear Horizon";
+            string speedSong = drgSettings.dragonFight.bard.buff1;
             bool brdSpeedOn = false;
-            string powSong = "Rhyme of Creation";
+            string powSong = drgSettings.dragonFight.bard.buff2;
             bool brdPowOn = false;
-            string endSong = "Rhythm of the Cosmos";
+            string endSong = drgSettings.dragonFight.bard.buff3;
             bool brdEndOn = false;
-            string healSong = "Euphony of Healing";
+            string healSong = drgSettings.dragonFight.bard.buff4;
             bool brdHealOn = false;
             //buff
-            string ablBuff = "Battlesong of Apotheosis";
+            string ablBuff = drgSettings.dragonFight.bard.buff5;
             //heals
-            int smallHealPct = 95;
-            int bigHealPct = 70;
-            string brdSmallHeal = "Minor Apotheosis";
-            string brdBigHeal = "Major Apotheosis";
-            string brdGrpHeal = "Group Apotheosis";
+            int smallHealPct = drgSettings.dragonFight.bard.heal1pct;
+            int bigHealPct = drgSettings.dragonFight.bard.heal2pct;
+            string brdSmallHeal = drgSettings.dragonFight.bard.heal1;
+            string brdBigHeal = drgSettings.dragonFight.bard.heal2;
+            string brdGrpHeal = drgSettings.dragonFight.bard.grpHeal1;
+            int grpHealPct = drgSettings.dragonFight.bard.grpHeal1pct;
 
             //Healer
-            string hlrClass = "Druid";
+            string hlrClass = drgSettings.dragonFight.healer.className;
             //resist buff
-            string hlrResistBuff = "Warmth of the Bear";
+            string hlrResistBuff = drgSettings.dragonFight.healer.buff1;
             bool hlrBuffOn = false;
             //heals
-            string hlrSmallHeal = "Minor Apotheosis";
-            string hlrBigHeal = "Major Renascence";
-            string hlrGrpHeal = "Group Apotheosis";
+            string hlrSmallHeal = drgSettings.dragonFight.healer.heal1;
+            string hlrBigHeal = drgSettings.dragonFight.healer.heal2;
+            string hlrGrpHeal = drgSettings.dragonFight.healer.grpHeal1;
 
             while (healRunning)
             {
@@ -1154,7 +1205,7 @@ namespace DarkSideModernGUI.Helpers
                     if (charGlobals.playerInfo.className.Contains(brdClass))
                     {
                         //check if need to group heal
-                        if (GetPartyAverageHP(charGlobals.partyMemberList) < 75)
+                        if (GetPartyAverageHP(charGlobals.partyMemberList) < grpHealPct)
                         {
                             UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdGrpHeal);
                         } else
@@ -1164,10 +1215,11 @@ namespace DarkSideModernGUI.Helpers
                             if (ptEntOffset > 0)
                             {
                                 SetTarget(charGlobals.apiObject, ptEntOffset);
-                                if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
-                                    UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdSmallHeal);
-                                else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
                                     UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdBigHeal);
+                                else if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                    UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdSmallHeal);
+
                             }
                         }
 
@@ -1176,7 +1228,7 @@ namespace DarkSideModernGUI.Helpers
                     else if (charGlobals.playerInfo.className.Contains(hlrClass))
                     {
                         //first check for group heal
-                        if (GetPartyAverageHP(charGlobals.partyMemberList) < 85)
+                        if (GetPartyAverageHP(charGlobals.partyMemberList) < grpHealPct)
                         {
                             UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrGrpHeal);
                         } else
@@ -1186,10 +1238,10 @@ namespace DarkSideModernGUI.Helpers
                             if (ptEntOffset > 0)
                             {
                                 SetTarget(charGlobals.apiObject, ptEntOffset);
-                                if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
-                                    UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrSmallHeal);
-                                else if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
                                     UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrBigHeal);
+                                else if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                    UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrSmallHeal);
                             }
                         }
                     }
@@ -1260,16 +1312,16 @@ namespace DarkSideModernGUI.Helpers
 
             IntPtr apiObject = charGlobals.apiObject;
 
-            List<string> badItems = new List<string>();
-
-            badItems.Add("Life Stone");
-            badItems.Add("Blood Stone");
+            //List<string> badItems = new List<string>();
+            //
+            //badItems.Add("Life Stone");
+            //badItems.Add("Blood Stone");
 
             //look through all slots
             for (int slotNum = 40; slotNum < 80; slotNum++)
             {
                 string itemName = charGlobals.playerInfo.Inventory[slotNum - 40].name;
-                if (badItems.Contains(itemName))
+                if (drgSettings.itemFilter.badItems.Contains(itemName))
                 {
                     //Move item to slot 0 to drop it
                     MoveItem(apiObject, slotNum, 0, 0);

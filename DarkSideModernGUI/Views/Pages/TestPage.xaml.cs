@@ -67,34 +67,34 @@ namespace DarkSideModernGUI.Views.Pages
             InitializeComponent();
 
             //PlayerInfo
-            int i = 0;
-            IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
-            foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
-            {
-
-                GetPlayerInfo(proc.apiObject, pInfobuf);
-                PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
-                string plyrName = new string(playerInfo.name);
-                charNames.Add(plyrName, proc.procId);
-
-            }
-
-            DashboardPage.GameDLL stickProc;
-
-            if (charNames.ContainsKey("Okarin"))
-            {
-                int stickPid = charNames["Okarin"];
-
-                stickProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == stickPid);
-            } else
-            {
-                stickProc = DashboardPage.gameprocs.FirstOrDefault();
-            }
-
-
-            DashboardPage.apiObject = stickProc.apiObject;
-
-            Marshal.FreeHGlobal(pInfobuf);
+            //int i = 0;
+            //IntPtr pInfobuf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerInfo>());
+            //foreach (DashboardPage.GameDLL proc in DashboardPage.gameprocs)
+            //{
+            //
+            //    GetPlayerInfo(proc.apiObject, pInfobuf);
+            //    PlayerInfo playerInfo = (PlayerInfo)Marshal.PtrToStructure(pInfobuf, typeof(PlayerInfo));
+            //    string plyrName = new string(playerInfo.name);
+            //    charNames.Add(plyrName, proc.procId);
+            //
+            //}
+            //
+            //DashboardPage.GameDLL stickProc;
+            //
+            //if (charNames.ContainsKey("Okarin"))
+            //{
+            //    int stickPid = charNames["Okarin"];
+            //
+            //    stickProc = DashboardPage.gameprocs.FirstOrDefault(x => x.procId == stickPid);
+            //} else
+            //{
+            //    stickProc = DashboardPage.gameprocs.FirstOrDefault();
+            //}
+            //
+            //
+            //DashboardPage.apiObject = stickProc.apiObject;
+            //
+            //Marshal.FreeHGlobal(pInfobuf);
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
