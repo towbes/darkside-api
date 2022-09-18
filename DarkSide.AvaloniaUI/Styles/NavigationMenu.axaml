@@ -2,19 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="5">
-          <TabControl Classes="navigationmeno">
-              <TabItem Header="Automation" />
-              <TabItem>
-                  
-              </TabItem>
-              <TabItem Header="Navigation"/>
-              <TabItem Header="Debug"/>
-              <TabItem Header="In Game Chat"/>
-              <TabItem Header="Bot Settings"/>
-          </TabControl>
+            <SplitView Classes="sidebar" OpenPaneLength="150" CompactPaneLength="90" Width="500" Height="450" IsPaneOpen="True">
+                <SplitView.Pane>
+                    <TextBlock>Left</TextBlock>
+                </SplitView.Pane>
+            </SplitView>
         </Border>
     </Design.PreviewWith>
-    <Style Selector="TabControl.navigationmeno">
-
-    </Style>
 </Styles>
