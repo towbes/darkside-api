@@ -903,15 +903,15 @@ namespace DarkSideModernGUI.Helpers
                                 UsePetCmdByName(charGlobals.apiObject, "passive");
                             }
                         }
-                        if (goleOffset == 0)
-                        {
-                            fightStarted = false;
-                            dragonRunning = false;
-                            //set the pet to idle=
-                            UsePetCmdByName(charGlobals.apiObject, "passive");
-                        }
-                    }
 
+                    }
+                    if (goleOffset == 0)
+                    {
+                        fightStarted = false;
+                        dragonRunning = false;
+                        //set the pet to idle=
+                        UsePetCmdByName(charGlobals.apiObject, "passive");
+                    }
 
                     //combat, do another check that fight is started so we don't fight after gole dies
                     if (fightStarted && castTimeout == 0)
