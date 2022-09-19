@@ -45,12 +45,6 @@
     <ClInclude Include="gh_d3d9.h">
       <Filter>hooks</Filter>
     </ClInclude>
-    <ClInclude Include="mem.h">
-      <Filter>hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="Hook.h">
-      <Filter>hooks</Filter>
-    </ClInclude>
     <ClInclude Include="TargetInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -96,9 +90,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gh_d3d9.cpp">
-      <Filter>hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="mem.cpp">
       <Filter>hooks</Filter>
     </ClCompile>
     <ClCompile Include="daochooks.cpp">

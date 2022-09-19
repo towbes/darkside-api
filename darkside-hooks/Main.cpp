@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "mem.h"
 #include "gh_d3d9.h"
 #include "Globals.h"
 #include "PlayerPosition.h"
