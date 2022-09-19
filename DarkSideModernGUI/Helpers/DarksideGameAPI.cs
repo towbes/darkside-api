@@ -480,7 +480,7 @@ namespace DarkSideModernGUI.Helpers
                 //Check if someone needs heal
                 if (partyMemberList[j].hp_pct < 95)
                 {
-                    int targ = findEntityByName(EntityList, cname);
+                    int targ = findEntityByName(EntityList, cname, true);
                     return targ;
                 }
             }

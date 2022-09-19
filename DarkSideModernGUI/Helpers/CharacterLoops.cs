@@ -770,24 +770,14 @@ namespace DarkSideModernGUI.Helpers
                             //If distance to cloud is less than 100
                             if (DistanceToPoint(charGlobals.playerPos, cloudPosX, cloudPosY) <= 30)
                             {
-                                //if (currentTankPoint == -1)
-                                //{
-                                //    currentTankPoint = 1;
-                                //}
-                                //else
-                                //{
-                                //    currentTankPoint = -1;
-                                //}
+
                                 //Sleep for 6 seconds while the cloud spawns
                                 for (int i = 0; i < 5; i ++)
                                 {
                                     UpdateGlobals(procId);
                                     CharGlobals cloudGlobals = CharGlobalDict[procId];
-                                    //tanknewheading = GetGameHeading(cloudGlobals.playerPos, cloudGlobals.EntityList[goleOffset].pos_x, cloudGlobals.EntityList[goleOffset].pos_y);
                                     SetPlayerStrafeSpeed(cloudGlobals.apiObject, true, strafeSpeed * currentTankPoint);
-                                    //SetPlayerHeading(cloudGlobals.apiObject, true, tanknewheading);
-                                    //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                                    //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+
                                     //Melee Taunt
                                     UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankMeleeTaunt);
                                     Thread.Sleep(threadSleep);
@@ -808,24 +798,14 @@ namespace DarkSideModernGUI.Helpers
                             //If distance to cloud is less than 100
                             if (DistanceToPoint(charGlobals.playerPos, firePosX, firePosY) <= 30)
                             {
-                                //if (currentTankPoint == -1)
-                                //{
-                                //    currentTankPoint = 1;
-                                //}
-                                //else
-                                //{
-                                //    currentTankPoint = -1;
-                                //}
+
                                 //Sleep for 6 seconds while the cloud spawns
                                 for (int i = 0; i < 5; i++)
                                 {
                                     UpdateGlobals(procId);
                                     CharGlobals fireGlobals = CharGlobalDict[procId];
-                                    //tanknewheading = GetGameHeading(cloudGlobals.playerPos, cloudGlobals.EntityList[goleOffset].pos_x, cloudGlobals.EntityList[goleOffset].pos_y);
                                     SetPlayerStrafeSpeed(fireGlobals.apiObject, true, strafeSpeed * currentTankPoint);
-                                    //SetPlayerHeading(cloudGlobals.apiObject, true, tanknewheading);
-                                    //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                                    //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
+
                                     //Melee Taunt
                                     UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankMeleeTaunt);
                                     Thread.Sleep(threadSleep);
@@ -902,16 +882,16 @@ namespace DarkSideModernGUI.Helpers
                                 //set the pet to idle=
                                 UsePetCmdByName(charGlobals.apiObject, "passive");
                             }
+                        } else if (goleOffset == 0)
+                        {
+                            //Gole's dead, set flags to false to stop loops
+                            fightStarted = false;
+                            dragonRunning = false;
+                            //set the pet to idle=
+                            UsePetCmdByName(charGlobals.apiObject, "passive");
                         }
+                    }
 
-                    }
-                    if (goleOffset == 0)
-                    {
-                        fightStarted = false;
-                        dragonRunning = false;
-                        //set the pet to idle=
-                        UsePetCmdByName(charGlobals.apiObject, "passive");
-                    }
 
                     //combat, do another check that fight is started so we don't fight after gole dies
                     if (fightStarted && castTimeout == 0)
