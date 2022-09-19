@@ -315,6 +315,7 @@ namespace DarkSideModernGUI.Views.Pages
             {
                 btnFullDragon.Content = "Dragon OFF";
                 dragonLooping = false;
+                dragonRunning = false;
                 btnFightDragon.Background = new SolidColorBrush(Colors.Red);
             }
 

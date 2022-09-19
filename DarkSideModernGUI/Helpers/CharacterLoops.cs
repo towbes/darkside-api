@@ -489,7 +489,7 @@ namespace DarkSideModernGUI.Helpers
             string cName = finalGlobals.playerInfo.className;
             //Set the state to battle
             //wait for gole to come back, or not be dead
-            while (goleOffset == 0 || finalGlobals.EntityList[goleOffset].isDead == 1)
+            while (dragonLooping && goleOffset == 0 || finalGlobals.EntityList[goleOffset].isDead == 1)
             {
                 UpdateGlobals(procId);
                 finalGlobals = CharGlobalDict[procId];
@@ -588,11 +588,14 @@ namespace DarkSideModernGUI.Helpers
             string hlrBigHeal = drgSettings.dragonFight.healer.heal2;
             string hlrGrpHeal = drgSettings.dragonFight.healer.grpHeal1;
 
+            CharGlobals charGlobals = CharGlobalDict[procId];
+
+
             while (dragonRunning)
             {
                 UpdateGlobals(procId);
 
-                CharGlobals charGlobals = CharGlobalDict[procId];
+                charGlobals = CharGlobalDict[procId];
 
                 string plyrName = charGlobals.playerInfo.name;
                 //don't move if we're readyName
@@ -1007,6 +1010,7 @@ namespace DarkSideModernGUI.Helpers
             int goleCheck = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
             if (goleCheck == 0)
             {
+                dragonRunning = false;
                 finalGlobals.currentState = DragonState.reset;
                 CharGlobalDict[procId] = finalGlobals;
             }
