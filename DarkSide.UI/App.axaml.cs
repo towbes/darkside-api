@@ -1,12 +1,12 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using DarkSide.AvaloniaUI.ViewModels;
-using DarkSide.AvaloniaUI.Views;
+using DarkSide.UI.ViewModels;
+using DarkSide.UI.Views;
 
-namespace DarkSide.AvaloniaUI
+namespace DarkSide.UI
 {
-    public class App : Application
+    public partial class App : Application
     {
         public override void Initialize()
         {
@@ -17,7 +17,10 @@ namespace DarkSide.AvaloniaUI
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow();
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = new MainWindowViewModel(),
+                };
             }
 
             base.OnFrameworkInitializationCompleted();

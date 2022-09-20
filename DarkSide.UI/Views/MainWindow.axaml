@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:DarkSide.UI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="DarkSide.UI.Views.MainWindow"
+        ExtendClientAreaToDecorationsHint="True"
+        WindowStartupLocation="CenterScreen"
+        Width="800"
+        Height="450"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="{Binding Greeting}">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+    <Grid ShowGridLines="True" RowDefinitions="35,*,35" ColumnDefinitions="75,Auto,*">
+        <Border Grid.Row="0" Grid.Column="1" BorderBrush="SlateBlue" BorderThickness="1">
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Greeting}" />
+        </Border>
+        <Image Grid.Row="0" Grid.Column="0" Source="/Assets/avalonia-logo.ico" Width="20" Height="20"
+               HorizontalAlignment="Left" Margin="15,5,0,10" />
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Background="green">
+            <Button Name="one" Margin="5" Command="{Binding LoadAutomation}">1</Button>
+            <Button Name="two" Margin="5">2</Button>
+            <Button Name="three" Margin="5" Command="{Binding InjectDll}">Inject</Button>
+        </StackPanel>
+      <DockPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Background="gray">
+        <ContentPresenter Content="{Binding Greeting}"></ContentPresenter>
+      </DockPanel>
+    </Grid>
+    <!--<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
+
+
+</Window>
