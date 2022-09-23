@@ -39,7 +39,7 @@
 //Player ent index is at +0x64 from address in ptrGameState_x
 #define ptrGameState_x		0x104a7f0
 #define ptrPetEntIndex_x	0x10498d0
-#define ptrAfkCounter_x		0x1494630
+#define ptrMouseOrKeyPress_x		0x104a744
 
 //Chat related
 #define ptrChatiMode_x		0x10498D8

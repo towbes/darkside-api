@@ -8,6 +8,8 @@ private:
     //Current process id
     int pid;
 
+    int* afkcheck;
+
     //player info shared memory
     plyrinfo_t* pShmPlayerInfo;
     void* hMapFile;

@@ -12,6 +12,7 @@ PlayerInfo::PlayerInfo() {
     ptrPlayerName = (void*)ptrPlayerName_x;
     ptrPlayerEntIndex = *(int*)ptrGameState_x;
     ptrPetEntIndex = (void*)ptrPetEntIndex_x;
+    afkcheck = (int*)ptrMouseOrKeyPress_x;
 
 #ifdef _DEBUG
     std::cout << "ptrPlayerHp: " << std::hex << (int)ptrPlayerHp << std::endl;
@@ -220,6 +221,8 @@ PlayerInfo::~PlayerInfo() {
 //Update the plyrInfo_t struct in shared memory
 void PlayerInfo::GetPlayerInfo() {
     if (pShmPlayerInfo != NULL) {
+        //Set mouse / key press to 1
+        *(int*)afkcheck = 1;
         //Pointer to grab hp/pow/endu offsets
         unsigned char* tempPtr = reinterpret_cast<unsigned char*>(ptrPlayerHp);
         pShmPlayerInfo->hp = *(int*)tempPtr;

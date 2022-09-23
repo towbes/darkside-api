@@ -307,6 +307,8 @@ namespace DarkSideModernGUI.Views.Pages
                     {
                         //https://stackoverflow.com/questions/14854878/creating-new-thread-with-method-with-parameter
                         Thread newThread = new Thread(() => DragonLoop(proc.procId));
+                        //Make thread background so that it closes when gui closes
+                        newThread.IsBackground = true;
                         newThread.Start();
                     }
                 }
