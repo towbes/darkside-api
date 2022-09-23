@@ -764,8 +764,8 @@ namespace DarkSideModernGUI.Helpers
 
                     //Paladin check for clouds
                     //******this type of movement doesn't work for this.  Maybe just a timed movement instead?
-                    if (charGlobals.playerInfo.className.Contains(tankClass))
-                    {
+                    //if (charGlobals.playerInfo.className.Contains(tankClass))
+                    //{
                         if (cloudOffset > 0)
                         {
                             float cloudPosX = charGlobals.EntityList[cloudOffset].pos_x;
@@ -823,7 +823,7 @@ namespace DarkSideModernGUI.Helpers
                             }
                         }
 
-                    }
+                    //}
 
                     //target checks for DPS / Debuff only
                     //always check morella offset first, then check for a granite giant spawn, then gole

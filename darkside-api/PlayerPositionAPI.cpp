@@ -99,9 +99,10 @@ bool DarksideAPI::SetPlayerHeading(bool changeHeading, short newHeading) {
         return false;
     }
 
-
-    posUpdate->changeHeading = changeHeading;
-    posUpdate->newHeading = newHeading;
+    if (posUpdate->changeHeading == false) {
+        posUpdate->changeHeading = changeHeading;
+        posUpdate->newHeading = newHeading;
+    }
 
     //clean up the shared mem
     if (posUpdate != NULL) {
@@ -156,8 +157,12 @@ bool DarksideAPI::SetPlayerFwdSpeed(bool changeSpeed, float newSpeed) {
         return false;
     }
 
-    posUpdate->changeFwd = changeSpeed;
-    posUpdate->newFwd = newSpeed;
+    if (posUpdate->changeFwd == false) {
+        posUpdate->changeFwd = changeSpeed;
+        posUpdate->newFwd = newSpeed;
+    }
+
+
 
     //clean up the shared mem
     if (posUpdate != NULL) {
@@ -212,8 +217,11 @@ bool DarksideAPI::SetPlayerStrafeSpeed(bool changeSpeed, float newSpeed) {
         return false;
     }
 
-    posUpdate->changeStrafe = changeSpeed;
-    posUpdate->newStrafe = newSpeed;
+    if (posUpdate->changeStrafe == false) {
+        posUpdate->changeStrafe = changeSpeed;
+        posUpdate->newStrafe = newSpeed;
+    }
+
 
     //clean up the shared mem
     if (posUpdate != NULL) {

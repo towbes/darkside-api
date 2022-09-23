@@ -145,12 +145,15 @@ void PlayerPosition::SetHeading() {
         //S = 0/4096  E = 3072  N = 2048  W = 1024
         //posUpdate->heading * 0x1000 / 0x168 
         playerPositionInfo->heading = posUpdate->newHeading;
+        posUpdate->changeHeading = false;
     }
     if ((bool)posUpdate->changeFwd) {
         playerPositionInfo->momentumFwdBackWrite = posUpdate->newFwd;
+        posUpdate->changeFwd = false;
     }
     if ((bool)posUpdate->changeStrafe) {
         playerPositionInfo->momentumLeftRight = posUpdate->newStrafe;
+        posUpdate->changeStrafe = false;
     }
 }
 
