@@ -270,6 +270,12 @@ namespace DarkSideModernGUI.Helpers
                 string className = new string(charGlobals.playerInfo.className);
 
 
+                //Check if we're dead, if so return
+                if (charGlobals.EntityList[charGlobals.playerInfo.entListIndex].isDead == 1)
+                {
+                    return;
+                }
+
                 //don't move if we're readyName
                 if (!string.IsNullOrEmpty(readyName))
                 {
@@ -433,6 +439,12 @@ namespace DarkSideModernGUI.Helpers
                 string plyrName = new string(charGlobals.playerInfo.name);
 
                 string className = new string(charGlobals.playerInfo.className);
+
+                //Check if we're dead, if so return
+                if (charGlobals.EntityList[charGlobals.playerInfo.entListIndex].isDead == 1)
+                {
+                    return;
+                }
 
                 //don't move if we're readyName
                 if (!string.IsNullOrEmpty(readyName)) {
@@ -602,6 +614,12 @@ namespace DarkSideModernGUI.Helpers
                 UpdateGlobals(procId);
 
                 charGlobals = CharGlobalDict[procId];
+
+                //Check if we're dead, if so return
+                if (charGlobals.EntityList[charGlobals.playerInfo.entListIndex].isDead == 1)
+                {
+                    return;
+                }
 
                 string plyrName = charGlobals.playerInfo.name;
                 //don't move if we're readyName
