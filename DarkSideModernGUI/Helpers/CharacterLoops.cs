@@ -270,33 +270,36 @@ namespace DarkSideModernGUI.Helpers
                 string className = new string(charGlobals.playerInfo.className);
 
 
-                if (plyrName.Contains(readyName))
+                //don't move if we're readyName
+                if (!string.IsNullOrEmpty(readyName))
                 {
-                    isMoving = false;
-                    
-                    int maxEnt = findEntityByName(charGlobals.EntityList, "Maximilian");
-                    while (maxEnt == 0 && dragonLooping)
+                    if (plyrName.Contains(readyName))
                     {
-                        UpdateGlobals(procId);
-                        charGlobals = CharGlobalDict[procId];
-                        maxEnt = findEntityByName(charGlobals.EntityList, "Maximilian");
-                        Thread.Sleep(100);
-                    }
-                    if (maxEnt > 0)
-                    {
-                        float maxdist = DistanceToPoint(charGlobals.playerPos, charGlobals.EntityList[maxEnt].pos_x, charGlobals.EntityList[maxEnt].pos_y);
-                        if (maxdist < 100)
-                        {
-                            IntPtr cmdbuf = Marshal.AllocHGlobal(Marshal.SizeOf<CmdBuffer>());
-                            cmdbuf = Marshal.StringToHGlobalAnsi("/say ready");
-                            SendCommand(charGlobals.apiObject, 0, 0, cmdbuf);
-                            Marshal.FreeHGlobal(cmdbuf);
-                        }
-                    }
+                        isMoving = false;
 
-                   
-                    break;
+                        int maxEnt = findEntityByName(charGlobals.EntityList, "Maximilian");
+                        while (maxEnt == 0 && dragonLooping)
+                        {
+                            UpdateGlobals(procId);
+                            charGlobals = CharGlobalDict[procId];
+                            maxEnt = findEntityByName(charGlobals.EntityList, "Maximilian");
+                            Thread.Sleep(100);
+                        }
+                        if (maxEnt > 0)
+                        {
+                            float maxdist = DistanceToPoint(charGlobals.playerPos, charGlobals.EntityList[maxEnt].pos_x, charGlobals.EntityList[maxEnt].pos_y);
+                            if (maxdist < 100)
+                            {
+                                IntPtr cmdbuf = Marshal.AllocHGlobal(Marshal.SizeOf<CmdBuffer>());
+                                cmdbuf = Marshal.StringToHGlobalAnsi("/say ready");
+                                SendCommand(charGlobals.apiObject, 0, 0, cmdbuf);
+                                Marshal.FreeHGlobal(cmdbuf);
+                            }
+                        }
+                        break;
+                    }
                 }
+
 
                 //Set up locs
                 if (className.Contains(drgSettings.dragonFight.tank.className))
@@ -432,10 +435,13 @@ namespace DarkSideModernGUI.Helpers
                 string className = new string(charGlobals.playerInfo.className);
 
                 //don't move if we're readyName
-                if (plyrName.Contains(readyName))
-                {
-                    break;
+                if (!string.IsNullOrEmpty(readyName)) {
+                    if (plyrName.Contains(readyName))
+                    {
+                        break;
+                    }
                 }
+
 
                 //Set up locs
                 if (className.Contains(drgSettings.dragonFight.tank.className))
@@ -599,9 +605,12 @@ namespace DarkSideModernGUI.Helpers
 
                 string plyrName = charGlobals.playerInfo.name;
                 //don't move if we're readyName
-                if (plyrName.Contains(readyName))
+                if (!string.IsNullOrEmpty(readyName))
                 {
-                    break;
+                    if (plyrName.Contains(readyName))
+                    {
+                        break;
+                    }
                 }
 
                 int decimusOffset = findEntityByName(charGlobals.EntityList, "Decimus", true);
@@ -774,8 +783,8 @@ namespace DarkSideModernGUI.Helpers
                             if (DistanceToPoint(charGlobals.playerPos, cloudPosX, cloudPosY) <= 30)
                             {
 
-                                //Sleep for 6 seconds while the cloud spawns
-                                for (int i = 0; i < 5; i ++)
+                                //Move for 9 seconds while the cloud spawns
+                                for (int i = 0; i < 9; i ++)
                                 {
                                     UpdateGlobals(procId);
                                     CharGlobals cloudGlobals = CharGlobalDict[procId];
@@ -790,7 +799,7 @@ namespace DarkSideModernGUI.Helpers
 
                                 }
                                 SetPlayerStrafeSpeed(charGlobals.apiObject, true, 0);
-                                SetPlayerStrafeSpeed(charGlobals.apiObject, false, 0);
+                                //SetPlayerStrafeSpeed(charGlobals.apiObject, false, 0);
                                 currentTankPoint = currentTankPoint * -1;
                             }
                         }
@@ -818,7 +827,7 @@ namespace DarkSideModernGUI.Helpers
 
                                 }
                                 SetPlayerStrafeSpeed(charGlobals.apiObject, true, 0);
-                                SetPlayerStrafeSpeed(charGlobals.apiObject, false, 0);
+                                //SetPlayerStrafeSpeed(charGlobals.apiObject, false, 0);
                                 currentTankPoint = currentTankPoint * -1;
                             }
                         }
@@ -999,12 +1008,12 @@ namespace DarkSideModernGUI.Helpers
             }
             CharGlobals finalGlobals = CharGlobalDict[procId];
             //Make sure we aren't moving and clean our inventory
-            SetPlayerHeading(finalGlobals.apiObject, true, 0);
+            //SetPlayerHeading(finalGlobals.apiObject, true, 0);
             SetPlayerFwdSpeed(finalGlobals.apiObject, true, 0);
             SetPlayerStrafeSpeed(finalGlobals.apiObject, true, 0);
-            SetPlayerHeading(finalGlobals.apiObject, false, 0);
-            SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
-            SetPlayerStrafeSpeed(finalGlobals.apiObject, false, 0);
+            //SetPlayerHeading(finalGlobals.apiObject, false, 0);
+            //SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
+            //SetPlayerStrafeSpeed(finalGlobals.apiObject, false, 0);
             clean_inventory(procId);
 
             int goleCheck = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
