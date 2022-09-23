@@ -240,7 +240,13 @@ namespace DarkSideModernGUI.Helpers
                 UpdateGlobals(procId);
                 CharGlobals charGlobals = CharGlobalDict[procId];
                 string playerClass = charGlobals.playerInfo.className;
-                if(healRunning && (playerClass.Contains("Bard") || playerClass.Contains("Druid")))
+                //Check if we're dead, if so return
+                if (charGlobals.EntityList[charGlobals.playerInfo.entListIndex].isDead == 1)
+                {
+                    return;
+                }
+
+                if (healRunning && (playerClass.Contains("Bard") || playerClass.Contains("Druid")))
                     HealFunc(procId);
                 if (stickRunning)
                     stickFunc(procId);
