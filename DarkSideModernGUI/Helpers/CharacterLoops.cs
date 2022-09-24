@@ -260,17 +260,30 @@ namespace DarkSideModernGUI.Helpers
             int threadsleep = 50;
             bool isMoving = true;
             bool isLooting = false;
+            bool isResetting = false;
 
             float xloc;
             float yloc;
             short finalheading;
 
+            UpdateGlobals(procId);
+
+            CharGlobals charGlobals = CharGlobalDict[procId];
+
+            //Check if ready char needs to run to reset
+            if (drgSettings.resetLocs.readyCharReset)
+            {
+                if (charGlobals.playerInfo.name.Equals(drgSettings.roleNames.readyName))
+                {
+                    isResetting = true;
+                }
+            }
 
             while (isMoving)
             {
                 UpdateGlobals(procId);
 
-                CharGlobals charGlobals = CharGlobalDict[procId];
+                charGlobals = CharGlobalDict[procId];
                 string plyrName = new string(charGlobals.playerInfo.name);
 
                 string className = new string(charGlobals.playerInfo.className);
@@ -283,7 +296,7 @@ namespace DarkSideModernGUI.Helpers
                 }
 
                 //don't move if we're readyName
-                if (!string.IsNullOrEmpty(readyName))
+                if (!string.IsNullOrEmpty(readyName) && !drgSettings.resetLocs.readyCharReset)
                 {
                     if (plyrName.Contains(readyName))
                     {
@@ -313,6 +326,8 @@ namespace DarkSideModernGUI.Helpers
                 }
 
 
+
+
                 //Set up locs
                 if (className.Contains(drgSettings.dragonFight.tank.className))
                 {
@@ -331,9 +346,10 @@ namespace DarkSideModernGUI.Helpers
                 float stoppingDist = 25.0f;
 
 
+                //Initial battle location
                 float dist = DistanceToPoint(charGlobals.playerPos, xloc, yloc);
                 short newheading = GetGameHeading(charGlobals.playerPos, xloc, yloc);
-                if (!isLooting)
+                if (!isLooting && !isResetting)
                 {
                     if (dist > stoppingDist)
                     {
@@ -351,11 +367,64 @@ namespace DarkSideModernGUI.Helpers
                     
                 }
 
-                //tank should get loot first
+                //If ready char needs to run to reset
+                if (isResetting)
+                {
+                    int currentDest = 0; //0 = battle location, 1 = ramp, 2 = max, 3 = back to ramp, 4 = battle location
+                    while (isResetting && dragonLooping)
+                    {
+                        dist = DistanceToPoint(charGlobals.playerPos, xloc, yloc);
+                        newheading = GetGameHeading(charGlobals.playerPos, xloc, yloc);
+                        UpdateGlobals(procId);
+                        charGlobals = CharGlobalDict[procId];
+                        //Check if we're dead, if so return
+                        if (charGlobals.EntityList[charGlobals.playerInfo.entListIndex].isDead == 1)
+                        {
+                            return;
+                        }
+                        if (dist > stoppingDist)
+                        {
+                            SetPlayerFwdSpeed(charGlobals.apiObject, true, fwdSpeed);
+                            SetPlayerHeading(charGlobals.apiObject, true, newheading);
+                        }
+                        else
+                        {
+                            SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
+                            //Arrived at battle loc, move to ramp
+                            if (currentDest == 0)
+                            {
+                                currentDest = 1;
+                                xloc = drgSettings.resetLocs.rampLoc.xloc;
+                                yloc = drgSettings.resetLocs.rampLoc.yloc;
+                            //Arrived at ramp, move to max
+                            } else if (currentDest == 1)
+                            {
+                                currentDest = 2;
+                                xloc = drgSettings.resetLocs.maxLoc.xloc;
+                                yloc = drgSettings.resetLocs.maxLoc.yloc;
+                            //Arrived at max, say ready and move back to ramp
+                            } else if (currentDest == 2)
+                            {
+                                IntPtr cmdbuf = Marshal.AllocHGlobal(Marshal.SizeOf<CmdBuffer>());
+                                cmdbuf = Marshal.StringToHGlobalAnsi("/say ready");
+                                SendCommand(charGlobals.apiObject, 0, 0, cmdbuf);
+                                Marshal.FreeHGlobal(cmdbuf);
+                                currentDest = 3;
+                                xloc = drgSettings.resetLocs.rampLoc.xloc;
+                                yloc = drgSettings.resetLocs.rampLoc.yloc;
+                            //Arrived back at ramp, end this loop so that char goes back to initial battle location
+                            } else if (currentDest == 3)
+                            {
+                                isResetting = false;
+                            }
+                        }
+                    }
+                }
 
+                //tank should get loot first
                 if (isLooting && className.Contains(drgSettings.dragonFight.tank.className))
                 {
-                    while (isLooting && dragonRunning)
+                    while (isLooting && dragonLooping)
                     {
                         UpdateGlobals(procId);
                         charGlobals = CharGlobalDict[procId];
@@ -424,7 +493,9 @@ namespace DarkSideModernGUI.Helpers
             float yloc = 0;
             short finalheading = 0;
 
-            while (isMoving)
+            int currentLoc = 0; //used to swap from prep loc -> actual reset loc
+
+            while (isMoving && dragonLooping)
             {
                 UpdateGlobals(procId);
 
@@ -441,8 +512,8 @@ namespace DarkSideModernGUI.Helpers
                     return;
                 }
 
-                //don't move if we're readyName
-                if (!string.IsNullOrEmpty(readyName)) {
+                //don't move if we're readyName and we are using a separate readychar
+                if (!string.IsNullOrEmpty(readyName) && !drgSettings.resetLocs.readyCharReset) {
                     if (plyrName.Contains(readyName))
                     {
                         break;
@@ -450,20 +521,24 @@ namespace DarkSideModernGUI.Helpers
                 }
 
 
-                //Set up locs
-                if (className.Contains(drgSettings.dragonFight.tank.className))
+                //Set up prep loc first
+                if (currentLoc == 0)
                 {
-                    xloc = drgSettings.resetLocs.tankLocs.xloc;
-                    yloc = drgSettings.resetLocs.tankLocs.yloc;
-                    finalheading = drgSettings.resetLocs.tankLocs.heading;
+                    if (className.Contains(drgSettings.dragonFight.tank.className))
+                    {
+                        xloc = drgSettings.resetLocs.prepResetLoc.xloc;
+                        yloc = drgSettings.resetLocs.prepResetLoc.yloc;
+                        finalheading = drgSettings.resetLocs.prepResetLoc.heading;
 
+                    }
+                    else
+                    {
+                        xloc = drgSettings.resetLocs.prepResetLoc.xloc;
+                        yloc = drgSettings.resetLocs.prepResetLoc.yloc;
+                        finalheading = drgSettings.resetLocs.prepResetLoc.heading;
+                    }
                 }
-                else
-                {
-                    xloc = drgSettings.resetLocs.otherLocs.xloc;
-                    yloc = drgSettings.resetLocs.otherLocs.yloc;
-                    finalheading = drgSettings.resetLocs.otherLocs.heading;
-                }
+
 
                 float stoppingDist = 10.0f;
                 //currentTarget = findEntityByName(EntityList, "Asmoe");
@@ -479,11 +554,22 @@ namespace DarkSideModernGUI.Helpers
                 }
                 else
                 {
-                    SetPlayerHeading(charGlobals.apiObject, true, ConvertDirHeading(finalheading));
                     SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
-                    //This isn't turning them the direction of the leader for some reason
-                    //
-                    isMoving = false;
+
+                    //We made it to the prep loc, so set to actual wall loc
+                    if (currentLoc == 0)
+                    {
+                        currentLoc = 1;
+                        xloc = drgSettings.resetLocs.tankLocs.xloc;
+                        yloc = drgSettings.resetLocs.tankLocs.yloc;
+                    }
+                    //We made it to the wall 
+                    else if (currentLoc == 1)
+                    {
+                        currentLoc = 2;
+                        SetPlayerHeading(charGlobals.apiObject, true, ConvertDirHeading(finalheading));
+                        isMoving = false;
+                    }
                 }
 
                 Thread.Sleep(100);
@@ -612,7 +698,7 @@ namespace DarkSideModernGUI.Helpers
 
                 string plyrName = charGlobals.playerInfo.name;
                 //don't move if we're readyName
-                if (!string.IsNullOrEmpty(readyName))
+                if (!string.IsNullOrEmpty(readyName) && !drgSettings.resetLocs.readyCharReset)
                 {
                     if (plyrName.Contains(readyName))
                     {
@@ -777,6 +863,12 @@ namespace DarkSideModernGUI.Helpers
                     int graniteOffset = findEntityInRadius(charGlobals.EntityList, charGlobals.playerPos, "granite giant", 1500);
                     int cloudOffset = findEntityByName(charGlobals.EntityList, "smoke cloud");
                     int fireOffset = findEntityByName(charGlobals.EntityList, "Fire");
+                    
+                    if (goleOffset == 0)
+                    {
+                        fightStarted = false;
+                        dragonRunning = false;
+                    }
 
                     //Paladin check for clouds
                     //******this type of movement doesn't work for this.  Maybe just a timed movement instead?
@@ -967,7 +1059,6 @@ namespace DarkSideModernGUI.Helpers
                             UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, dbfNS);
                         }
 
-                        //******single target heals not working at all
                         if (charGlobals.playerInfo.className.Contains(brdClass))
                         {
                             //check if need to group heal
@@ -1032,8 +1123,70 @@ namespace DarkSideModernGUI.Helpers
             int goleCheck = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
             if (goleCheck == 0)
             {
+                //Make sure group is healed up before resetting
+                if (charGlobals.playerInfo.className.Contains(brdClass) || charGlobals.playerInfo.className.Contains(hlrClass))
+                {
+                    while (GetPartyAverageHP(charGlobals.partyMemberList) < 95)
+                    {
+                        UpdateGlobals(procId);
+                        charGlobals = CharGlobalDict[procId];
+
+                        if (charGlobals.playerInfo.className.Contains(brdClass))
+                        {
+                            //check if need to group heal
+                            if (GetPartyAverageHP(charGlobals.partyMemberList) < 75)
+                            {
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdGrpHeal);
+                            }
+                            else
+                            {
+                                //check if a party member needs heal
+                                int ptEntOffset = PartyMemberNeedsHeal(charGlobals.partyMemberList, charGlobals.EntityList);
+                                if (ptEntOffset > 0)
+                                {
+                                    SetTarget(charGlobals.apiObject, ptEntOffset);
+                                    if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdBigHeal);
+                                    else if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, brdSmallHeal);
+
+                                }
+                            }
+
+
+                        }
+                        else if (charGlobals.playerInfo.className.Contains(hlrClass))
+                        {
+                            //first check for group heal
+                            if (GetPartyAverageHP(charGlobals.partyMemberList) < 85)
+                            {
+                                UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrGrpHeal);
+                            }
+                            else
+                            {
+                                //check if a party member needs heal
+                                int ptEntOffset = PartyMemberNeedsHeal(charGlobals.partyMemberList, charGlobals.EntityList);
+                                if (ptEntOffset > 0)
+                                {
+                                    SetTarget(charGlobals.apiObject, ptEntOffset);
+                                    if (charGlobals.EntityList[ptEntOffset].health < bigHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrBigHeal);
+                                    else if (charGlobals.EntityList[ptEntOffset].health < smallHealPct)
+                                        UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, hlrSmallHeal);
+
+                                }
+                            }
+                        }
+                    }
+                }
+
                 dragonRunning = false;
                 finalGlobals.currentState = DragonState.reset;
+                CharGlobalDict[procId] = finalGlobals;
+            } else
+            {
+                finalGlobals.currentState = DragonState.fighting;
+                dragonRunning = true;
                 CharGlobalDict[procId] = finalGlobals;
             }
 

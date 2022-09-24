@@ -35,6 +35,10 @@ namespace DarkSideModernGUI.Helpers
     {
         public SettingsLoc tankLocs;
         public SettingsLoc otherLocs;
+        public SettingsLoc prepResetLoc;
+        public SettingsLoc rampLoc;
+        public SettingsLoc maxLoc;
+        public bool readyCharReset;
     }
 
     public class SettingsLoc
