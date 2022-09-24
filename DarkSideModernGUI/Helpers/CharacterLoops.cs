@@ -329,8 +329,6 @@ namespace DarkSideModernGUI.Helpers
                 }
 
                 float stoppingDist = 25.0f;
-                //currentTarget = findEntityByName(EntityList, "Asmoe");
-                //SetTarget(charGlobals.apiObject, currentTarget);
 
 
                 float dist = DistanceToPoint(charGlobals.playerPos, xloc, yloc);
@@ -341,16 +339,11 @@ namespace DarkSideModernGUI.Helpers
                     {
                         SetPlayerFwdSpeed(charGlobals.apiObject, true, fwdSpeed);
                         SetPlayerHeading(charGlobals.apiObject, true, newheading);
-                        //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                        //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
                     }
                     else
                     {
                         SetPlayerHeading(charGlobals.apiObject, true, ConvertDirHeading(finalheading));
-                        //SetPlayerHeading(charGlobals.apiObject, false, 0);
                         SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
-                        //This isn't turning them the direction of the leader for some reason
-                        //
                         isMoving = false;
                         isLooting = true;
 
@@ -371,16 +364,12 @@ namespace DarkSideModernGUI.Helpers
                         {
 
                             SetTarget(charGlobals.apiObject, loot);
-                            //float lootdist = DistanceToPoint(charGlobals.playerPos, lootlocx, lootlocy);
-                            //short loothead = GetGameHeading(charGlobals.playerPos, lootlocx, lootlocy);
                             float lootdist = DistanceToPoint(charGlobals.playerPos, charGlobals.EntityList[loot].pos_x, charGlobals.EntityList[loot].pos_y);
                             short loothead = GetGameHeading(charGlobals.playerPos, charGlobals.EntityList[loot].pos_x, charGlobals.EntityList[loot].pos_y);
                             if (lootdist > stoppingDist)
                             {
                                 SetPlayerFwdSpeed(charGlobals.apiObject, true, fwdSpeed);
                                 SetPlayerHeading(charGlobals.apiObject, true, loothead);
-                                //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                                //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
                             }
                             else
                             {
@@ -485,17 +474,12 @@ namespace DarkSideModernGUI.Helpers
                 short newheading = GetGameHeading(charGlobals.playerPos, xloc, yloc);
                 if (dist > stoppingDist)
                 {
-                    //SetPlayerFwdSpeed(charGlobals.apiObject, true, fwdSpeed);
                     SetPlayerFwdSpeed(charGlobals.apiObject, true, fwdSpeed);
                     SetPlayerHeading(charGlobals.apiObject, true, newheading);
-                    //dist = DistanceToPoint(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y, stickTargPos.pos_z);
-                    //newheading = GetGameHeading(charGlobals.playerPos, stickTargPos.pos_x, stickTargPos.pos_y);
                 }
                 else
                 {
                     SetPlayerHeading(charGlobals.apiObject, true, ConvertDirHeading(finalheading));
-                    //SetPlayerHeading(charGlobals.apiObject, false, 0);
-                    //SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
                     SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
                     //This isn't turning them the direction of the leader for some reason
                     //
@@ -506,14 +490,13 @@ namespace DarkSideModernGUI.Helpers
             }
             CharGlobals finalGlobals = CharGlobalDict[procId];
             SetPlayerHeading(finalGlobals.apiObject, false, 0);
-            //SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
             SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
 
             int goleOffset = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
             string cName = finalGlobals.playerInfo.className;
             //Set the state to battle
             //wait for gole to come back, or not be dead
-            while (dragonLooping && goleOffset == 0 || finalGlobals.EntityList[goleOffset].isDead == 1)
+            while (dragonLooping && goleOffset == 0)
             {
                 UpdateGlobals(procId);
                 finalGlobals = CharGlobalDict[procId];
@@ -875,6 +858,9 @@ namespace DarkSideModernGUI.Helpers
                                     UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, mlNine);
                                     Thread.Sleep(50);
                                     UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, "Emasculate Strength");
+                                    //Make sure these are staying true while we're fighting
+                                    fightStarted = true;
+                                    dragonRunning = true;
                                 }
 
                             }
@@ -888,7 +874,10 @@ namespace DarkSideModernGUI.Helpers
                                 if (charGlobals.playerInfo.className.Contains(dmgClass))
                                 {
                                     SetTarget(charGlobals.apiObject, graniteOffset);
-                        
+                                    //Make sure these are staying true while we're fighting
+                                    fightStarted = true;
+                                    dragonRunning = true;
+
                                 }
                             } else
                             {
@@ -909,6 +898,9 @@ namespace DarkSideModernGUI.Helpers
                                     Thread.Sleep(50);
                                     UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, "Emasculate Strength");
                                 }
+                                //Make sure these are staying true while we're fighting
+                                fightStarted = true;
+                                dragonRunning = true;
                             }
                             else
                             {
@@ -1032,12 +1024,9 @@ namespace DarkSideModernGUI.Helpers
             }
             CharGlobals finalGlobals = CharGlobalDict[procId];
             //Make sure we aren't moving and clean our inventory
-            //SetPlayerHeading(finalGlobals.apiObject, true, 0);
             SetPlayerFwdSpeed(finalGlobals.apiObject, true, 0);
             SetPlayerStrafeSpeed(finalGlobals.apiObject, true, 0);
-            //SetPlayerHeading(finalGlobals.apiObject, false, 0);
-            //SetPlayerFwdSpeed(finalGlobals.apiObject, false, 0);
-            //SetPlayerStrafeSpeed(finalGlobals.apiObject, false, 0);
+
             clean_inventory(procId);
 
             int goleCheck = findEntityByName(finalGlobals.EntityList, "Golestandt", true);
