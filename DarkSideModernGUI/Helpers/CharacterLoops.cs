@@ -567,7 +567,7 @@ namespace DarkSideModernGUI.Helpers
                     else if (currentLoc == 1)
                     {
                         currentLoc = 2;
-                        SetPlayerHeading(charGlobals.apiObject, true, ConvertDirHeading(finalheading));
+                        //SetPlayerHeading(charGlobals.apiObject, true, ConvertDirHeading(finalheading));
                         isMoving = false;
                     }
                 }
@@ -1126,10 +1126,15 @@ namespace DarkSideModernGUI.Helpers
                 //Make sure group is healed up before resetting
                 if (charGlobals.playerInfo.className.Contains(brdClass) || charGlobals.playerInfo.className.Contains(hlrClass))
                 {
-                    while (GetPartyAverageHP(charGlobals.partyMemberList) < 95)
+                    while (dragonLooping && GetPartyAverageHP(charGlobals.partyMemberList) < 95)
                     {
                         UpdateGlobals(procId);
                         charGlobals = CharGlobalDict[procId];
+                        //Check if we're dead, if so return
+                        if (charGlobals.EntityList[charGlobals.playerInfo.entListIndex].isDead == 1)
+                        {
+                            return;
+                        }
 
                         if (charGlobals.playerInfo.className.Contains(brdClass))
                         {

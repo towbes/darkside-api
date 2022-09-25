@@ -14,6 +14,11 @@ namespace DarkSideModernGUI.Helpers
 {
     public class DarksideGameAPI
     {
+        /**
+         * Struct: Player Position (Actual game struct)
+         * Contains position info for the current player
+         * heading, momentumFwdBackWritable and momentumLeftRight are used for automated movement
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct PlayerPosition
         {
@@ -37,7 +42,9 @@ namespace DarkSideModernGUI.Helpers
 
         }
 
-        //PartyMemberInfo
+        /**
+         * Struct: Party Member Info (Custom api struct)
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct PartyMemberInfo
         {
@@ -51,12 +58,15 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4616)] public char[] unknown2;
         }
 
-        //EntityInfo
+        /**
+         * Struct: Entity Info (Custom api struct)
+         * This uses a subset of data from the original entity struct
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct EntityInfo
         {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 48)] public String name;
-            public byte type { get; private set; }
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 48)] public String name; //Entity Name
+            public byte type { get; private set; }          
             public short objectId { get; private set; }
             public int level { get; private set; }
             public int health { get; private set; }
@@ -65,10 +75,14 @@ namespace DarkSideModernGUI.Helpers
             public float pos_z { get; private set; }
             public short heading { get; private set; }
             public int castCountdown { get; private set; }
-            public int entityStatus { get; private set; } // 8 = idle
+            public int entityStatus { get; private set; }   // 8 = idle
             public short isDead { get; private set; }
         }
-        //Playerinfo struct
+
+        /**
+         * Struct: Entity List (Custom api struct)
+         * Full 2000 length array of Entity objects copied from the game
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct EntityList
         {
@@ -76,7 +90,11 @@ namespace DarkSideModernGUI.Helpers
 
         }
 
-        //useSkill_t
+        /**
+         * Struct: Skill (in game struct)
+         * Skill information
+         * Healers/Melee are all skill based (hybrids, casters have skills and spells, Master level abilities are spells)
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Skill_t
         {
@@ -85,19 +103,12 @@ namespace DarkSideModernGUI.Helpers
             public int unknown2 { get; private set; }
             public int tickCount { get; private set; }
         }
-        //useSpell_t
-        //struct useSpell_t
-        //{
-        //    char name[64];
-        //    short spellLevel;
-        //    short unknown1;
-        //    int tickCount;
-        //    int unknown2;
-        //    int unknown3;
-        //    int unknown4;
-        //    int unknown5;
-        //    int unknown6;
-        //};
+
+        /**
+         * Struct: Spell (in game struct)
+         * Spell information
+         * hybrids, casters have skills and spells, Master level abilities are spells
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Spell_t
         {
@@ -111,7 +122,11 @@ namespace DarkSideModernGUI.Helpers
             public int unknown5 { get; private set; }
             public int unknown6 { get; private set; }
         }
-        //spellCategory_t
+
+        /**
+         * Struct: Spell Category (in game struct)
+         * This is the way spells are organized in game memory
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct spellCategory_t
         {
@@ -119,7 +134,11 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 75)] public Spell_t[] spells;
             public int align { get; private set; }
         }
-        //item_t
+
+        /**
+         * Struct: Item (in game struct)
+         * Information about items
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Item_t
         {
@@ -128,7 +147,11 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)] public String name;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 312)] public char[] unknown2;
         }
-        //buff_t
+
+        /**
+         * Struct: Buff (in game struct)
+         * Information about buffs
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Buff_t
         {
@@ -142,7 +165,10 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)] public char[] unknown3;
         }
 
-        //Playerinfo struct
+        /**
+         * Struct: Buff (custom api struct)
+         * Combination of data to get information about the player
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct PlayerInfo
         {
@@ -158,7 +184,11 @@ namespace DarkSideModernGUI.Helpers
             public int entListIndex { get; private set; }
             public int petEntIndex { get; private set; }
         }
-        //Playerinfo struct
+        /**
+         * 
+         * Struct: TargetInfo (custom api struct)
+         * Combination of data to get information about the current target
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct TargetInfo
         {
@@ -169,7 +199,11 @@ namespace DarkSideModernGUI.Helpers
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 4)] public String hasTarget;
         }
 
-        //Chatbuffer
+        /**
+         * 
+         * Struct: ChatBuffer (custom api struct)
+         * Used to grab a single line of chat from the game as it comes in
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct Chatbuffer
         {
@@ -177,14 +211,22 @@ namespace DarkSideModernGUI.Helpers
         }
 
 
-        //CmdBuffer
+        /**
+         * 
+         * Struct: Command Buffer (custom api struct)
+         * Used to send commands to the game
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct CmdBuffer
         {
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)] public String sendCmd;
         }
 
-        //SendPktBuffer
+        /**
+         * 
+         * Struct: Send packet Buffer (custom api struct)
+         * Used to send packets to the game
+         */
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct PktBuffer
         {
