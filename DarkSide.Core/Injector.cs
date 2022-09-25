@@ -18,7 +18,7 @@ namespace DarkSide.Core
             var localByName = Process.GetProcessesByName("game.dll");
             apiObject = DarkSideApiWrapper.CreateDarksideAPI();
             DarkSideApiWrapper.InjectPid(apiObject, localByName[0].Id);
-            var bla = new Stuff();
+            var bla = new EntityPosition();
             IntPtr outputIntPtr=new IntPtr();
             DarkSideApiWrapper.GetPlayerPosition(apiObject,outputIntPtr);
             

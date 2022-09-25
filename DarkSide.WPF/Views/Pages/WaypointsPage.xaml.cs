@@ -91,7 +91,7 @@ public partial class WaypointsPage : INavigableView<WaypointsViewModel>
         var buf = Marshal.AllocHGlobal(Marshal.SizeOf<PlayerPosition>());
         GetPlayerPosition(TestPage.apiObject, buf);
         var playerPos = (PlayerPosition)Marshal.PtrToStructure(buf, typeof(PlayerPosition));
-
+        
         Dispatcher.Invoke(
             () =>
             {
