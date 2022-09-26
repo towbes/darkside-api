@@ -562,6 +562,7 @@ namespace DarkSideModernGUI.Helpers
                         currentLoc = 1;
                         xloc = drgSettings.resetLocs.tankLocs.xloc;
                         yloc = drgSettings.resetLocs.tankLocs.yloc;
+                        SetPlayerFwdSpeed(charGlobals.apiObject, true, fwdSpeed);
                     }
                     //We made it to the wall 
                     else if (currentLoc == 1)
@@ -708,16 +709,34 @@ namespace DarkSideModernGUI.Helpers
 
                 int decimusOffset = findEntityByName(charGlobals.EntityList, "Decimus", true);
 
+                //Setup gole to check for health under 100
+                //This should fix when the encounter bug resets before gole is dead
+                int goleOffset = findEntityByName(charGlobals.EntityList, "Golestandt", true);
+                EntityInfo goleEnt;
+                if (goleOffset > 0)
+                {
+                    goleEnt = charGlobals.EntityList[goleOffset];
+                    if (goleEnt.health < 100)
+                    {
+                        fightStarted = true;
+                    }
+                } else
+                {
+                    dragonRunning = false;
+                }
                 //Check chat for selan message
                 //******the chat check doesn't seem to be working but the decimus offset does
                 //charGlobals.chatLine.chatLine.Contains("Golestandt") || 
                 if (decimusOffset == 0)
                 {
                     fightStarted = true;
-                } else
-                {
-                    fightStarted = false;
                 }
+                       
+                
+                //else
+                //{
+                //    fightStarted = false;
+                //}
 
                 //Check if we're casting and have more than castSleep left
                 if (charGlobals.EntityList[charGlobals.playerInfo.entListIndex].castCountdown > castSleep)
@@ -859,11 +878,14 @@ namespace DarkSideModernGUI.Helpers
                 if (fightStarted)
                 {
                     int morellaOffset = findEntityByName(charGlobals.EntityList, "Morella");
-                    int goleOffset = findEntityByName(charGlobals.EntityList, "Golestandt", true);
+                    goleOffset = findEntityByName(charGlobals.EntityList, "Golestandt", true);
                     int graniteOffset = findEntityInRadius(charGlobals.EntityList, charGlobals.playerPos, "granite giant", 1500);
-                    int cloudOffset = findEntityByName(charGlobals.EntityList, "smoke cloud");
-                    int fireOffset = findEntityByName(charGlobals.EntityList, "Fire");
-                    
+                    int cloudOffset = findEntityInRadius(charGlobals.EntityList, charGlobals.playerPos, "smoke cloud", 30);
+                    int fireOffset = findEntityInRadius(charGlobals.EntityList, charGlobals.playerPos, "Fire", 30);
+
+                    //assign gole entity to check for hp under 100 in case encounter bugs
+                    goleEnt = charGlobals.EntityList[goleOffset];
+
                     if (goleOffset == 0)
                     {
                         fightStarted = false;
@@ -902,7 +924,7 @@ namespace DarkSideModernGUI.Helpers
                                 currentTankPoint = currentTankPoint * -1;
                             }
                         }
-                        else if (fireOffset > 0)
+                        if (fireOffset > 0)
                         {
                             float firePosX = charGlobals.EntityList[fireOffset].pos_x;
                             float firePosY = charGlobals.EntityList[fireOffset].pos_y;
@@ -937,7 +959,8 @@ namespace DarkSideModernGUI.Helpers
                     //always check morella offset first, then check for a granite giant spawn, then gole
                     if (charGlobals.playerInfo.className.Contains(dmgClass) || charGlobals.playerInfo.className.Contains(dbfClass))
                     {
-                        if (morellaOffset > 0 && charGlobals.targetInfo.entOffset != morellaOffset)
+                        //only attack morella if goles health is over 95, this should kill morella initially, but then not try to retarget her if encounter was started
+                        if (morellaOffset > 0 && charGlobals.targetInfo.entOffset != morellaOffset && goleEnt.health > 95)
                         {
                             EntityInfo morellaEnt = charGlobals.EntityList[morellaOffset];
                             if (morellaEnt.isDead == 0)
@@ -977,9 +1000,10 @@ namespace DarkSideModernGUI.Helpers
                                 graniteOffset = 0;
                             }
                         }
+                        //attack if morella and giant are dead, or if gole's health is under 100
                         if ((morellaOffset == 0) && (graniteOffset == 0) && goleOffset > 0 && charGlobals.targetInfo.entOffset != goleOffset)
                         {
-                            EntityInfo goleEnt = charGlobals.EntityList[goleOffset];
+                            goleEnt = charGlobals.EntityList[goleOffset];
                             if (goleEnt.health > 0)
                             {
                                 if (charGlobals.playerInfo.className.Contains(dmgClass) || charGlobals.playerInfo.className.Contains(dbfClass))
@@ -1009,7 +1033,7 @@ namespace DarkSideModernGUI.Helpers
                             dragonRunning = false;
                             //set the pet to idle=
                             UsePetCmdByName(charGlobals.apiObject, "passive");
-                        }
+                        } 
                     }
 
 
