@@ -270,6 +270,8 @@ namespace DarkSideModernGUI.Helpers
 
             CharGlobals charGlobals = CharGlobalDict[procId];
 
+            int currentLoc = 0; //used to swap from prep loc -> actual battle loc
+
             //Check if ready char needs to run to reset
             if (drgSettings.resetLocs.readyCharReset)
             {
@@ -335,16 +337,35 @@ namespace DarkSideModernGUI.Helpers
                     yloc = drgSettings.battleLocs.tankLocs.yloc;
                     finalheading = drgSettings.battleLocs.tankLocs.heading;
 
+                } else if (currentLoc == 0){
+                    xloc = drgSettings.battleLocs.prepBattleLoc.xloc;
+                    yloc = drgSettings.battleLocs.prepBattleLoc.yloc;
+                    finalheading = drgSettings.battleLocs.prepBattleLoc.heading;
                 }
+                else if (drgSettings.battleLocs.loc1Chars.Contains(plyrName))
+                {
+                    xloc = drgSettings.battleLocs.otherLocs1.xloc;
+                    yloc = drgSettings.battleLocs.otherLocs1.yloc;
+                    finalheading = drgSettings.battleLocs.otherLocs1.heading;
+                }
+                else if (drgSettings.battleLocs.loc2Chars.Contains(plyrName))
+                {
+                    xloc = drgSettings.battleLocs.otherLocs2.xloc;
+                    yloc = drgSettings.battleLocs.otherLocs2.yloc;
+                    finalheading = drgSettings.battleLocs.otherLocs2.heading;
+
+                }
+                //remaining go to loc 3
+                //else if (drgSettings.battleLocs.loc3Chars.Contains(plyrName))
                 else
                 {
-                    xloc = drgSettings.battleLocs.otherLocs.xloc;
-                    yloc = drgSettings.battleLocs.otherLocs.yloc;
-                    finalheading = drgSettings.battleLocs.otherLocs.heading;
+                    xloc = drgSettings.battleLocs.otherLocs3.xloc;
+                    yloc = drgSettings.battleLocs.otherLocs3.yloc;
+                    finalheading = drgSettings.battleLocs.otherLocs3.heading;
+
                 }
 
                 float stoppingDist = 25.0f;
-
 
                 //Initial battle location
                 float dist = DistanceToPoint(charGlobals.playerPos, xloc, yloc);
@@ -360,9 +381,14 @@ namespace DarkSideModernGUI.Helpers
                     {
                         SetPlayerHeading(charGlobals.apiObject, true, ConvertDirHeading(finalheading));
                         SetPlayerFwdSpeed(charGlobals.apiObject, true, 0);
-                        isMoving = false;
-                        isLooting = true;
+                        //Stop if we made it to second location
+                        if (currentLoc > 0)
+                        {
+                            isMoving = false;
+                            isLooting = true;
+                        }
 
+                        currentLoc++;
                     }
                     
                 }
@@ -1048,12 +1074,8 @@ namespace DarkSideModernGUI.Helpers
                             //face gole
                             short facegoleheading = GetGameHeading(charGlobals.playerPos, charGlobals.EntityList[goleOffset].pos_x, charGlobals.EntityList[goleOffset].pos_y);
                             SetPlayerHeading(charGlobals.apiObject, true, facegoleheading);
-                            Thread.Sleep(50);
-                            //set to false to avoid locking heading update
-                            SetPlayerHeading(charGlobals.apiObject, false, 0);
                             //Melee Taunt
                             UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankMeleeTaunt);
-                            Thread.Sleep(threadSleep);
                             //Spell taunt
                             UseSkillByName(charGlobals.apiObject, charGlobals.playerInfo.Skills, tankSpellTaunt);
                             if (charGlobals.playerInfo.health < tankHealpct)
@@ -1079,7 +1101,6 @@ namespace DarkSideModernGUI.Helpers
                                 UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, dbfStun);
                             }
                             UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, dbfSpell);
-                            Thread.Sleep(50);
                             UseSpellByName(charGlobals.apiObject, charGlobals.playerInfo.SpellLines, dbfNS);
                         }
 

@@ -25,8 +25,14 @@ namespace DarkSideModernGUI.Helpers
 
     public class BattleLocs
     {
+        public SettingsLoc prepBattleLoc;
         public SettingsLoc tankLocs;
-        public SettingsLoc otherLocs;
+        public SettingsLoc otherLocs1;
+        public SettingsLoc otherLocs2;
+        public SettingsLoc otherLocs3;
+        public List<string> loc1Chars;
+        public List<string> loc2Chars;
+        public List<string> loc3Chars;
 
     }
 
