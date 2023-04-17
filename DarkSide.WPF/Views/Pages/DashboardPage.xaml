@@ -1,13 +1,13 @@
 ﻿<ui:UiPage
-    x:Class="DarkSide.WPF.Views.Pages.DashboardPage"
+    x:Class="DarkSideModernGUI.Views.Pages.DashboardPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DarkSideModernGUI.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:pages="clr-namespace:DarkSide.WPF.Views.Pages"
     Title="DashboardPage"
-    d:DataContext="{d:DesignInstance pages:DashboardPage,
+    d:DataContext="{d:DesignInstance local:DashboardPage,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -34,19 +34,14 @@
             Margin="0,0,0,0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Top"
-            DisplayMemberPath="GameDLLID"
-            SelectedValuePath="GameDLLID" />
+            DisplayMemberPath="procId"
+            SelectedValuePath="procId" />
 
 
-        <ui:Button
-            x:Name="btnInjectGameDLL"
-            Grid.Column="3"
-            Width="150"
-            Margin="33,4,0,0"
-            VerticalAlignment="Top"
-            Background="#FFFCA703"
-            Click="btnInjectGameDLL_Click"
-            Content="Inject Game.DLL" />
+
+
+
+
 
 
         <DockPanel Grid.Column="3">
@@ -60,31 +55,12 @@
                 BorderThickness="1">
 
 
-                <StackPanel
-                    x:Name="Route_Load"
-                    Margin="0,0,0,5">
 
-                    <Label
-                        Width="180"
-                        Margin="10,10,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Content="Select Route"
-                        FontSize="14"
-                        FontWeight="Bold" />
-
-
-                    <ComboBox
-                        x:Name="cbxRouteLoad"
-                        Width="160"
-                        Margin="0,0,0,10" />
-
-
-                </StackPanel>
 
             </Border>
 
         </DockPanel>
+
 
 
         <Label
@@ -94,7 +70,63 @@
             FontWeight="Bold" />
 
 
-        <DockPanel Grid.Column="3">
+
+
+        <StackPanel
+                    x:Name="Route_Load"
+                    Grid.Column="3"
+                    Margin="0,0,0,5">
+            <ui:Button
+            x:Name="btnInjectGameDLL"
+            Grid.Column="3"
+            Width="150"
+            Margin="33,4,0,0"
+            VerticalAlignment="Top"
+            Background="#FFFCA703"
+            Click="btnInjectGameDLL_Click"
+            Content="Inject Game.DLL" />
+
+            <ui:Button
+            x:Name="btnInjectAll"
+            Grid.Column="3"
+            Width="150"
+            Margin="33,10,0,0"
+            VerticalAlignment="Top"
+            Background="#FFFCA703"
+            Click="btnInjectAll_Click"
+            Content="Inject All" />
+
+            <ui:Button
+            x:Name="btnUnloadAll"
+            Grid.Column="3"
+            Width="150"
+            Margin="33,10,0,0"
+            VerticalAlignment="Top"
+            Background="#FFFCA703"
+            Click="btnUnloadAll_Click"
+            Content="Unload All" />
+
+            <Label
+                        Grid.Column="3"
+                        Width="180"
+                        Margin="10,10,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="Select Route"
+                        FontSize="14"
+                        FontWeight="Bold" />
+
+
+            <ComboBox
+                        x:Name="cbxRouteLoad"
+                        Width="160"
+                        Margin="0,0,0,10" />
+
+
+
+
+        </StackPanel>
+        <DockPanel Grid.Column="2" Grid.ColumnSpan="2" Margin="155,0,5,0">
             <Border
                 Width="200"
                 Height="230"
@@ -103,10 +135,12 @@
                 VerticalAlignment="Top"
                 BorderBrush="#FFFCA703"
                 BorderThickness="1">
+                
+                
                 <ui:Button
                     x:Name="btnLaunchBot"
                     Width="160"
-                    Height="160"
+                    Height="100"
                     Margin="0,30,0,0"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"
@@ -114,6 +148,7 @@
                     Click="btnLaunchBot_Click"
                     Content="Launch BOT" />
             </Border>
+
 
 
         </DockPanel>

@@ -16,6 +16,9 @@
     <Filter Include="hooks">
       <UniqueIdentifier>{eb38e7a1-d51f-4f0e-af6b-ed803c160a2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="detours">
+      <UniqueIdentifier>{a1336264-4351-4ba6-9971-6a0f4ccedb43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -42,23 +45,26 @@
     <ClInclude Include="gh_d3d9.h">
       <Filter>hooks</Filter>
     </ClInclude>
-    <ClInclude Include="mem.h">
-      <Filter>hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="Hook.h">
-      <Filter>hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="daocgame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DaocStructs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="daochooks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TargetInfo.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\daoc-logger\daoc-logger\detours\include\detours\detours.h">
+      <Filter>detours</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\daoc-logger\daoc-logger\detours\include\detours\detver.h">
+      <Filter>detours</Filter>
+    </ClInclude>
+    <ClInclude Include="daocgame.h">
+      <Filter>hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="daochooks.h">
+      <Filter>hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="DaocStructs.h">
+      <Filter>hooks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -86,14 +92,19 @@
     <ClCompile Include="gh_d3d9.cpp">
       <Filter>hooks</Filter>
     </ClCompile>
-    <ClCompile Include="mem.cpp">
-      <Filter>hooks</Filter>
-    </ClCompile>
     <ClCompile Include="daochooks.cpp">
       <Filter>hooks</Filter>
     </ClCompile>
     <ClCompile Include="TargetInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChatManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\daoc-logger\daoc-logger\detours\lib\detours.lib">
+      <Filter>detours</Filter>
+    </Library>
   </ItemGroup>
 </Project>

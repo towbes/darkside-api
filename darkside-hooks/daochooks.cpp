@@ -2,6 +2,8 @@
 #include "daochooks.h"
 
 uintptr_t wGetEntityName = funcGetEntityName_x;
+uintptr_t ptrChatiMode = ptrChatiMode_x;
+uintptr_t oCmdHandler = funcCmdHandler_x;
 
 namespace daoc {
     uintptr_t GetEntityPointer(int entityOffset)
@@ -22,6 +24,7 @@ namespace daoc {
         return reinterpret_cast<bool(__fastcall*)(uint32_t)>(funcEntityPtrSanityCheck_x)(entOffset);
     }
 
+    // (c) 2022 atom0s [atom0s@live.com]
     void __declspec(naked) __stdcall GetEntityName(int table_idx, int entity_idx, char* Destination, size_t Count) {
 
         __asm {
@@ -60,12 +63,12 @@ namespace daoc {
     }
 
     //Use spell and skill
-    void UseSpell(int canCastSpell, int spellSlot) {
+    void UseSpell(int spellCategory, int spellLevel) {
         //Use spell and use skill functions
-        typedef void(__cdecl* _UseSpell)(int canCastSpell, int spellSlot);
+        typedef void(__cdecl* _UseSpell)(int spellCategory, int spellLevel);
         _UseSpell UseSpell = (_UseSpell)funcUseSpell_x;
 
-        return UseSpell(canCastSpell, spellSlot);
+        return UseSpell(spellCategory, spellLevel);
     }
 
 
@@ -92,5 +95,75 @@ namespace daoc {
         
         return SetTargetUI();
     }
+
+    void UsePetCommand(char aggroState, char walkState, char command) {
+        typedef void(__cdecl* _PetWindow)(char aggroState, char walkState, char command);
+        _PetWindow PetWindow = (_PetWindow)funcPetWindow_x;
+
+        return PetWindow(aggroState, walkState, command);
+        //Address of signature = game.dll + 0x0002AD78
+        //const char* funcPetWindowPattern = "\x55\x8B\xEC\x51\x83\x3D\x00\x82\x99\x00\x00\x75\x00\x8A\x45\x00\x88\x45\x00\x8A\x45\x00\x88\x45\x00\x8A\x45";
+        //const char* funcPetWindowMask = "xxxxxxxxxx?x?xx?xx?xx?xx?xx";
+        //"55 8B EC 51 83 3D 00 82 99 00 ? 75 ? 8A 45 ? 88 45 ? 8A 45 ? 88 45 ? 8A 45"
+    }
+
+    void __declspec(naked) SendCommand(int cmdMode, int iMode, const char* cmdBuffer) {
+        //typedef void(__cdecl* _SendCommand)(const char* cmdBuffer);
+        //_SendCommand SendCommand = (_SendCommand)funcSendCmd_x;
+        //return SendCommand(cmdBuffer);
+        ////Address of signature = game.dll + 0x0002BC08 0x42bc08
+        //const char* sendCmdPattern = "\x83\x3D\x00\x82\x99\x00\x00\x0F\x85\x00\x00\x00\x00\x56";
+        //const char* sendCmdMask = "xxxxxx?xx????x";
+        //"83 3D 00 82 99 00 ? 0F 85 ? ? ? ? 56"
+            //void SendCommand(int cmdMode, int iMode, const char* cmdBuffer) {
+                //prepare stackframe
+        _asm push ebp;
+        _asm mov ebp, esp;
+        _asm sub esp, __LOCAL_SIZE;
+
+        *(int*)ptrChatiMode = iMode;
+        _asm push cmdMode;
+        _asm mov edx, cmdBuffer
+
+        _asm call oCmdHandler;
+        //wrapCmdHandler();
+
+        //epilogue
+        _asm mov esp, ebp;
+        _asm pop ebp;
+        //
+        _asm ret;
+    }
+
+    //Move item Function
+    //Slot reference: https://github.com/Dawn-of-Light/DOLSharp/blob/9af87af011497c3fda852559b01a269c889b162e/GameServer/gameutils/IGameInventory.cs
+    //Ground = 1
+    //Backpack = 40-79
+    //count = 0 for non stacks
+    void MoveItem(int toSlot, int fromSlot, int count) {
+        typedef void(__cdecl* _MoveItem)(int toSlot, int fromSlot, int count);
+        _MoveItem MoveItem = (_MoveItem)funcMoveItem_x;
+
+        return MoveItem(toSlot, fromSlot, count);
+    }
+
+    void InteractRequest(uint16_t objId) {
+        //Object interact request
+        typedef void(__cdecl* _InteractRequest)(uint16_t objId);
+        _InteractRequest InteractRequest = (_InteractRequest)funcInteract_x;
+        //Address of signature = game.dll + 0x0002AE06 0x42ae06
+
+        return InteractRequest(objId);
+    }
+
+
+
+    int SendPacket(const char* packetBuffer, DWORD packetHeader, DWORD packetLen, DWORD unknown) {
+        typedef int(__cdecl* _SendPacket)(const char* packetBuffer, DWORD packetHeader, DWORD packetLen, DWORD unknown);
+        _SendPacket SendPacket = (_SendPacket)funcSendPacket_x;
+
+        return SendPacket(packetBuffer, packetHeader, packetLen, unknown);
+    }
+
 
 }

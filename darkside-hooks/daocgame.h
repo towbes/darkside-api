@@ -11,6 +11,11 @@
 #define funcUseSpell_x		0x42b4b8
 #define funcSetTarget_x		0x43a8f3
 #define funcSetTargetUI_x		0x48f194
+#define funcPrintChat_x		0x4190e3
+#define funcPetWindow_x		0x42ad78
+#define funcCmdHandler_x		0x416444
+#define funcMoveItem_x			0x42a976
+#define funcInteract_x		0x42ae06
 
 // Entities
 #define funcGetEntityPointer_x		0x43589f
@@ -26,10 +31,18 @@
 #define ptrZoneYoffset_x		0x1495820
 #define ptrZoneXoffset_x		0x149581c
 #define ptrPlayerHp_x		0xf69df0
-#define ptrPlyrSpells_x		0x161da70
+#define ptrPlyrSpells_x		0x161d9f0
 #define ptrPlyrBuffs_x		0xfdd300
 #define ptrPlyrUseSkill_x		0x9a9730
 #define ptrInventory_x		0xf9b8d0
+#define ptrPlayerName_x		0xfd7090
+//Player ent index is at +0x64 from address in ptrGameState_x
+#define ptrGameState_x		0x104a7f0
+#define ptrPetEntIndex_x	0x10498d0
+#define ptrMouseOrKeyPress_x		0x104a744
+
+//Chat related
+#define ptrChatiMode_x		0x10498D8
 
 // Target related
 #define ptrCurrentTargetEntOffset_x		0x10498b0

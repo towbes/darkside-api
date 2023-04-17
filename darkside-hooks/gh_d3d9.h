@@ -1,9 +1,11 @@
+//Code from https://guidedhacking.com/threads/d3d9-endscene-hook-template-using-dummy-device.14008/
+
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 #include <windows.h>
 #include <d3d9.h>
 #include <d3dx9.h>
-#include "mem.h"
+
 
 //typedef HRESULT(APIENTRY* tEndScene)(LPDIRECT3DDEVICE9 pDevice);
 

@@ -61,53 +61,174 @@ bool DarksideAPI::SetPlayerHeading(bool changeHeading, short newHeading) {
 
     //Setup the MMF
         //setup the heading overwrite flag mmf
-    std::wstring headingmmf_name = std::to_wstring(pidHandle) + L"_heading";
-    std::size_t headingFileSize = sizeof(headingupdate_t);
+    std::wstring posUpdateMmf_name = std::to_wstring(pidHandle) + L"_posUpdate";
+    std::size_t posUpdateFilesize = sizeof(positionUpdate_t);
 
 
-    auto headingMapFile = CreateFileMapping(
+    auto posUpdateMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE,    // use paging file
         NULL,                    // default security
         PAGE_READWRITE,          // read/write access
         0,                       // maximum object size (high-order DWORD)
-        headingFileSize,                // maximum object size (low-order DWORD)
-        headingmmf_name.c_str());                 // name of mapping object
+        posUpdateFilesize,                // maximum object size (low-order DWORD)
+        posUpdateMmf_name.c_str());                 // name of mapping object
 
-    if (headingMapFile == NULL)
+    if (posUpdateMapFile == NULL)
     {
         _tprintf(TEXT("Could not create file mapping object (%d).\n"),
             GetLastError());
-        if (headingMapFile != NULL) {
-            CloseHandle(headingMapFile);
+        if (posUpdateMapFile != NULL) {
+            CloseHandle(posUpdateMapFile);
         }
 
         return false;
     }
 
-    headingupdate_t* headingUpdate = (headingupdate_t*)MapViewOfFile(headingMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    positionUpdate_t* posUpdate = (positionUpdate_t*)MapViewOfFile(posUpdateMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     //Todo add exception
 
-    if (headingUpdate == NULL) {
+    if (posUpdate == NULL) {
         _tprintf(TEXT("Could not create map view object (%d).\n"),
             GetLastError());
-        if (headingUpdate != NULL) {
-            UnmapViewOfFile(headingUpdate);
+        if (posUpdate != NULL) {
+            UnmapViewOfFile(posUpdate);
         }
-        if (headingMapFile != NULL) {
-            CloseHandle(headingMapFile);
+        if (posUpdateMapFile != NULL) {
+            CloseHandle(posUpdateMapFile);
         }
         return false;
     }
 
-    headingUpdate->changeHeading = changeHeading;
-    headingUpdate->heading = newHeading;
+    if (posUpdate->changeHeading == false) {
+        posUpdate->changeHeading = changeHeading;
+        posUpdate->newHeading = newHeading;
+    }
 
     //clean up the shared mem
-    if (headingUpdate != NULL) {
-        UnmapViewOfFile(headingUpdate);
+    if (posUpdate != NULL) {
+        UnmapViewOfFile(posUpdate);
     }
-    if (headingMapFile != NULL) {
-        CloseHandle(headingMapFile);
+    if (posUpdateMapFile != NULL) {
+        CloseHandle(posUpdateMapFile);
+    }
+
+    return true;
+}
+
+bool DarksideAPI::SetPlayerFwdSpeed(bool changeSpeed, float newSpeed) {
+
+    //Setup the MMF
+        //setup the heading overwrite flag mmf
+    std::wstring posUpdateMmf_name = std::to_wstring(pidHandle) + L"_posUpdate";
+    std::size_t posUpdateFilesize = sizeof(positionUpdate_t);
+
+
+    auto posUpdateMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        posUpdateFilesize,                // maximum object size (low-order DWORD)
+        posUpdateMmf_name.c_str());                 // name of mapping object
+
+    if (posUpdateMapFile == NULL)
+    {
+        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+            GetLastError());
+        if (posUpdateMapFile != NULL) {
+            CloseHandle(posUpdateMapFile);
+        }
+
+        return false;
+    }
+
+    positionUpdate_t* posUpdate = (positionUpdate_t*)MapViewOfFile(posUpdateMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    //Todo add exception
+
+    if (posUpdate == NULL) {
+        _tprintf(TEXT("Could not create map view object (%d).\n"),
+            GetLastError());
+        if (posUpdate != NULL) {
+            UnmapViewOfFile(posUpdate);
+        }
+        if (posUpdateMapFile != NULL) {
+            CloseHandle(posUpdateMapFile);
+        }
+        return false;
+    }
+
+    if (posUpdate->changeFwd == false) {
+        posUpdate->changeFwd = changeSpeed;
+        posUpdate->newFwd = newSpeed;
+    }
+
+
+
+    //clean up the shared mem
+    if (posUpdate != NULL) {
+        UnmapViewOfFile(posUpdate);
+    }
+    if (posUpdateMapFile != NULL) {
+        CloseHandle(posUpdateMapFile);
+    }
+
+    return true;
+}
+
+bool DarksideAPI::SetPlayerStrafeSpeed(bool changeSpeed, float newSpeed) {
+
+    //Setup the MMF
+        //setup the heading overwrite flag mmf
+    std::wstring posUpdateMmf_name = std::to_wstring(pidHandle) + L"_posUpdate";
+    std::size_t posUpdateFilesize = sizeof(positionUpdate_t);
+
+
+    auto posUpdateMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // use paging file
+        NULL,                    // default security
+        PAGE_READWRITE,          // read/write access
+        0,                       // maximum object size (high-order DWORD)
+        posUpdateFilesize,                // maximum object size (low-order DWORD)
+        posUpdateMmf_name.c_str());                 // name of mapping object
+
+    if (posUpdateMapFile == NULL)
+    {
+        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
+            GetLastError());
+        if (posUpdateMapFile != NULL) {
+            CloseHandle(posUpdateMapFile);
+        }
+
+        return false;
+    }
+
+    positionUpdate_t* posUpdate = (positionUpdate_t*)MapViewOfFile(posUpdateMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    //Todo add exception
+
+    if (posUpdate == NULL) {
+        _tprintf(TEXT("Could not create map view object (%d).\n"),
+            GetLastError());
+        if (posUpdate != NULL) {
+            UnmapViewOfFile(posUpdate);
+        }
+        if (posUpdateMapFile != NULL) {
+            CloseHandle(posUpdateMapFile);
+        }
+        return false;
+    }
+
+    if (posUpdate->changeStrafe == false) {
+        posUpdate->changeStrafe = changeSpeed;
+        posUpdate->newStrafe = newSpeed;
+    }
+
+
+    //clean up the shared mem
+    if (posUpdate != NULL) {
+        UnmapViewOfFile(posUpdate);
+    }
+    if (posUpdateMapFile != NULL) {
+        CloseHandle(posUpdateMapFile);
     }
 
     return true;

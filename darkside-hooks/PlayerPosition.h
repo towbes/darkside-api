@@ -15,10 +15,10 @@ private:
     std::wstring posInfommf_name;
 
     //Setup mmf to track heading overwrite
-    void* headingMapFile;
-    std::wstring headingmmf_name;
+    void* posUpdateMapFile;
+    std::wstring posUpdateMmf_name;
     //Pointer to heading update struct in shared memory
-    headingupdate_t* headingUpdate;
+    positionUpdate_t* posUpdate;
     //Mutex for the player position pointer
     //Prevents writing/reading at the same time
     std::mutex posUpdateMutex;

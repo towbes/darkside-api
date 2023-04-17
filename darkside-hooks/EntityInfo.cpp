@@ -215,6 +215,7 @@ bool EntityInfo::GetEntityInfo() {
             entoffset += sizeof(entity_t);
             nameoffset += sizeof(entName_t);
         }
+        return true;
     }//Todo add exception
     else {
         return false;

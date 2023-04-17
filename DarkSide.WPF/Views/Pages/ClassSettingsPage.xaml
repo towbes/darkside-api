@@ -1,17 +1,143 @@
 ﻿<ui:UiPage
-    x:Class="DarkSide.WPF.Views.Pages.ClassSettingsPage"
+    x:Class="DarkSideModernGUI.Views.Pages.ClassSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:DarkSideModernGUI.Helpers"
+    xmlns:local="clr-namespace:DarkSideModernGUI.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:pages="clr-namespace:DarkSide.WPF.Views.Pages"
     Title="testPage"
-    d:DataContext="{d:DesignInstance pages:ClassSettingsPage,
+    d:DataContext="{d:DesignInstance local:ClassSettingsPage,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="450"
+    d:DesignHeight="600"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <ui:UiPage.Resources />
 
+    <Grid
+        Height="574"
+        Margin="0,0,0,0"
+        VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="250" />
+        </Grid.ColumnDefinitions>
+        <StackPanel
+            Grid.Column="0">
+            <TextBlock
+            Name="InjectedInfo"
+            Grid.Column="0"
+            Margin="10,0,15,275"
+            Width="auto"
+            Foreground="Orange"
+            TextWrapping="Wrap">
+            InjectedInfo
+            </TextBlock>
+            <TextBlock
+            Name="SettingsInfo"
+            Grid.Column="0"
+            Margin="10,0,15,275"
+            Width="auto"
+            Foreground="Orange"
+            TextWrapping="Wrap">
+            SettingsInfo
+            </TextBlock>
+        </StackPanel>
+        <StackPanel
+            Grid.Column="1">
+            <ui:Button
+            Name="btnMainLoop"
+            Grid.Column="1"
+            Width="136"
+            Margin="67,0,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_MainLoop">
+                MainLoop
+            </ui:Button>
+            <ui:Button
+            Name="btnHealLoop"
+            Grid.Column="1"
+            Width="136"
+            Margin="67,0,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_HealLoop">
+            HealLoop
+            </ui:Button>
+
+            <ui:Button
+            Name="StickButton"
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_Stick">
+                Stick is Off
+            </ui:Button>
+            <ui:Button
+                Name="btnCleanInv"
+                Grid.Column="1"
+                Width="136"
+                Margin="67,10,0,0"
+                VerticalAlignment="Top"
+                Click="Button_Click_CleanInventory">
+                CleanInventory
+            </ui:Button>
+            <ui:Button
+                Name="LoadSettings"
+                Grid.Column="1"
+                Width="136"
+                Margin="67,10,0,0"
+                VerticalAlignment="Top"
+                Click="Button_Click_LoadSettings">
+                LoadSettings
+            </ui:Button>
+            <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_RunTarget">
+                GetBuffs
+            </ui:Button>
+        </StackPanel>
+        <StackPanel
+            Grid.Column="2">
+            <ui:Button
+                Name="btnFullDragon"
+                Grid.Column="1"
+                Width="136"
+                Margin="67,10,0,0"
+                VerticalAlignment="Top"
+                Click="Button_Click_FullDragon">
+                Full Dragon
+            </ui:Button>
+            <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_BattleLoc">
+                DragBattleLoc
+            </ui:Button>
+            <ui:Button
+            Grid.Column="1"
+            Width="136"
+            Margin="67,10,0,0"
+            VerticalAlignment="Top"
+            Click="Button_Click_ResetLoc">
+                DragResetLoc
+            </ui:Button>
+            <ui:Button
+                Name="btnFightDragon"
+                Grid.Column="1"
+                Width="136"
+                Margin="67,10,0,0"
+                VerticalAlignment="Top"
+                Click="Button_Click_FightDragon">
+                DragFight
+            </ui:Button>
+        </StackPanel>
+    </Grid>
 </ui:UiPage>

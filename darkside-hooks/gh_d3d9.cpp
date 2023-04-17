@@ -1,3 +1,5 @@
+//Code from https://guidedhacking.com/threads/d3d9-endscene-hook-template-using-dummy-device.14008/
+
 #pragma once
 #include "pch.h"
 #include "gh_d3d9.h"

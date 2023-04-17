@@ -145,6 +145,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChatManagerAPI.cpp" />
     <ClCompile Include="DarksideAPI.cpp" />
     <ClCompile Include="DarksideAPICaller.cpp" />
     <ClCompile Include="EntityInfoAPI.cpp" />
